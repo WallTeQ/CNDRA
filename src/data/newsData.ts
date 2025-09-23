@@ -28,9 +28,10 @@ export interface Event {
 
 export const mockNews: NewsArticle[] = [
   {
-    id: '1',
-    title: 'New Digital Collection: Civil War Letters Now Available Online',
-    excerpt: 'Over 5,000 personal letters from Civil War soldiers and their families have been digitized and are now accessible to researchers worldwide.',
+    id: "1",
+    title: "New Digital Collection: Civil War Letters Now Available Online",
+    excerpt:
+      "Over 5,000 personal letters from Civil War soldiers and their families have been digitized and are now accessible to researchers worldwide.",
     content: `We are excited to announce the completion of our largest digitization project to date. The Civil War Letters Collection, comprising over 5,000 personal correspondences from soldiers and their families during the American Civil War, is now fully available online.
 
 This remarkable collection provides intimate glimpses into the daily lives, hopes, and fears of those who lived through one of America's most defining periods. The letters span from 1861 to 1865 and include correspondence from both Union and Confederate soldiers, as well as letters from family members on the home front.
@@ -45,17 +46,19 @@ Key highlights of the collection include:
 Each letter has been carefully transcribed and indexed, making them fully searchable by keyword, date, location, and correspondent. The collection also includes detailed metadata about each document, including provenance information and historical context.
 
 This project was made possible through a generous grant from the National Endowment for the Humanities and represents three years of meticulous work by our digitization team and volunteer transcribers.`,
-    author: 'Dr. Sarah Mitchell',
-    publishedAt: '2024-01-15T10:00:00Z',
-    category: 'announcement',
-    imageUrl: 'https://images.pexels.com/photos/1029141/pexels-photo-1029141.jpeg?auto=compress&cs=tinysrgb&w=600',
-    tags: ['civil war', 'digitization', 'letters', 'online collection'],
-    featured: true
+    author: "Dr. Sarah Mitchell",
+    publishedAt: "2024-01-15T10:00:00Z",
+    category: "announcement",
+    imageUrl:
+      "https://images.pexels.com/photos/1029141/pexels-photo-1029141.jpeg?auto=compress&cs=tinysrgb&w=600",
+    tags: ["civil war", "digitization", "letters", "online collection"],
+    featured: true,
   },
   {
-    id: '2',
-    title: 'Archive Receives Major Donation of Industrial Revolution Documents',
-    excerpt: 'A private collector has donated over 2,000 documents related to American industrialization, including rare factory records and worker testimonies.',
+    id: "2",
+    title: "Archive Receives Major Donation of Industrial Revolution Documents",
+    excerpt:
+      "A private collector has donated over 2,000 documents related to American industrialization, including rare factory records and worker testimonies.",
     content: `The National Archive is pleased to announce a significant donation from the estate of historian Dr. Robert Hartwell. The collection includes over 2,000 documents spanning the Industrial Revolution period (1760-1840), with particular focus on American manufacturing and labor history.
 
 The donation includes:
@@ -68,17 +71,27 @@ The donation includes:
 This collection fills important gaps in our industrial history holdings and will be invaluable for researchers studying the transformation of American society during this crucial period. The documents are currently being processed and cataloged, with digitization expected to begin in the spring.
 
 Dr. Hartwell spent over 40 years collecting these materials, and his meticulous documentation and provenance research will greatly assist our archival team in making these resources accessible to the public.`,
-    author: 'Michael Chen',
-    publishedAt: '2024-01-10T14:30:00Z',
-    category: 'acquisition',
-    imageUrl: 'https://images.pexels.com/photos/256455/pexels-photo-256455.jpeg?auto=compress&cs=tinysrgb&w=600',
-    tags: ['industrial revolution', 'donation', 'labor history', 'manufacturing'],
-    featured: false
+    author: "Michael Chen",
+    publishedAt: "2024-01-10T14:30:00Z",
+    category: "acquisition",
+    imageUrl:
+      "https://images.pexels.com/photos/256455/pexels-photo-256455.jpeg?auto=compress&cs=tinysrgb&w=600",
+    tags: [
+      "industrial revolution",
+      "donation",
+      "labor history",
+      "manufacturing",
+    ],
+    featured: false,
   },
   {
-    id: '3',
-    title: 'Research Fellowship Program Opens for 2024 Applications',
-    excerpt: 'The National Archive is now accepting applications for its prestigious research fellowship program, offering scholars access to unique collections.',
+    id: "3",
+    title: "Research Fellowship Program Opens for 2024 Applications",
+    imageUrl:
+      "https://images.pexels.com/photos/256455/pexels-photo-256455.jpeg?auto=compress&cs=tinysrgb&w=600",
+
+    excerpt:
+      "The National Archive is now accepting applications for its prestigious research fellowship program, offering scholars access to unique collections.",
     content: `Applications are now open for the 2024 National Archive Research Fellowship Program. This competitive program provides scholars with unprecedented access to our collections, along with financial support and research facilities.
 
 Fellowship Benefits:
@@ -97,16 +110,17 @@ We are particularly interested in research projects that:
 The application deadline is March 15, 2024. Fellowships will begin in September 2024. Applicants must hold a PhD in history or related field, or be advanced graduate students with dissertation committee approval.
 
 For more information and application materials, visit our website or contact our Research Services department.`,
-    author: 'Dr. Jennifer Walsh',
-    publishedAt: '2024-01-08T09:00:00Z',
-    category: 'announcement',
-    tags: ['fellowship', 'research', 'scholars', 'applications'],
-    featured: true
+    author: "Dr. Jennifer Walsh",
+    publishedAt: "2024-01-08T09:00:00Z",
+    category: "announcement",
+    tags: ["fellowship", "research", "scholars", "applications"],
+    featured: true,
   },
   {
-    id: '4',
-    title: 'New Conservation Lab Opens to Public Tours',
-    excerpt: 'Visitors can now see behind the scenes of document preservation with guided tours of our state-of-the-art conservation laboratory.',
+    id: "4",
+    title: "New Conservation Lab Opens to Public Tours",
+    excerpt:
+      "Visitors can now see behind the scenes of document preservation with guided tours of our state-of-the-art conservation laboratory.",
     content: `Starting this month, the National Archive is offering guided tours of our newly renovated conservation laboratory. These behind-the-scenes tours provide visitors with a unique opportunity to see how we preserve and restore historical documents for future generations.
 
 Tour highlights include:
@@ -126,13 +140,14 @@ The conservation lab features cutting-edge equipment including:
 - Custom storage solutions
 
 This initiative is part of our ongoing commitment to transparency and public education about the important work of preserving our nation's documentary heritage.`,
-    author: 'Lisa Rodriguez',
-    publishedAt: '2024-01-05T11:15:00Z',
-    category: 'news',
-    imageUrl: 'https://images.pexels.com/photos/1068166/pexels-photo-1068166.jpeg?auto=compress&cs=tinysrgb&w=600',
-    tags: ['conservation', 'tours', 'preservation', 'public programs'],
-    featured: false
-  }
+    author: "Lisa Rodriguez",
+    publishedAt: "2024-01-05T11:15:00Z",
+    category: "news",
+    imageUrl:
+      "https://images.pexels.com/photos/1068166/pexels-photo-1068166.jpeg?auto=compress&cs=tinysrgb&w=600",
+    tags: ["conservation", "tours", "preservation", "public programs"],
+    featured: true,
+  },
 ];
 
 export const mockEvents: Event[] = [

@@ -6,7 +6,6 @@ import {
   MapPin, 
   Users, 
   ExternalLink, 
-  Filter,
   Search,
   Tag,
   User,
@@ -19,7 +18,7 @@ import { Footer } from '../../components/common/Footer';
 import { Card } from '../../components/ui/Card';
 import { Button } from '../../components/ui/Button';
 import { Badge } from '../../components/ui/Badge';
-import { mockNews, mockEvents, NewsArticle, Event } from '../../data/newsData';
+import { mockNews, mockEvents} from '../../data/newsData';
 
 export const NewsEventsPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'news' | 'events'>('news');
@@ -47,12 +46,6 @@ export const NewsEventsPage: React.FC = () => {
     
     return matchesSearch && matchesFilter;
   });
-
-  const featuredNews = mockNews.filter(article => article.featured);
-  const upcomingEvents = mockEvents
-    .filter(event => new Date(event.date) >= new Date())
-    .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
-    .slice(0, 3);
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
@@ -103,127 +96,6 @@ export const NewsEventsPage: React.FC = () => {
           <p className="text-lg text-slate-600">
             Stay updated with the latest news from the National Archive and upcoming events.
           </p>
-        </div>
-
-        {/* Featured Section */}
-        <div className="mb-12">
-          <h2 className="text-2xl font-bold text-slate-900 mb-6">Featured</h2>
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            {/* Featured News */}
-            <div>
-              <h3 className="text-lg font-semibold text-slate-900 mb-4">Latest News</h3>
-              <div className="space-y-4">
-                {featuredNews.slice(0, 2).map((article) => (
-                  <Card key={article.id} className="overflow-hidden p-0" hover>
-                    {article.imageUrl && (
-                      <img
-                        src={article.imageUrl}
-                        alt={article.title}
-                        className="w-full h-48 object-cover"
-                      />
-                    )}
-                    <div className="p-6">
-                      <div className="flex items-center space-x-2 mb-3">
-                        <Badge variant={getCategoryColor(article.category)} size="sm" className="capitalize">
-                          {article.category}
-                        </Badge>
-                        <span className="text-sm text-slate-500">
-                          {formatDate(article.publishedAt)}
-                        </span>
-                      </div>
-                      <h4 className="text-lg font-semibold text-slate-900 mb-2 line-clamp-2">
-                        {article.title}
-                      </h4>
-                      <p className="text-slate-600 text-sm mb-4 line-clamp-3">
-                        {article.excerpt}
-                      </p>
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center space-x-2 text-sm text-slate-500">
-                          <User className="h-4 w-4" />
-                          <span>{article.author}</span>
-                        </div>
-                        <Link to={`/news/${article.id}`}>
-                          <Button variant="ghost" size="sm" className="flex items-center space-x-1">
-                            <span>Read More</span>
-                            <ChevronRight className="h-4 w-4" />
-                          </Button>
-                        </Link>
-                      </div>
-                    </div>
-                  </Card>
-                ))}
-              </div>
-            </div>
-
-            {/* Upcoming Events */}
-            <div>
-              <h3 className="text-lg font-semibold text-slate-900 mb-4">Upcoming Events</h3>
-              <div className="space-y-4">
-                {upcomingEvents.map((event) => (
-                  <Card key={event.id} hover>
-                    <div className="flex items-start space-x-4">
-                      <div className="flex-shrink-0 text-center">
-                        <div className="bg-blue-100 text-blue-800 rounded-lg p-3">
-                          <div className="text-lg font-bold">
-                            {new Date(event.date).getDate()}
-                          </div>
-                          <div className="text-xs uppercase">
-                            {new Date(event.date).toLocaleDateString('en-US', { month: 'short' })}
-                          </div>
-                        </div>
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center space-x-2 mb-2">
-                          <Badge variant={getEventTypeColor(event.type)} size="sm" className="capitalize">
-                            {event.type}
-                          </Badge>
-                          {event.registrationRequired && (
-                            <Badge variant="warning" size="sm">
-                              Registration Required
-                            </Badge>
-                          )}
-                        </div>
-                        <h4 className="text-lg font-semibold text-slate-900 mb-2 line-clamp-2">
-                          {event.title}
-                        </h4>
-                        <div className="space-y-1 text-sm text-slate-600 mb-3">
-                          <div className="flex items-center space-x-2">
-                            <Clock className="h-4 w-4" />
-                            <span>{event.time}</span>
-                          </div>
-                          <div className="flex items-center space-x-2">
-                            <MapPin className="h-4 w-4" />
-                            <span>{event.location}</span>
-                          </div>
-                          {event.capacity && (
-                            <div className="flex items-center space-x-2">
-                              <Users className="h-4 w-4" />
-                              <span>Limited to {event.capacity} participants</span>
-                            </div>
-                          )}
-                        </div>
-                        <div className="flex items-center justify-between">
-                          <span className="text-sm font-medium text-slate-900">
-                            {event.price}
-                          </span>
-                          {event.registrationRequired && event.registrationUrl ? (
-                            <Button size="sm" className="flex items-center space-x-1">
-                              <span>Register</span>
-                              <ExternalLink className="h-3 w-3" />
-                            </Button>
-                          ) : (
-                            <Button variant="outline" size="sm">
-                              Learn More
-                            </Button>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                  </Card>
-                ))}
-              </div>
-            </div>
-          </div>
         </div>
 
         {/* Main Content */}
