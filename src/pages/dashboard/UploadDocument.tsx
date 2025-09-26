@@ -1,50 +1,78 @@
-import React, { useState } from 'react';
-import { Upload, X, FileText, Image, Map, Music, Video, File } from 'lucide-react';
-import { Card } from '../../components/ui/Card';
-import { Button } from '../../components/ui/Button';
-import { Badge } from '../../components/ui/Badge';
 
-export const UploadDocument: React.FC = () => {
+import type React from "react";
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import {
+  Upload,
+  X,
+  FileText,
+  ImageIcon,
+  Music,
+  Video,
+  type File,
+} from "lucide-react";
+import { Button } from "../../components/ui/Button";
+import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/Card";
+import { useAppDispatch, useAppSelector } from "../../store/";
+import { fetchDepartments } from "../../store/slices/depatments/departmentThunk";
+import { fetchCollections } from "../../store/slices/collections/collectionThunk";
+import { addRecord } from "../../store/slices/records/recordsThunk";
+import { Input } from "../../components/ui/Input";
+
+export default function UploadDocumentPage() {
+  const navigate = useNavigate();
+  const dispatch = useAppDispatch();
+  const { departments, isLoading: departmentsLoading } = useAppSelector(
+    (state) => state.departments
+  );
+  const { collections, isLoading: collectionsLoading } = useAppSelector(
+    (state) => state.collections
+  );
+  const { isLoading: recordsLoading, error } = useAppSelector(
+    (state) => state.records
+  );
+
   const [dragActive, setDragActive] = useState(false);
   const [files, setFiles] = useState<File[]>([]);
   const [formData, setFormData] = useState({
-    title: '',
-    type: 'manuscript',
-    author: '',
-    date: '',
-    description: '',
-    tags: '',
-    category: '',
-    accessLevel: 'public'
+    title: "",
+    description: "",
+    tags: "",
+    collectionId: "",
+    accessLevel: "PUBLIC",
   });
+  const [selectedDepartment, setSelectedDepartment] = useState("");
 
-  const documentTypes = [
-    { value: 'manuscript', label: 'Manuscript', icon: FileText },
-    { value: 'photograph', label: 'Photograph', icon: Image },
-    { value: 'map', label: 'Map', icon: Map },
-    { value: 'record', label: 'Record', icon: FileText },
-    { value: 'audio', label: 'Audio', icon: Music },
-    { value: 'video', label: 'Video', icon: Video },
-    { value: 'other', label: 'Other', icon: File }
-  ];
+  useEffect(() => {
+    dispatch(fetchDepartments());
+    dispatch(fetchCollections());
+  }, [dispatch]);
 
-  const categories = [
-    'Historical Records',
-    'Military Records',
-    'Social History',
-    'Political Documents',
-    'Legal Documents',
-    'Cultural Archives',
-    'Scientific Records',
-    'Other'
+  const accessLevels = [
+    {
+      value: "PUBLIC",
+      label: "Public",
+      description: "Accessible to all users and searchable",
+    },
+    {
+      value: "RESTRICTED",
+      label: "Restricted",
+      description: "Only accessible to staff and authorized users",
+    },
+    {
+      value: "CONFIDENTIAL",
+      label: "Confidential",
+      description: "Restricted access - admin approval required",
+    },
+    
   ];
 
   const handleDrag = (e: React.DragEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    if (e.type === 'dragenter' || e.type === 'dragover') {
+    if (e.type === "dragenter" || e.type === "dragover") {
       setDragActive(true);
-    } else if (e.type === 'dragleave') {
+    } else if (e.type === "dragleave") {
       setDragActive(false);
     }
   };
@@ -53,321 +81,339 @@ export const UploadDocument: React.FC = () => {
     e.preventDefault();
     e.stopPropagation();
     setDragActive(false);
-    
+
     if (e.dataTransfer.files && e.dataTransfer.files[0]) {
       const newFiles = Array.from(e.dataTransfer.files);
-      setFiles(prev => [...prev, ...newFiles]);
+      setFiles((prev) => [...prev, ...newFiles]);
     }
   };
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
       const newFiles = Array.from(e.target.files);
-      setFiles(prev => [...prev, ...newFiles]);
+      setFiles((prev) => [...prev, ...newFiles]);
     }
   };
 
   const removeFile = (index: number) => {
-    setFiles(prev => prev.filter((_, i) => i !== index));
+    setFiles((prev) => prev.filter((_, i) => i !== index));
   };
 
   const formatFileSize = (bytes: number) => {
-    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-    if (bytes === 0) return '0 Bytes';
+    const sizes = ["Bytes", "KB", "MB", "GB"];
+    if (bytes === 0) return "0 Bytes";
     const i = Math.floor(Math.log(bytes) / Math.log(1024));
-    return Math.round(bytes / Math.pow(1024, i) * 100) / 100 + ' ' + sizes[i];
+    return Math.round((bytes / Math.pow(1024, i)) * 100) / 100 + " " + sizes[i];
   };
 
   const getFileIcon = (type: string) => {
-    if (type.startsWith('image/')) return Image;
-    if (type.startsWith('audio/')) return Music;
-    if (type.startsWith('video/')) return Video;
+    if (type.startsWith("image/")) return ImageIcon;
+    if (type.startsWith("audio/")) return Music;
+    if (type.startsWith("video/")) return Video;
     return FileText;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Submitting document:', { formData, files });
-    // Here you would typically send the data to your backend
-    alert('Document uploaded successfully!');
+
+    if (!formData.collectionId) {
+      alert("Please select a collection");
+      return;
+    }
+
+    if (files.length === 0) {
+      alert("Please select at least one file");
+      return;
+    }
+    console.log("Selected files:", files);
+    console.log("file details:", files.map(file => ({ name: file.name, size: file.size, type: file.type })));
+    console.log("Form data:", formData);
+
+    const recordData = {
+      title: formData.title,
+      description: formData.description,
+      collectionId: formData.collectionId,
+      accessLevel: formData.accessLevel,
+      subjectTags: formData.tags
+        .split(",")
+        .map((tag) => tag.trim())
+        .filter((tag) => tag),
+      files: files,
+    };
+    console.log("Record data to submit:", recordData);
+
+    try {
+      await dispatch(addRecord(recordData)).unwrap();
+      navigate("dashboard/records");
+    } catch (error) {
+      console.error("Failed to create record:", error);
+    }
   };
 
   const handleInputChange = (field: string, value: string) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
+    setFormData((prev) => ({ ...prev, [field]: value }));
   };
+
+  // Filter collections based on selected department
+  const filteredCollections = selectedDepartment
+    ? collections.filter((collection) =>
+        collection.departments?.some((dept) => dept.id === selectedDepartment)
+      )
+    : collections;
 
   return (
     <div className="py-6">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 md:px-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8">
         {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-2xl font-bold text-gray-900">Upload Document</h1>
-          <p className="mt-1 text-sm text-gray-600">
-            Add a new document to the archive system.
-          </p>
+        <div className="flex items-center justify-between pb-6">
+          <div>
+            <h1 className="text-2xl font-bold text-foreground">
+              Upload Document
+            </h1>
+            <p className="text-muted-foreground">
+              Add a new document to the archive system.
+            </p>
+          </div>
+          <Button variant="outline" onClick={() => navigate("/records")}>
+            Back to Records
+          </Button>
         </div>
+
+        {error && (
+          <div className="bg-destructive/10 border border-destructive/20 text-destructive px-4 py-3 rounded-lg">
+            {error}
+          </div>
+        )}
 
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* File Upload */}
           <Card>
-            <h3 className="text-lg font-medium text-gray-900 mb-4">Document Files</h3>
-            
-            <div
-              className={`relative border-2 border-dashed rounded-lg p-6 transition-colors ${
-                dragActive
-                  ? 'border-blue-400 bg-blue-50'
-                  : 'border-gray-300 hover:border-gray-400'
-              }`}
-              onDragEnter={handleDrag}
-              onDragLeave={handleDrag}
-              onDragOver={handleDrag}
-              onDrop={handleDrop}
-            >
-              <div className="text-center">
-                <Upload className="mx-auto h-12 w-12 text-gray-400" />
-                <div className="mt-4">
-                  <label htmlFor="file-upload" className="cursor-pointer">
-                    <span className="mt-2 block text-sm font-medium text-gray-900">
-                      Drop files here or click to browse
-                    </span>
-                    <input
-                      id="file-upload"
-                      name="file-upload"
-                      type="file"
-                      className="sr-only"
-                      multiple
-                      onChange={handleFileSelect}
-                    />
-                  </label>
-                  <p className="mt-2 text-xs text-gray-500">
-                    PDF, images, audio, video files up to 50MB each
-                  </p>
+            <CardHeader>
+              <CardTitle>Document Files</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div
+                className={`relative border-2 border-dashed rounded-lg p-6 transition-colors ${
+                  dragActive
+                    ? "border-primary bg-primary/5"
+                    : "border-border hover:border-border/80"
+                }`}
+                onDragEnter={handleDrag}
+                onDragLeave={handleDrag}
+                onDragOver={handleDrag}
+                onDrop={handleDrop}
+              >
+                <div className="text-center">
+                  <Upload className="mx-auto h-12 w-12 text-muted-foreground" />
+                  <div className="mt-4">
+                    <label htmlFor="file-upload" className="cursor-pointer">
+                      <span className="mt-2 block text-sm font-medium text-foreground">
+                        Drop files here or click to browse
+                      </span>
+                      <input
+                        id="file-upload"
+                        name="file-upload"
+                        type="file"
+                        className="sr-only"
+                        multiple
+                        onChange={handleFileSelect}
+                      />
+                    </label>
+                    <p className="mt-2 text-xs text-muted-foreground">
+                      PDF, images, audio, video files up to 50MB each
+                    </p>
+                  </div>
                 </div>
               </div>
-            </div>
 
-            {/* File List */}
-            {files.length > 0 && (
-              <div className="mt-4 space-y-2">
-                <h4 className="text-sm font-medium text-gray-900">Selected Files</h4>
-                {files.map((file, index) => {
-                  const FileIcon = getFileIcon(file.type);
-                  return (
-                    <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                      <div className="flex items-center space-x-3">
-                        <FileIcon className="h-5 w-5 text-gray-400" />
-                        <div>
-                          <p className="text-sm font-medium text-gray-900">{file.name}</p>
-                          <p className="text-xs text-gray-500">{formatFileSize(file.size)}</p>
-                        </div>
-                      </div>
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => removeFile(index)}
+              {/* File List */}
+              {files.length > 0 && (
+                <div className="mt-4 space-y-2">
+                  <h4 className="text-sm font-medium text-foreground">
+                    Selected Files
+                  </h4>
+                  {files.map((file, index) => {
+                    const FileIcon = getFileIcon(file.type);
+                    return (
+                      <div
+                        key={index}
+                        className="flex items-center justify-between p-3 bg-muted/50 rounded-lg"
                       >
-                        <X className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  );
-                })}
-              </div>
-            )}
+                        <div className="flex items-center space-x-3">
+                          <FileIcon className="h-5 w-5 text-muted-foreground" />
+                          <div>
+                            <p className="text-sm font-medium text-foreground">
+                              {file.name}
+                            </p>
+                            <p className="text-xs text-muted-foreground">
+                              {formatFileSize(file.size)}
+                            </p>
+                          </div>
+                        </div>
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => removeFile(index)}
+                        >
+                          <X className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </CardContent>
           </Card>
 
           {/* Document Metadata */}
           <Card>
-            <h3 className="text-lg font-medium text-gray-900 mb-4">Document Information</h3>
-            
-            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-              <div className="sm:col-span-2">
-                <label htmlFor="title" className="block text-sm font-medium text-gray-700">
-                  Title *
-                </label>
-                <input
-                  type="text"
-                  id="title"
-                  required
-                  value={formData.title}
-                  onChange={(e) => handleInputChange('title', e.target.value)}
-                  className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+            <CardHeader>
+              <CardTitle>Document Information</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div>
+                <Input
+                  label="Title *"
                   placeholder="Enter document title"
-                />
-              </div>
-
-              <div>
-                <label htmlFor="type" className="block text-sm font-medium text-gray-700">
-                  Document Type *
-                </label>
-                <select
-                  id="type"
+                  value={formData.title}
+                  onChange={(e) => handleInputChange("title", e.target.value)}
                   required
-                  value={formData.type}
-                  onChange={(e) => handleInputChange('type', e.target.value)}
-                  className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                >
-                  {documentTypes.map((type) => (
-                    <option key={type.value} value={type.value}>
-                      {type.label}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              <div>
-                <label htmlFor="author" className="block text-sm font-medium text-gray-700">
-                  Author
-                </label>
-                <input
-                  type="text"
-                  id="author"
-                  value={formData.author}
-                  onChange={(e) => handleInputChange('author', e.target.value)}
-                  className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                  placeholder="Enter author name"
                 />
               </div>
 
-              <div>
-                <label htmlFor="date" className="block text-sm font-medium text-gray-700">
-                  Date
-                </label>
-                <input
-                  type="date"
-                  id="date"
-                  value={formData.date}
-                  onChange={(e) => handleInputChange('date', e.target.value)}
-                  className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                />
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="text-sm font-medium text-foreground">
+                    Department
+                  </label>
+                  <select
+                    className="mt-2 flex h-10 w-full rounded-lg border border-border bg-input px-3 py-2 text-sm"
+                    value={selectedDepartment}
+                    onChange={(e) => {
+                      setSelectedDepartment(e.target.value);
+                      setFormData((prev) => ({ ...prev, collectionId: "" })); // Reset collection when department changes
+                    }}
+                    disabled={departmentsLoading}
+                  >
+                    <option value="">All Departments</option>
+                    {departments.map((dept) => (
+                      <option key={dept.id} value={dept.id}>
+                        {dept.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label className="text-sm font-medium text-foreground">
+                    Collection *
+                  </label>
+                  <select
+                    className="mt-2 flex h-10 w-full rounded-lg border border-border bg-input px-3 py-2 text-sm"
+                    value={formData.collectionId}
+                    onChange={(e) =>
+                      handleInputChange("collectionId", e.target.value)
+                    }
+                    required
+                    disabled={collectionsLoading}
+                  >
+                    <option value="">Select Collection</option>
+                    {filteredCollections.map((collection) => (
+                      <option key={collection.id} value={collection.id}>
+                        {collection.title}
+                      </option>
+                    ))}
+                  </select>
+                </div>
               </div>
 
               <div>
-                <label htmlFor="category" className="block text-sm font-medium text-gray-700">
-                  Category
-                </label>
-                <select
-                  id="category"
-                  value={formData.category}
-                  onChange={(e) => handleInputChange('category', e.target.value)}
-                  className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                >
-                  <option value="">Select a category</option>
-                  {categories.map((category) => (
-                    <option key={category} value={category}>
-                      {category}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              <div className="sm:col-span-2">
-                <label htmlFor="description" className="block text-sm font-medium text-gray-700">
+                <label className="text-sm font-medium text-foreground">
                   Description
                 </label>
                 <textarea
-                  id="description"
-                  rows={4}
-                  value={formData.description}
-                  onChange={(e) => handleInputChange('description', e.target.value)}
-                  className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                  className="mt-2 flex min-h-[80px] w-full rounded-lg border border-border bg-input px-3 py-2 text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                   placeholder="Enter a detailed description of the document"
+                  value={formData.description}
+                  onChange={(e) =>
+                    handleInputChange("description", e.target.value)
+                  }
                 />
               </div>
 
-              <div className="sm:col-span-2">
-                <label htmlFor="tags" className="block text-sm font-medium text-gray-700">
-                  Tags
-                </label>
-                <input
-                  type="text"
-                  id="tags"
-                  value={formData.tags}
-                  onChange={(e) => handleInputChange('tags', e.target.value)}
-                  className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+              <div>
+                <Input
+                  label="Tags"
                   placeholder="Enter tags separated by commas"
+                  value={formData.tags}
+                  onChange={(e) => handleInputChange("tags", e.target.value)}
                 />
-                <p className="mt-1 text-xs text-gray-500">
-                  Separate multiple tags with commas (e.g., colonial, history, boston)
+                <p className="mt-1 text-xs text-muted-foreground">
+                  Separate multiple tags with commas (e.g., colonial, history,
+                  boston)
                 </p>
               </div>
-            </div>
+            </CardContent>
           </Card>
 
           {/* Access Control */}
           <Card>
-            <h3 className="text-lg font-medium text-gray-900 mb-4">Access Control</h3>
-            
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-3">
-                Access Level *
-              </label>
-              <div className="space-y-3">
-                <label className="flex items-center">
-                  <input
-                    type="radio"
-                    name="accessLevel"
-                    value="public"
-                    checked={formData.accessLevel === 'public'}
-                    onChange={(e) => handleInputChange('accessLevel', e.target.value)}
-                    className="focus:ring-blue-500 h-4 w-4 text-blue-600 border-gray-300"
-                  />
-                  <div className="ml-3">
-                    <span className="block text-sm font-medium text-gray-700">Public</span>
-                    <span className="block text-xs text-gray-500">
-                      Accessible to all users and searchable
-                    </span>
-                  </div>
+            <CardHeader>
+              <CardTitle>Access Control</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div>
+                <label className="block text-sm font-medium text-foreground mb-3">
+                  Access Level *
                 </label>
-                
-                <label className="flex items-center">
-                  <input
-                    type="radio"
-                    name="accessLevel"
-                    value="internal"
-                    checked={formData.accessLevel === 'internal'}
-                    onChange={(e) => handleInputChange('accessLevel', e.target.value)}
-                    className="focus:ring-blue-500 h-4 w-4 text-blue-600 border-gray-300"
-                  />
-                  <div className="ml-3">
-                    <span className="block text-sm font-medium text-gray-700">Internal</span>
-                    <span className="block text-xs text-gray-500">
-                      Only accessible to staff and authorized users
-                    </span>
-                  </div>
-                </label>
-                
-                <label className="flex items-center">
-                  <input
-                    type="radio"
-                    name="accessLevel"
-                    value="confidential"
-                    checked={formData.accessLevel === 'confidential'}
-                    onChange={(e) => handleInputChange('accessLevel', e.target.value)}
-                    className="focus:ring-blue-500 h-4 w-4 text-blue-600 border-gray-300"
-                  />
-                  <div className="ml-3">
-                    <span className="block text-sm font-medium text-gray-700">Confidential</span>
-                    <span className="block text-xs text-gray-500">
-                      Restricted access - admin approval required
-                    </span>
-                  </div>
-                </label>
+                <div className="space-y-3">
+                  {accessLevels.map((level) => (
+                    <label key={level.value} className="flex items-center">
+                      <input
+                        type="radio"
+                        name="accessLevel"
+                        value={level.value}
+                        checked={formData.accessLevel === level.value}
+                        onChange={(e) =>
+                          handleInputChange("accessLevel", e.target.value)
+                        }
+                        className="focus:ring-primary h-4 w-4 text-primary border-border"
+                      />
+                      <div className="ml-3">
+                        <span className="block text-sm font-medium text-foreground">
+                          {level.label}
+                        </span>
+                        <span className="block text-xs text-muted-foreground">
+                          {level.description}
+                        </span>
+                      </div>
+                    </label>
+                  ))}
+                </div>
               </div>
-            </div>
+            </CardContent>
           </Card>
 
           {/* Submit */}
           <div className="flex justify-end space-x-3">
-            <Button type="button" variant="outline">
-              Save as Draft
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => navigate("/records")}
+            >
+              Cancel
             </Button>
-            <Button type="submit">
-              Upload Document
+            <Button
+              type="submit"
+              disabled={
+                recordsLoading || !formData.title || !formData.collectionId
+              }
+            >
+              {recordsLoading ? "Uploading..." : "Upload Document"}
             </Button>
           </div>
         </form>
       </div>
     </div>
   );
-};
+}

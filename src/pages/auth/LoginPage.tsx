@@ -1,36 +1,53 @@
-import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { Archive, Eye, EyeOff } from 'lucide-react';
-import { Card } from '../../components/ui/Card';
-import { Button } from '../../components/ui/Button';
-import { useAuth } from '../../hooks/useAuth';
+import React, { useState } from "react";
+import { Link, useNavigate, Navigate } from "react-router-dom";
+import { useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import * as yup from "yup";
+import { Archive, Eye, EyeOff } from "lucide-react";
+import { Card } from "../../components/ui/Card";
+import { Button } from "../../components/ui/Button";
+import { useAuth } from "../../hooks/useAuth";
+
+const schema = yup.object({
+  email: yup
+    .string()
+    .email("Please enter a valid email address")
+    .required("Email is required"),
+  password: yup.string().required("Password is required"),
+});
+
+type FormData = yup.InferType<typeof schema>;
 
 export const LoginPage: React.FC = () => {
-  const [email, setEmail] = useState('admin@archive.gov');
-  const [password, setPassword] = useState('password');
   const [showPassword, setShowPassword] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState('');
 
-  const { login } = useAuth();
+  const { login, isAuthenticated, isLoading, error, clearAuthError } =
+    useAuth();
   const navigate = useNavigate();
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsLoading(true);
-    setError('');
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<FormData>({
+    resolver: yupResolver(schema),
+    defaultValues: {
+      email: "admin@archive.gov",
+      password: "password",
+    },
+  });
 
-    try {
-      const success = await login(email, password);
-      if (success) {
-        navigate('/dashboard');
-      } else {
-        setError('Invalid email or password');
-      }
-    } catch (err) {
-      setError('An error occurred during login');
-    } finally {
-      setIsLoading(false);
+  // Redirect if already authenticated
+  if (isAuthenticated) {
+    return <Navigate to="/" replace />;
+  }
+
+  const onSubmit = async (data: FormData) => {
+    clearAuthError();
+
+    const success = await login(data);
+    if (success) {
+      navigate("/");
     }
   };
 
@@ -41,15 +58,19 @@ export const LoginPage: React.FC = () => {
         <div className="text-center mb-8">
           <Link to="/" className="inline-flex items-center space-x-2 mb-6">
             <Archive className="h-10 w-10 text-blue-600" />
-            <span className="text-2xl font-bold text-slate-900">National Archive</span>
+            <span className="text-2xl font-bold text-slate-900">
+              National Archive
+            </span>
           </Link>
-          <h1 className="text-3xl font-bold text-slate-900 mb-2">Staff Login</h1>
+          <h1 className="text-3xl font-bold text-slate-900 mb-2">
+            Staff Login
+          </h1>
           <p className="text-slate-600">Access the archive management system</p>
         </div>
 
         {/* Login Form */}
         <Card>
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
             {error && (
               <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
                 {error}
@@ -57,32 +78,43 @@ export const LoginPage: React.FC = () => {
             )}
 
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-slate-700 mb-2">
+              <label
+                htmlFor="email"
+                className="block text-sm font-medium text-slate-700 mb-2"
+              >
                 Email Address
               </label>
               <input
+                {...register("email")}
                 id="email"
                 type="email"
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                  errors.email ? "border-red-300" : "border-slate-300"
+                }`}
                 placeholder="Enter your email"
               />
+              {errors.email && (
+                <p className="mt-1 text-sm text-red-600">
+                  {errors.email.message}
+                </p>
+              )}
             </div>
 
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-slate-700 mb-2">
+              <label
+                htmlFor="password"
+                className="block text-sm font-medium text-slate-700 mb-2"
+              >
                 Password
               </label>
               <div className="relative">
                 <input
+                  {...register("password")}
                   id="password"
-                  type={showPassword ? 'text' : 'password'}
-                  required
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="w-full px-3 py-2 pr-10 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  type={showPassword ? "text" : "password"}
+                  className={`w-full px-3 py-2 pr-10 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                    errors.password ? "border-red-300" : "border-slate-300"
+                  }`}
                   placeholder="Enter your password"
                 />
                 <button
@@ -97,6 +129,11 @@ export const LoginPage: React.FC = () => {
                   )}
                 </button>
               </div>
+              {errors.password && (
+                <p className="mt-1 text-sm text-red-600">
+                  {errors.password.message}
+                </p>
+              )}
             </div>
 
             <div className="flex items-center justify-between">
@@ -112,21 +149,35 @@ export const LoginPage: React.FC = () => {
               </a>
             </div>
 
-            <Button
-              type="submit"
-              className="w-full"
-              disabled={isLoading}
-            >
-              {isLoading ? 'Signing in...' : 'Sign In'}
+            <Button type="submit" className="w-full" disabled={isLoading}>
+              {isLoading ? "Signing in..." : "Sign In"}
             </Button>
           </form>
 
           <div className="mt-6 pt-6 border-t border-slate-200">
+            <div className="text-center mb-4">
+              <p className="text-sm text-slate-600">
+                Don't have an account?{" "}
+                <Link
+                  to="/signup"
+                  className="text-blue-600 hover:text-blue-700 font-medium"
+                >
+                  Create one here
+                </Link>
+              </p>
+            </div>
+
             <div className="bg-blue-50 p-4 rounded-lg">
-              <h3 className="text-sm font-medium text-blue-900 mb-2">Demo Credentials</h3>
+              <h3 className="text-sm font-medium text-blue-900 mb-2">
+                Demo Credentials
+              </h3>
               <div className="text-sm text-blue-700 space-y-1">
-                <p><strong>Admin:</strong> admin@archive.gov / password</p>
-                <p><strong>Staff:</strong> staff@archive.gov / password</p>
+                <p>
+                  <strong>Admin:</strong> admin@archive.gov / password
+                </p>
+                <p>
+                  <strong>Staff:</strong> staff@archive.gov / password
+                </p>
               </div>
             </div>
           </div>

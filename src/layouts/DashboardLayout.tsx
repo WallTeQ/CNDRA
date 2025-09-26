@@ -1,49 +1,105 @@
-import React, { useState } from 'react';
-import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
-import { 
-  Archive, 
-  LayoutDashboard, 
-  Upload, 
-  FileText, 
-  Users, 
-  Settings, 
-  LogOut, 
-  Menu, 
+import React, { useState } from "react";
+import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
+import {
+  Archive,
+  LayoutDashboard,
+  Upload,
+  FileText,
+  Users,
+  Settings,
+  LogOut,
+  Menu,
   X,
   Bell,
   Search,
-  ClipboardCheck
-} from 'lucide-react';
-import { Button } from '../components/ui/Button';
-import { useAuth } from '../hooks/useAuth';
+  ClipboardCheck,
+} from "lucide-react";
+import { Button } from "../components/ui/Button";
+import { useAuth } from "../hooks/useAuth";
 
 const navigation = [
-  { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
-  { name: 'Upload Document', href: '/dashboard/upload', icon: Upload },
-  { name: 'All Documents', href: '/dashboard/documents', icon: FileText },
-  { name: 'Review Requests', href: '/dashboard/review', icon: ClipboardCheck },
-  { name: 'Users', href: '/dashboard/users', icon: Users },
-  { name: 'Settings', href: '/dashboard/settings', icon: Settings },
+  { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
+  { name: "Upload Document", href: "/dashboard/upload", icon: Upload },
+  { name: "Records", href: "/dashboard/records", icon: FileText },
+  { name: "Departments", href: "/dashboard/departments", icon: Users },
+  { name: "Collections", href: "/dashboard/collections", icon: ClipboardCheck },
+  { name: "Users", href: "/dashboard/users", icon: Users },
+  { name: "Settings", href: "/dashboard/settings", icon: Settings },
 ];
 
 export const DashboardLayout: React.FC = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
-  const { user, logout } = useAuth();
+  const { user, logout, hasRole, hasAnyRole } = useAuth();
+  console.log("current user:", user);
 
   const handleLogout = () => {
-    logout();
-    navigate('/');
+    logout().then(() => {
+      navigate("/");
+    });
   };
+
+  // Get user's primary role for display
+  const getUserRole = () => {
+    if (!user?.roles || user.roles.length === 0) return "User";
+
+    // Prioritize admin roles for display
+    if (hasRole("super-admin")) return "Super Admin";
+    if (hasRole("admin")) return "Admin";
+
+    // Return the first role name
+    return user.roles[0].name;
+  };
+
+  // Get user's display name
+  const getUserDisplayName = () => {
+    return user?.displayName || user?.email || "User";
+  };
+
+  // Get user's initials for avatar
+  const getUserInitials = () => {
+    const name = getUserDisplayName();
+    return name
+      .split(" ")
+      .map((word) => word.charAt(0).toUpperCase())
+      .slice(0, 2)
+      .join("");
+  };
+
+  // Filter navigation items based on user roles
+  const getFilteredNavigation = () => {
+    return navigation.filter((item) => {
+      // Users management is only for admins and super-admins
+      if (item.href === "/dashboard/users") {
+        return hasAnyRole(["admin", "super-admin"]);
+      }
+      return true;
+    });
+  };
+
+  const filteredNavigation = getFilteredNavigation();
 
   return (
     <div className="h-screen flex overflow-hidden bg-gray-100">
       {/* Mobile sidebar */}
-      <div className={`fixed inset-0 flex z-40 md:hidden ${sidebarOpen ? '' : 'pointer-events-none'}`}>
-        <div className={`fixed inset-0 bg-gray-600 bg-opacity-75 transition-opacity ease-linear duration-300 ${sidebarOpen ? 'opacity-100' : 'opacity-0'}`} onClick={() => setSidebarOpen(false)} />
-        
-        <div className={`relative flex-1 flex flex-col max-w-xs w-full pt-5 pb-4 bg-white transform transition ease-in-out duration-300 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
+      <div
+        className={`fixed inset-0 flex z-40 md:hidden ${
+          sidebarOpen ? "" : "pointer-events-none"
+        }`}
+      >
+        <div
+          className={`fixed inset-0 bg-gray-600 bg-opacity-75 transition-opacity ease-linear duration-300 ${
+            sidebarOpen ? "opacity-100" : "opacity-0"
+          }`}
+          onClick={() => setSidebarOpen(false)}
+        />
+
+        <div
+          className={`relative flex-1 flex flex-col max-w-xs w-full pt-5 pb-4 bg-white transform transition ease-in-out duration-300 ${
+            sidebarOpen ? "translate-x-0" : "-translate-x-full"
+          }`}
+        >
           <div className="absolute top-0 right-0 -mr-12 pt-2">
             <button
               className="ml-1 flex items-center justify-center h-10 w-10 rounded-full focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white"
@@ -52,15 +108,17 @@ export const DashboardLayout: React.FC = () => {
               <X className="h-6 w-6 text-white" />
             </button>
           </div>
-          
+
           <div className="flex-shrink-0 flex items-center px-4">
             <Archive className="h-8 w-8 text-blue-600" />
-            <span className="ml-2 text-xl font-bold text-slate-900">Archive</span>
+            <span className="ml-2 text-xl font-bold text-slate-900">
+              Archive
+            </span>
           </div>
-          
+
           <div className="mt-5 flex-1 h-0 overflow-y-auto">
             <nav className="px-2 space-y-1">
-              {navigation.map((item) => {
+              {filteredNavigation.map((item) => {
                 const isActive = location.pathname === item.href;
                 return (
                   <Link
@@ -68,12 +126,18 @@ export const DashboardLayout: React.FC = () => {
                     to={item.href}
                     className={`group flex items-center px-2 py-2 text-base font-medium rounded-md ${
                       isActive
-                        ? 'bg-blue-100 text-blue-900'
-                        : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                        ? "bg-blue-100 text-blue-900"
+                        : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
                     }`}
                     onClick={() => setSidebarOpen(false)}
                   >
-                    <item.icon className={`mr-4 h-6 w-6 ${isActive ? 'text-blue-500' : 'text-gray-400 group-hover:text-gray-500'}`} />
+                    <item.icon
+                      className={`mr-4 h-6 w-6 ${
+                        isActive
+                          ? "text-blue-500"
+                          : "text-gray-400 group-hover:text-gray-500"
+                      }`}
+                    />
                     {item.name}
                   </Link>
                 );
@@ -81,7 +145,7 @@ export const DashboardLayout: React.FC = () => {
             </nav>
           </div>
         </div>
-        
+
         <div className="flex-shrink-0 w-14">
           {/* Dummy element to force sidebar to shrink to fit close icon */}
         </div>
@@ -93,11 +157,13 @@ export const DashboardLayout: React.FC = () => {
           <div className="flex flex-col h-0 flex-1">
             <div className="flex items-center h-16 flex-shrink-0 px-4 bg-white border-r border-gray-200">
               <Archive className="h-8 w-8 text-blue-600" />
-              <span className="ml-2 text-xl font-bold text-slate-900">Archive</span>
+              <span className="ml-2 text-xl font-bold text-slate-900">
+                Archive
+              </span>
             </div>
             <div className="flex-1 flex flex-col overflow-y-auto bg-white border-r border-gray-200">
               <nav className="flex-1 px-2 py-4 space-y-1">
-                {navigation.map((item) => {
+                {filteredNavigation.map((item) => {
                   const isActive = location.pathname === item.href;
                   return (
                     <Link
@@ -105,34 +171,40 @@ export const DashboardLayout: React.FC = () => {
                       to={item.href}
                       className={`group flex items-center px-2 py-2 text-sm font-medium rounded-md ${
                         isActive
-                          ? 'bg-blue-100 text-blue-900'
-                          : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                          ? "bg-blue-100 text-blue-900"
+                          : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
                       }`}
                     >
-                      <item.icon className={`mr-3 h-5 w-5 ${isActive ? 'text-blue-500' : 'text-gray-400 group-hover:text-gray-500'}`} />
+                      <item.icon
+                        className={`mr-3 h-5 w-5 ${
+                          isActive
+                            ? "text-blue-500"
+                            : "text-gray-400 group-hover:text-gray-500"
+                        }`}
+                      />
                       {item.name}
                     </Link>
                   );
                 })}
               </nav>
-              
+
               {/* User section */}
               <div className="flex-shrink-0 border-t border-gray-200 p-4">
                 <div className="flex items-center">
                   <div className="flex-shrink-0">
-                    {user?.avatar ? (
-                      <img className="h-8 w-8 rounded-full" src={user.avatar} alt={user.name} />
-                    ) : (
-                      <div className="h-8 w-8 rounded-full bg-blue-500 flex items-center justify-center">
-                        <span className="text-sm font-medium text-white">
-                          {user?.name.charAt(0)}
-                        </span>
-                      </div>
-                    )}
+                    <div className="h-8 w-8 rounded-full bg-blue-500 flex items-center justify-center">
+                      <span className="text-sm font-medium text-white">
+                        {getUserInitials()}
+                      </span>
+                    </div>
                   </div>
                   <div className="ml-3 flex-1">
-                    <p className="text-sm font-medium text-gray-700">{user?.name}</p>
-                    <p className="text-xs text-gray-500 capitalize">{user?.role}</p>
+                    <p className="text-sm font-medium text-gray-700">
+                      {getUserDisplayName()}
+                    </p>
+                    <p className="text-xs text-gray-500 capitalize">
+                      {getUserRole()}
+                    </p>
                   </div>
                   <Button
                     variant="ghost"
@@ -159,7 +231,7 @@ export const DashboardLayout: React.FC = () => {
           >
             <Menu className="h-6 w-6" />
           </button>
-          
+
           <div className="flex-1 px-4 flex justify-between items-center">
             <div className="flex-1 flex">
               <div className="w-full flex md:ml-0">
@@ -173,25 +245,25 @@ export const DashboardLayout: React.FC = () => {
                 </div>
               </div>
             </div>
-            
+
             <div className="ml-4 flex items-center md:ml-6 space-x-4">
               <Button variant="ghost" size="sm">
                 <Bell className="h-5 w-5" />
               </Button>
-              
+
               <div className="flex items-center space-x-3">
-                {user?.avatar ? (
-                  <img className="h-8 w-8 rounded-full" src={user.avatar} alt={user.name} />
-                ) : (
-                  <div className="h-8 w-8 rounded-full bg-blue-500 flex items-center justify-center">
-                    <span className="text-sm font-medium text-white">
-                      {user?.name.charAt(0)}
-                    </span>
-                  </div>
-                )}
+                <div className="h-8 w-8 rounded-full bg-blue-500 flex items-center justify-center">
+                  <span className="text-sm font-medium text-white">
+                    {getUserInitials()}
+                  </span>
+                </div>
                 <div className="hidden md:block">
-                  <p className="text-sm font-medium text-gray-700">{user?.name}</p>
-                  <p className="text-xs text-gray-500 capitalize">{user?.role}</p>
+                  <p className="text-sm font-medium text-gray-700">
+                    {getUserDisplayName()}
+                  </p>
+                  <p className="text-xs text-gray-500 capitalize">
+                    {getUserRole()}
+                  </p>
                 </div>
               </div>
             </div>
