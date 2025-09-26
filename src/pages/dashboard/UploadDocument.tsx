@@ -341,7 +341,7 @@ export default function UploadDocumentPage() {
                 />
               </div>
 
-              <div>
+              {/* <div>
                 <Input
                   label="Tags"
                   placeholder="Enter tags separated by commas"
@@ -352,7 +352,7 @@ export default function UploadDocumentPage() {
                   Separate multiple tags with commas (e.g., colonial, history,
                   boston)
                 </p>
-              </div>
+              </div> */}
             </CardContent>
           </Card>
 
