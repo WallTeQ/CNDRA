@@ -58,7 +58,12 @@ export const useAuth = () => {
 
   const login = async (data: LoginData) => {
     const result = await dispatch(loginAction(data));
-    return result.type === "auth/login/fulfilled";
+    const success = result.type === "auth/login/fulfilled";
+    if (success) {
+      await dispatch(getProfile());
+    }
+    const userData = success ? (result.payload as any)?.user : null;
+    return { success, user: userData };
   };
 
   const logout = async () => {
@@ -77,7 +82,11 @@ export const useAuth = () => {
 
   const signupComplete = async (data: CompleteRegistrationData) => {
     const result = await dispatch(completeRegistration(data));
-    return result.type === "auth/completeRegistration/fulfilled";
+    const success = result.type === "auth/completeRegistration/fulfilled";
+    if (success) {
+      await dispatch(getProfile());
+    }
+    return success;
   };
 
   const clearAuthError = () => {
@@ -130,12 +139,14 @@ export const useAuth = () => {
     );
   };
 
-  const isAdmin = (): boolean => {
-    return hasAnyRole(["admin", "super-admin"]);
+  const isAdmin = (): string | null => {
+    if (hasRole("super-admin")) return "super-admin";
+    if (hasRole("admin")) return "admin";
+    return null;
   };
 
-  const isSuperAdmin = (): boolean => {
-    return hasRole("super-admin");
+  const isSuperAdmin = (): string | null => {
+    return hasRole("super-admin") ? "super-admin" : null;
   };
 
   // Computed loading state - consider loading if not initialized or actively loading
@@ -145,7 +156,8 @@ export const useAuth = () => {
     // State
     user,
     isAuthenticated,
-    isLoading: computedIsLoading,
+    isLoading: computedIsLoading, // For app initialization
+    isLoginLoading: isLoading, // For login-specific loading
     error,
     signupStep,
     signupEmail,

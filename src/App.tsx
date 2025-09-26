@@ -4,7 +4,7 @@ import {
   BrowserRouter as Router,
   Routes,
   Route,
-  Navigate,
+  // Navigate,
 } from "react-router-dom";
 import { Provider } from "react-redux";
 import { store } from "./store";
@@ -15,7 +15,7 @@ import { ProtectedRoute } from "./components/common/protectedRoute";
 // Public Pages
 import { LandingPage } from "./pages/public/LandingPage";
 import { SearchPage } from "./pages/public/SearchPage";
-import { DocumentDetails } from "./pages/public/DocumentDetails";
+import { RecordDetailsPage } from "./pages/public/DocumentDetails";
 import { NewsEventsPage } from "./pages/public/NewsEventsPage";
 import { NewsArticlePage } from "./pages/public/NewsArticlePage";
 import PublicDepartmentsPage from "./pages/public/Departments";
@@ -38,14 +38,14 @@ import { NotFound } from "./pages/NotFound";
 
 // App Content Component (needs to be inside Provider)
 const AppContent: React.FC = () => {
-  const { initializeAuth, isLoading } = useAuth();
+  const { initializeAuth, isInitialized } = useAuth();
 
   useEffect(() => {
     initializeAuth();
   }, [initializeAuth]);
 
-  // Show loading while initializing auth
-  if (isLoading) {
+  // Show loading only during initial app initialization (not during login)
+  if (!isInitialized) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="text-center">
@@ -63,7 +63,7 @@ const AppContent: React.FC = () => {
         <Route path="/" element={<LandingPage />} />
         <Route path="/search" element={<SearchPage />} />
         <Route path="/departments" element={<PublicDepartmentsPage />} />
-        <Route path="/document/:id" element={<DocumentDetails />} />
+        <Route path="/records/:id" element={<RecordDetailsPage />} />
         <Route path="/news-events" element={<NewsEventsPage />} />
         <Route path="/news/:id" element={<NewsArticlePage />} />
 

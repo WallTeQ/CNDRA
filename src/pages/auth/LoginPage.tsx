@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
 import { Link, useNavigate, Navigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -18,10 +18,10 @@ const schema = yup.object({
 
 type FormData = yup.InferType<typeof schema>;
 
-export const LoginPage: React.FC = () => {
+export const LoginPage: React.FC = React.memo(() => {
   const [showPassword, setShowPassword] = useState(false);
 
-  const { login, isAuthenticated, isLoading, error, clearAuthError } =
+  const { login, isAuthenticated, error, clearAuthError, isAdmin, isSuperAdmin, isLoginLoading } =
     useAuth();
   const navigate = useNavigate();
 
@@ -31,25 +31,29 @@ export const LoginPage: React.FC = () => {
     formState: { errors },
   } = useForm<FormData>({
     resolver: yupResolver(schema),
-    defaultValues: {
-      email: "admin@archive.gov",
-      password: "password",
-    },
   });
 
-  // Redirect if already authenticated
-  if (isAuthenticated) {
-    return <Navigate to="/" replace />;
-  }
-
-  const onSubmit = async (data: FormData) => {
+  // Memoize the submit handler to prevent unnecessary re-renders
+  const onSubmit = useCallback(async (data: FormData) => {
     clearAuthError();
 
     const success = await login(data);
     if (success) {
-      navigate("/");
+      // Small delay to allow user data to load, then route based on role
+      setTimeout(() => {
+        if (isAdmin() !== null || isSuperAdmin() !== null) {
+          navigate("/dashboard");
+        } else {
+          navigate("/");
+        }
+      }, 100);
     }
-  };
+  }, [clearAuthError, login, navigate, isAdmin, isSuperAdmin]);
+
+  // Redirect if already authenticated (but not during login process)
+  if (isAuthenticated && !isLoginLoading) {
+    return <Navigate to="/" replace />;
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-100 to-slate-200 flex items-center justify-center px-4">
@@ -149,8 +153,8 @@ export const LoginPage: React.FC = () => {
               </a>
             </div>
 
-            <Button type="submit" className="w-full" disabled={isLoading}>
-              {isLoading ? "Signing in..." : "Sign In"}
+            <Button type="submit" className="w-full" disabled={isLoginLoading}>
+              {isLoginLoading ? "Signing  in..." : "Sign In"}
             </Button>
           </form>
 
@@ -167,7 +171,7 @@ export const LoginPage: React.FC = () => {
               </p>
             </div>
 
-            <div className="bg-blue-50 p-4 rounded-lg">
+            {/* <div className="bg-blue-50 p-4 rounded-lg">
               <h3 className="text-sm font-medium text-blue-900 mb-2">
                 Demo Credentials
               </h3>
@@ -179,7 +183,7 @@ export const LoginPage: React.FC = () => {
                   <strong>Staff:</strong> staff@archive.gov / password
                 </p>
               </div>
-            </div>
+            </div> */}
           </div>
         </Card>
 
@@ -192,4 +196,4 @@ export const LoginPage: React.FC = () => {
       </div>
     </div>
   );
-};
+});

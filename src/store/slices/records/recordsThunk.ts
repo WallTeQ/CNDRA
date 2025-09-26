@@ -90,7 +90,7 @@ export const fetchRecordById = createAsyncThunk(
   "records/fetchById",
   async (id: string) => {
     const response = await api.get(`/records/${id}`);
-    return response.data;
+    return response.data.data;
   }
 );
 

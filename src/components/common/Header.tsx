@@ -6,8 +6,8 @@ import {
   X,
   Archive,
   HelpCircle,
-  Globe,
-  Eye,
+  // Globe,
+  // Eye,
   User,
   LayoutDashboard,
 } from "lucide-react";
@@ -117,7 +117,7 @@ export const Header: React.FC<HeaderProps> = () => {
             </nav>
 
             <div className="flex items-center space-x-4">
-              <div>
+              <div className="hidden md:flex items-center space-x-2">
                 {(isAdmin() || isSuperAdmin()) && (
                   <Link
                     to="/dashboard"
@@ -131,43 +131,46 @@ export const Header: React.FC<HeaderProps> = () => {
                 )}
               </div>
               <div className="hidden md:flex items-center">
-                {user ? (
-                  <Button
-                    onClick={handleLogout}
-                    className="flex items-center space-x-2 bg-transparent hover:bg-blue-600 hover:bg-opacity-50 text-white border border-blue-300 border-opacity-50"
-                  >
-                    <User className="h-4 w-4" />
-                    <span>Logout</span>
-                  </Button>
-                ) : (
-                  <Button
-                    onClick={() => {
-                      navigate("/login");
-                      setIsMenuOpen(false);
-                    }}
-                    className="flex items-center space-x-2 bg-transparent hover:bg-blue-600 hover:bg-opacity-50 text-white border border-blue-300 border-opacity-50"
-                  >
-                    <User className="h-4 w-4" />
-                    <span>Login</span>
-                  </Button>
-                )}
+                {/* display Login Button or logout if there is a user */}
+                <div className="hidden md:flex items-center space-x-2">
+                  {user ? (
+                    <Button
+                      onClick={handleLogout}
+                      className="flex items-center space-x-2 bg-transparent hover:bg-blue-600 hover:bg-opacity-50 text-white border border-blue-300 border-opacity-50"
+                    >
+                      <User className="h-4 w-4" />
+                      <span>Logout</span>
+                    </Button>
+                  ) : (
+                    <Button
+                      onClick={() => {
+                        navigate("/login");
+                        setIsMenuOpen(false);
+                      }}
+                      className="flex items-center space-x-2 bg-transparent hover:bg-blue-600 hover:bg-opacity-50 text-white border border-blue-300 border-opacity-50"
+                    >
+                      <User className="h-4 w-4" />
+                      <span>Login</span>
+                    </Button>
+                  )}
+                </div>
               </div>
-            </div>
 
-            {/* Mobile menu button */}
-            <div className="md:hidden">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setIsMenuOpen(!isMenuOpen)}
-                className="text-white hover:bg-blue-600 hover:bg-opacity-50"
-              >
-                {isMenuOpen ? (
-                  <X className="h-5 w-5" />
-                ) : (
-                  <Menu className="h-5 w-5" />
-                )}
-              </Button>
+              {/* Mobile menu button */}
+              <div className="md:hidden">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setIsMenuOpen(!isMenuOpen)}
+                  className="text-white hover:bg-blue-600 hover:bg-opacity-50"
+                >
+                  {isMenuOpen ? (
+                    <X className="h-5 w-5" />
+                  ) : (
+                    <Menu className="h-5 w-5" />
+                  )}
+                </Button>
+              </div>
             </div>
           </div>
         </div>
@@ -209,6 +212,19 @@ export const Header: React.FC<HeaderProps> = () => {
                   {item.name}
                 </Link>
               ))}
+              <div className="">
+                {(isAdmin() || isSuperAdmin()) && (
+                  <Link
+                    to="/dashboard"
+                    className="px-3 py-2 text-white hover:bg-blue-600 hover:bg-opacity-50 rounded transition-colors text-sm"
+                  >
+                    <Button className="flex items-center space-x-2 bg-transparent hover:bg-blue-600 hover:bg-opacity-50 text-white border border-blue-300 border-opacity-50">
+                      <LayoutDashboard className="h-4 w-4" />
+                      <span>Dashboard</span>
+                    </Button>
+                  </Link>
+                )}
+              </div>
               {user ? (
                 <div className="pt-2">
                   <Button
@@ -219,7 +235,7 @@ export const Header: React.FC<HeaderProps> = () => {
                     className="w-full bg-transparent hover:bg-blue-600 hover:bg-opacity-50 text-white border border-blue-300 border-opacity-50"
                   >
                     <User className="h-4 w-4 mr-2" />
-                    Login
+                    Logout
                   </Button>
                 </div>
               ) : (

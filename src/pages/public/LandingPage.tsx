@@ -15,7 +15,7 @@ import  FeaturedNewsSection from "../../components/FeaturedNews";
 import FeaturedDepartments from "../../components/FeaturedDepartment";
 import { fetchRecords } from "../../store/slices/records/recordsThunk";
 import { useAppDispatch, useAppSelector } from "../../store";
-
+import FeaturedRecords from "../../components/FeautredRecord";
 export const LandingPage: React.FC = () => {
   const dispatch = useAppDispatch();
    const { records, isLoading, error } = useAppSelector(
@@ -163,6 +163,7 @@ export const LandingPage: React.FC = () => {
           </div>
         </div>
       </section>
+      <FeaturedRecords />
 
       <FeaturedDepartments />
 
