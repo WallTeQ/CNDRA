@@ -4,7 +4,7 @@ import {
   BrowserRouter as Router,
   Routes,
   Route,
-  Navigate,
+  // Navigate,
 } from "react-router-dom";
 import { Provider } from "react-redux";
 import { store } from "./store";
@@ -37,14 +37,14 @@ import { NotFound } from "./pages/NotFound";
 
 // App Content Component (needs to be inside Provider)
 const AppContent: React.FC = () => {
-  const { initializeAuth, isLoading } = useAuth();
+  const { initializeAuth, isInitialized } = useAuth();
 
   useEffect(() => {
     initializeAuth();
   }, [initializeAuth]);
 
-  // Show loading while initializing auth
-  if (isLoading) {
+  // Show loading only during initial app initialization (not during login)
+  if (!isInitialized) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="text-center">

@@ -145,7 +145,8 @@ export const useAuth = () => {
     // State
     user,
     isAuthenticated,
-    isLoading: computedIsLoading,
+    isLoading: computedIsLoading, // For app initialization
+    isLoginLoading: isLoading, // For login-specific loading
     error,
     signupStep,
     signupEmail,

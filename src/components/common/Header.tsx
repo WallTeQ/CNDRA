@@ -6,8 +6,8 @@ import {
   X,
   Archive,
   HelpCircle,
-  Globe,
-  Eye,
+  // Globe,
+  // Eye,
   User,
 } from "lucide-react";
 import { Button } from "../ui/Button";
@@ -21,7 +21,7 @@ export const Header: React.FC<HeaderProps> = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const navigate = useNavigate();
-  const { user, logout } = useAuth();
+  const { user, logout, isAdmin, isSuperAdmin } = useAuth();
 
   const publicNavItems = [
     { name: "Home", path: "/" },
@@ -118,15 +118,26 @@ export const Header: React.FC<HeaderProps> = () => {
             </nav>
 
             {/* display Login Button or logout if there is a user */}
-            <div className="hidden md:flex items-center">
+            <div className="hidden md:flex items-center space-x-2">
               {user ? (
-                <Button
-                  onClick={handleLogout}
-                  className="flex items-center space-x-2 bg-transparent hover:bg-blue-600 hover:bg-opacity-50 text-white border border-blue-300 border-opacity-50"
-                >
-                  <User className="h-4 w-4" />
-                  <span>Logout</span>
-                </Button>
+                <>
+                  {isAdmin() || isSuperAdmin() && (
+                    <Button
+                      onClick={() => navigate("/dashboard")}
+                      className="flex items-center space-x-2 bg-transparent hover:bg-blue-600 hover:bg-opacity-50 text-white border border-blue-300 border-opacity-50"
+                    >
+                      <Archive className="h-4 w-4" />
+                      <span>Dashboard</span>
+                    </Button>
+                  )}
+                  <Button
+                    onClick={handleLogout}
+                    className="flex items-center space-x-2 bg-transparent hover:bg-blue-600 hover:bg-opacity-50 text-white border border-blue-300 border-opacity-50"
+                  >
+                    <User className="h-4 w-4" />
+                    <span>Logout</span>
+                  </Button>
+                </>
               ) : (
                 <Button
                   onClick={() => {
@@ -197,7 +208,19 @@ export const Header: React.FC<HeaderProps> = () => {
                 </Link>
               ))}
               {user ?  (
-                <div className="pt-2">
+                <div className="pt-2 space-y-2">
+                  {isAdmin() && (
+                    <Button
+                      onClick={() => {
+                        navigate("/dashboard");
+                        setIsMenuOpen(false);
+                      }}
+                      className="w-full bg-transparent hover:bg-blue-600 hover:bg-opacity-50 text-white border border-blue-300 border-opacity-50"
+                    >
+                      <Archive className="h-4 w-4 mr-2" />
+                      Dashboard
+                    </Button>
+                  )}
                   <Button
                     onClick={() => {
                       handleLogout();
@@ -206,7 +229,7 @@ export const Header: React.FC<HeaderProps> = () => {
                     className="w-full bg-transparent hover:bg-blue-600 hover:bg-opacity-50 text-white border border-blue-300 border-opacity-50"
                   >
                     <User className="h-4 w-4 mr-2" />
-                    Login
+                    Logout
                   </Button>
                 </div>
               ) : (
