@@ -121,7 +121,7 @@ export const Header: React.FC<HeaderProps> = () => {
             <div className="hidden md:flex items-center space-x-2">
               {user ? (
                 <>
-                  {isAdmin() || isSuperAdmin() && (
+                  {(isAdmin() !== null || isSuperAdmin() !== null) && (
                     <Button
                       onClick={() => navigate("/dashboard")}
                       className="flex items-center space-x-2 bg-transparent hover:bg-blue-600 hover:bg-opacity-50 text-white border border-blue-300 border-opacity-50"
@@ -209,7 +209,7 @@ export const Header: React.FC<HeaderProps> = () => {
               ))}
               {user ?  (
                 <div className="pt-2 space-y-2">
-                  {isAdmin() && (
+                  {(isAdmin() !== null || isSuperAdmin() !== null) && (
                     <Button
                       onClick={() => {
                         navigate("/dashboard");
@@ -229,7 +229,7 @@ export const Header: React.FC<HeaderProps> = () => {
                     className="w-full bg-transparent hover:bg-blue-600 hover:bg-opacity-50 text-white border border-blue-300 border-opacity-50"
                   >
                     <User className="h-4 w-4 mr-2" />
-                    Logout
+                    Logout {isSuperAdmin() || isAdmin() ? `(${isSuperAdmin() || isAdmin()})` : ''}
                   </Button>
                 </div>
               ) : (

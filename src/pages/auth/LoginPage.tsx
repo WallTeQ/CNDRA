@@ -41,14 +41,14 @@ export const LoginPage: React.FC = React.memo(() => {
     if (success) {
       // Small delay to allow user data to load, then route based on role
       setTimeout(() => {
-        if (isAdmin() || isSuperAdmin()) {
+        if (isAdmin() !== null || isSuperAdmin() !== null) {
           navigate("/dashboard");
         } else {
           navigate("/");
         }
       }, 100);
     }
-  }, [clearAuthError, login, navigate, isAdmin]);
+  }, [clearAuthError, login, navigate, isAdmin, isSuperAdmin]);
 
   // Redirect if already authenticated (but not during login process)
   if (isAuthenticated && !isLoginLoading) {
@@ -171,7 +171,7 @@ export const LoginPage: React.FC = React.memo(() => {
               </p>
             </div>
 
-            <div className="bg-blue-50 p-4 rounded-lg">
+            {/* <div className="bg-blue-50 p-4 rounded-lg">
               <h3 className="text-sm font-medium text-blue-900 mb-2">
                 Demo Credentials
               </h3>
@@ -183,7 +183,7 @@ export const LoginPage: React.FC = React.memo(() => {
                   <strong>Staff:</strong> staff@archive.gov / password
                 </p>
               </div>
-            </div>
+            </div> */}
           </div>
         </Card>
 
