@@ -9,6 +9,7 @@ import {
   Globe,
   Eye,
   User,
+  LayoutDashboard,
 } from "lucide-react";
 import { Button } from "../ui/Button";
 import { useAuth } from "../../hooks/useAuth";
@@ -21,7 +22,7 @@ export const Header: React.FC<HeaderProps> = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const navigate = useNavigate();
-  const { user, logout } = useAuth();
+  const { user, logout, isAdmin, isSuperAdmin } = useAuth();
 
   const publicNavItems = [
     { name: "Home", path: "/" },
@@ -93,8 +94,6 @@ export const Header: React.FC<HeaderProps> = () => {
               <button className="text-white hover:text-blue-200 transition-colors p-2">
                 <HelpCircle className="h-5 w-5" />
               </button>
-             
-              
             </div>
           </div>
         </div>
@@ -117,28 +116,42 @@ export const Header: React.FC<HeaderProps> = () => {
               ))}
             </nav>
 
-            {/* display Login Button or logout if there is a user */}
-            <div className="hidden md:flex items-center">
-              {user ? (
-                <Button
-                  onClick={handleLogout}
-                  className="flex items-center space-x-2 bg-transparent hover:bg-blue-600 hover:bg-opacity-50 text-white border border-blue-300 border-opacity-50"
-                >
-                  <User className="h-4 w-4" />
-                  <span>Logout</span>
-                </Button>
-              ) : (
-                <Button
-                  onClick={() => {
-                    navigate("/login");
-                    setIsMenuOpen(false);
-                  }}
-                  className="flex items-center space-x-2 bg-transparent hover:bg-blue-600 hover:bg-opacity-50 text-white border border-blue-300 border-opacity-50"
-                >
-                  <User className="h-4 w-4" />
-                  <span>Login</span>
-                </Button>
-              )}
+            <div className="flex items-center space-x-4">
+              <div>
+                {(isAdmin() || isSuperAdmin()) && (
+                  <Link
+                    to="/dashboard"
+                    className="px-3 py-2 text-white hover:bg-blue-600 hover:bg-opacity-50 rounded transition-colors text-sm"
+                  >
+                    <Button className="flex items-center space-x-2 bg-transparent hover:bg-blue-600 hover:bg-opacity-50 text-white border border-blue-300 border-opacity-50">
+                      <LayoutDashboard className="h-4 w-4" />
+                      <span>Dashboard</span>
+                    </Button>
+                  </Link>
+                )}
+              </div>
+              <div className="hidden md:flex items-center">
+                {user ? (
+                  <Button
+                    onClick={handleLogout}
+                    className="flex items-center space-x-2 bg-transparent hover:bg-blue-600 hover:bg-opacity-50 text-white border border-blue-300 border-opacity-50"
+                  >
+                    <User className="h-4 w-4" />
+                    <span>Logout</span>
+                  </Button>
+                ) : (
+                  <Button
+                    onClick={() => {
+                      navigate("/login");
+                      setIsMenuOpen(false);
+                    }}
+                    className="flex items-center space-x-2 bg-transparent hover:bg-blue-600 hover:bg-opacity-50 text-white border border-blue-300 border-opacity-50"
+                  >
+                    <User className="h-4 w-4" />
+                    <span>Login</span>
+                  </Button>
+                )}
+              </div>
             </div>
 
             {/* Mobile menu button */}
@@ -196,7 +209,7 @@ export const Header: React.FC<HeaderProps> = () => {
                   {item.name}
                 </Link>
               ))}
-              {user ?  (
+              {user ? (
                 <div className="pt-2">
                   <Button
                     onClick={() => {

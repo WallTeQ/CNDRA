@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Link } from "react-router-dom";
 import {
   Search,
@@ -12,8 +12,20 @@ import { Footer } from "../../components/common/Footer";
 import { Card } from "../../components/ui/Card";
 import { Button } from "../../components/ui/Button";
 import  FeaturedNewsSection from "../../components/FeaturedNews";
+import FeaturedDepartments from "../../components/FeaturedDepartment";
+import { fetchRecords } from "../../store/slices/records/recordsThunk";
+import { useAppDispatch, useAppSelector } from "../../store";
 
 export const LandingPage: React.FC = () => {
+  const dispatch = useAppDispatch();
+   const { records, isLoading, error } = useAppSelector(
+      (state) => state.records
+    );
+
+     useEffect(() => {
+        dispatch(fetchRecords());
+       
+      }, [dispatch]);
   const features = [
     {
       icon: <Search className="h-8 w-8 text-blue-600" />,
@@ -152,6 +164,8 @@ export const LandingPage: React.FC = () => {
         </div>
       </section>
 
+      <FeaturedDepartments />
+
       {/* Collections Section */}
       <section className="py-16 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -166,22 +180,22 @@ export const LandingPage: React.FC = () => {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {collections.map((collection, index) => (
+            {records.map((record, index) => (
               <Card key={index} className="overflow-hidden p-0" hover>
                 <img
-                  src={collection.image}
-                  alt={collection.title}
+                  src={record.fileAssets[0]?.storagePath}
+                  alt={record.title}
                   className="w-full h-48 object-cover"
                 />
                 <div className="p-6">
                   <h3 className="text-lg font-semibold text-slate-900 mb-2">
-                    {collection.title}
+                    {record.title}
                   </h3>
                   <p className="text-slate-600 mb-3">
-                    {collection.description}
+                    {record.description}
                   </p>
                   <p className="text-sm text-blue-600 font-medium">
-                    {collection.count}
+                    {record.fileAssets.length} items
                   </p>
                 </div>
               </Card>

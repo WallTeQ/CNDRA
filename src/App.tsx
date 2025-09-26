@@ -18,6 +18,7 @@ import { SearchPage } from "./pages/public/SearchPage";
 import { DocumentDetails } from "./pages/public/DocumentDetails";
 import { NewsEventsPage } from "./pages/public/NewsEventsPage";
 import { NewsArticlePage } from "./pages/public/NewsArticlePage";
+import PublicDepartmentsPage from "./pages/public/Departments";
 
 // Auth Pages
 import { LoginPage } from "./pages/auth/LoginPage";
@@ -61,6 +62,7 @@ const AppContent: React.FC = () => {
         {/* Public Routes */}
         <Route path="/" element={<LandingPage />} />
         <Route path="/search" element={<SearchPage />} />
+        <Route path="/departments" element={<PublicDepartmentsPage />} />
         <Route path="/document/:id" element={<DocumentDetails />} />
         <Route path="/news-events" element={<NewsEventsPage />} />
         <Route path="/news/:id" element={<NewsArticlePage />} />
