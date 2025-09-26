@@ -31,10 +31,6 @@ export const LoginPage: React.FC = () => {
     formState: { errors },
   } = useForm<FormData>({
     resolver: yupResolver(schema),
-    defaultValues: {
-      email: "admin@archive.gov",
-      password: "password",
-    },
   });
 
   // Redirect if already authenticated
