@@ -8,7 +8,6 @@ import {
   User,
   Tag,
   FileText,
-  Eye,
   Share2,
   Clock,
   MapPin,
@@ -17,12 +16,6 @@ import {
   ExternalLink,
   Bookmark,
   Printer as Print,
-  ZoomIn as Zoom,
-  ZoomIn,
-  ZoomOut,
-  RotateCw,
-  ChevronLeft,
-  ChevronRight,
 } from "lucide-react";
 import { Header } from "../../components/common/Header";
 import { Footer } from "../../components/common/Footer";
@@ -35,53 +28,38 @@ import {
 import { Button } from "../../components/ui/Button";
 import { Badge } from "../../components/ui/Badge";
 import { Modal } from "../../components/ui/Modal";
-import { fetchRecordById } from "../../store/slices/records/recordsThunk";
+import { fetchRecordById, fetchRecords } from "../../store/slices/records/recordsThunk";
 import type { RootState, AppDispatch } from "../../store";
-
-// Mock related records for now - you can replace this with actual API call later
-const mockRelatedRecords = [
-  {
-    id: "REC-2023-012",
-    title: "Annual Budget Report 2023",
-    author: "Department of Finance",
-    date: "2023-01-15",
-    previewUrl: "/api/placeholder/150/100",
-  },
-  {
-    id: "REC-2024-015",
-    title: "Q4 Financial Summary",
-    author: "Finance Division",
-    date: "2024-01-10",
-    previewUrl: "/api/placeholder/150/100",
-  },
-  {
-    id: "REC-2024-008",
-    title: "Budget Allocation Guidelines",
-    author: "Treasury Department",
-    date: "2024-01-05",
-    previewUrl: "/api/placeholder/150/100",
-  },
-];
 
 export const RecordDetailsPage: React.FC = () => {
   const params = useParams();
   const navigate = useNavigate();
   const dispatch = useDispatch<AppDispatch>();
-  const { currentRecord: record, isLoading } = useSelector(
+  const { currentRecord: record, isLoading, records: allRecords } = useSelector(
     (state: RootState) => state.records
   );
 
-  const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const [isShareOpen, setIsShareOpen] = useState(false);
-  const [zoomLevel, setZoomLevel] = useState(100);
-  const [rotation, setRotation] = useState(0);
-  const [currentPage, setCurrentPage] = useState(1);
+  const [relatedRecords, setRelatedRecords] = useState<any[]>([]);
 
   useEffect(() => {
     if (params.id) {
       dispatch(fetchRecordById(params.id as string));
     }
   }, [dispatch, params.id]);
+
+  useEffect(() => {
+    if (record?.collection?.id) {
+      // Fetch related records from the same collection
+      dispatch(fetchRecords({ collectionId: record.collection.id, limit: 6 })).then((action) => {
+        if (fetchRecords.fulfilled.match(action)) {
+          // Filter out the current record and limit to 3-5 related records
+          const filtered = action.payload.filter((r: any) => r.id !== record.id).slice(0, 3);
+          setRelatedRecords(filtered);
+        }
+      });
+    }
+  }, [dispatch, record?.id, record?.collection?.id]);
 
   if (isLoading) {
     return (
@@ -174,6 +152,32 @@ export const RecordDetailsPage: React.FC = () => {
     // You could add a toast notification here
   };
 
+  const handleDownloadFile = async (fileAsset: any) => {
+    try {
+      // Fetch the file as a blob
+      const response = await fetch(fileAsset.storagePath);
+      const blob = await response.blob();
+
+      // Create a blob URL
+      const blobUrl = window.URL.createObjectURL(blob);
+
+      // Create a temporary anchor element to trigger download
+      const link = document.createElement('a');
+      link.href = blobUrl;
+      link.download = fileAsset.filename || 'download';
+      document.body.appendChild(link);
+      link.click();
+
+      // Clean up
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(blobUrl);
+    } catch (error) {
+      console.error('Download failed:', error);
+      // Fallback to opening in new tab if download fails
+      window.open(fileAsset.storagePath, '_blank');
+    }
+  };
+
   // Extract data from record
   const primaryFile = record.fileAssets[0];
   const fileType = primaryFile
@@ -182,16 +186,6 @@ export const RecordDetailsPage: React.FC = () => {
   const fileSize = primaryFile ? formatFileSize(primaryFile.size) : "Unknown";
   const formattedDate = formatDate(record.createdAt);
   const accessInfo = getAccessLevelInfo(record.accessLevel);
-
-  // Determine preview URL based on file type
-  const isImage =
-    primaryFile &&
-    ["jpg", "jpeg", "png", "gif", "webp", "bmp", "svg"].includes(
-      primaryFile.mimeType.split("/")[1].toLowerCase()
-    );
-  const previewUrl = isImage
-    ? primaryFile.storagePath
-    : "/api/placeholder/400/600";
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -231,21 +225,21 @@ export const RecordDetailsPage: React.FC = () => {
               <CardContent className="p-6">
                 <div className="mb-6">
                   <div className="flex flex-wrap items-center gap-2 mb-4">
-                    <Badge variant="secondary" className="capitalize">
+                    <Badge variant="default" className="capitalize">
                       {fileType}
                     </Badge>
                     <Badge
                       variant={
                         accessInfo.color === "success"
-                          ? "default"
+                          ? "success"
                           : accessInfo.color === "warning"
-                          ? "secondary"
-                          : "destructive"
+                          ? "warning"
+                          : "danger"
                       }
                     >
                       {record.accessLevel}
                     </Badge>
-                    <Badge variant="outline" className="capitalize">
+                    <Badge variant="info" className="capitalize">
                       Active
                     </Badge>
                   </div>
@@ -261,53 +255,46 @@ export const RecordDetailsPage: React.FC = () => {
                     </div>
                     <div className="flex items-center space-x-2">
                       <Archive className="h-5 w-5" />
-                      <span>{record.collection.title}</span>
+                      <span>{record.collection?.title || "Unknown Collection"}</span>
                     </div>
                   </div>
 
                   {/* Action Buttons */}
                   <div className="flex flex-wrap gap-3">
-                    <Button
-                      onClick={() => setIsPreviewOpen(true)}
-                      className="flex items-center space-x-2"
-                    >
-                      <Eye className="h-4 w-4" />
-                      <span>View Document</span>
-                    </Button>
-
                     {record.accessLevel === "PUBLIC" && primaryFile && (
                       <Button
+                        size="sm"
                         variant="outline"
-                        className="flex items-center space-x-2"
+                        onClick={() => handleDownloadFile(primaryFile)}
+                        icon={<Download className="h-4 w-4" />}
                       >
-                        <Download className="h-4 w-4" />
-                        <span>Download ({fileSize})</span>
+                        Download ({fileSize})
                       </Button>
                     )}
 
                     <Button
+                      size="sm"
                       variant="outline"
                       onClick={() => setIsShareOpen(true)}
-                      className="flex items-center space-x-2"
+                      icon={<Share2 className="h-4 w-4" />}
                     >
-                      <Share2 className="h-4 w-4" />
-                      <span>Share</span>
+                      Share
                     </Button>
 
                     <Button
+                      size="sm"
                       variant="outline"
-                      className="flex items-center space-x-2"
+                      icon={<Bookmark className="h-4 w-4" />}
                     >
-                      <Bookmark className="h-4 w-4" />
-                      <span>Save</span>
+                      Save
                     </Button>
 
                     <Button
+                      size="sm"
                       variant="outline"
-                      className="flex items-center space-x-2"
+                      icon={<Print className="h-4 w-4" />}
                     >
-                      <Print className="h-4 w-4" />
-                      <span>Print</span>
+                      Print
                     </Button>
                   </div>
                 </div>
@@ -337,30 +324,79 @@ export const RecordDetailsPage: React.FC = () => {
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
-                  {record.fileAssets.map((file) => (
-                    <div
-                      key={file.id}
-                      className="flex items-center justify-between p-4 border border-slate-200 rounded-lg hover:border-slate-300 transition-colors"
-                    >
-                      <div className="flex-1">
-                        <div className="flex items-center space-x-2">
-                          <FileText className="h-5 w-5 text-slate-400" />
-                          <div>
-                            <p className="font-medium text-slate-900">
-                              {file.filename}
-                            </p>
-                            <p className="text-sm text-slate-600">
-                              {file.mimeType} • {formatFileSize(file.size)}
-                            </p>
+                  {record.fileAssets.map((file) => {
+                    const isImage = file.mimeType?.startsWith('image/');
+                    const imageTypes = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'bmp', 'svg'];
+                    const fileExtension = file.mimeType?.split('/')[1]?.toLowerCase();
+                    const isDisplayableImage = isImage && imageTypes.includes(fileExtension || '');
+
+                    return (
+                      <div
+                        key={file.id}
+                        className="p-4 border border-slate-200 rounded-lg hover:border-slate-300 transition-colors"
+                      >
+                        {isDisplayableImage ? (
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center space-x-4 flex-1">
+                              <div className="flex-shrink-0">
+                                <img
+                                  src={file.storagePath}
+                                  alt={file.filename}
+                                  className="w-16 h-16 object-cover rounded-lg border border-slate-200"
+                                  onError={(e) => {
+                                    const target = e.target as HTMLImageElement;
+                                    target.style.display = 'none';
+                                    const parent = target.parentElement;
+                                    if (parent) {
+                                      const fallback = document.createElement('div');
+                                      fallback.className = 'w-16 h-16 bg-slate-100 rounded-lg flex items-center justify-center';
+                                      fallback.innerHTML = '<svg class="h-6 w-6 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>';
+                                      parent.appendChild(fallback);
+                                    }
+                                  }}
+                                />
+                              </div>
+                              <div className="flex-1 min-w-0">
+                                <div className="flex items-center space-x-2">
+                                  <FileText className="h-5 w-5 text-slate-400" />
+                                  <div>
+                                    <p className="font-medium text-slate-900">
+                                      {file.filename}
+                                    </p>
+                                    <p className="text-sm text-slate-600">
+                                      {file.mimeType} • {formatFileSize(file.size)}
+                                    </p>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                            <Button size="sm" variant="outline" onClick={() => handleDownloadFile(file)} icon={<Download className="h-4 w-4" />}>
+                              Download
+                            </Button>
                           </div>
-                        </div>
+                        ) : (
+                          <div className="flex items-center justify-between">
+                            <div className="flex-1">
+                              <div className="flex items-center space-x-2">
+                                <FileText className="h-5 w-5 text-slate-400" />
+                                <div>
+                                  <p className="font-medium text-slate-900">
+                                    {file.filename}
+                                  </p>
+                                  <p className="text-sm text-slate-600">
+                                    {file.mimeType} • {formatFileSize(file.size)}
+                                  </p>
+                                </div>
+                              </div>
+                            </div>
+                            <Button size="sm" variant="outline" onClick={() => handleDownloadFile(file)} icon={<Download className="h-4 w-4" />}>
+                              Download
+                            </Button>
+                          </div>
+                        )}
                       </div>
-                      <Button size="sm" variant="outline">
-                        <Download className="h-4 w-4 mr-2" />
-                        Download
-                      </Button>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               </CardContent>
             </Card>
@@ -396,7 +432,7 @@ export const RecordDetailsPage: React.FC = () => {
               <CardContent>
                 <div className="bg-slate-50 p-4 rounded-lg">
                   <p className="text-sm text-slate-700 font-mono leading-relaxed">
-                    "{record.title}." {record.collection.title}, {formattedDate}
+                    "{record.title}." {record.collection?.title || "Unknown Collection"}, {formattedDate}
                     . Web. {formatDate(new Date().toISOString())}.
                   </p>
                   <Button
@@ -406,7 +442,7 @@ export const RecordDetailsPage: React.FC = () => {
                     onClick={() =>
                       copyToClipboard(
                         `"${record.title}." ${
-                          record.collection.title
+                          record.collection?.title || "Unknown Collection"
                         }, ${formattedDate}. Web. ${formatDate(
                           new Date().toISOString()
                         )}.`
@@ -426,25 +462,42 @@ export const RecordDetailsPage: React.FC = () => {
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {mockRelatedRecords.map((relatedDoc) => (
+                  {relatedRecords.map((relatedDoc) => (
                     <Link
                       key={relatedDoc.id}
                       to={`/records/${relatedDoc.id}`}
                       className="block p-4 border border-slate-200 rounded-lg hover:border-slate-300 hover:shadow-sm transition-all"
                     >
-                      {relatedDoc.previewUrl && (
-                        <img
-                          src={relatedDoc.previewUrl}
-                          alt={relatedDoc.title}
-                          className="w-full h-24 object-cover rounded mb-3"
-                        />
+                      {relatedDoc.fileAssets && relatedDoc.fileAssets.length > 0 && (
+                        (() => {
+                          const firstFile = relatedDoc.fileAssets[0];
+                          const isImage = firstFile && ["jpg", "jpeg", "png", "gif", "webp", "bmp", "svg"].includes(
+                            firstFile.mimeType?.split("/")[1]?.toLowerCase()
+                          );
+                          
+                          return isImage ? (
+                            <img
+                              src={firstFile.storagePath}
+                              alt={relatedDoc.title}
+                              className="w-full h-24 object-cover rounded mb-3"
+                              onError={(e) => {
+                                const target = e.target as HTMLImageElement;
+                                target.src = "/api/placeholder/150/100";
+                              }}
+                            />
+                          ) : (
+                            <div className="w-full h-24 bg-slate-100 rounded mb-3 flex items-center justify-center">
+                              <FileText className="h-8 w-8 text-slate-400" />
+                            </div>
+                          );
+                        })()
                       )}
                       <h3 className="font-medium text-slate-900 text-sm line-clamp-2 mb-2">
                         {relatedDoc.title}
                       </h3>
                       <p className="text-xs text-slate-600">
-                        {relatedDoc.author && `by ${relatedDoc.author} • `}
-                        {formatDate(relatedDoc.date)}
+                        {relatedDoc.collection?.title && `Collection: ${relatedDoc.collection.title} • `}
+                        {formatDate(relatedDoc.createdAt)}
                       </p>
                     </Link>
                   ))}
@@ -455,40 +508,6 @@ export const RecordDetailsPage: React.FC = () => {
 
           {/* Sidebar */}
           <div className="space-y-6">
-            {/* Preview Thumbnail */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Document Preview</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div
-                  className="relative group cursor-pointer"
-                  onClick={() => setIsPreviewOpen(true)}
-                >
-                  <img
-                    src={previewUrl}
-                    alt={record.title}
-                    className="w-full rounded-lg shadow-sm group-hover:shadow-md transition-shadow"
-                  />
-                  <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 rounded-lg transition-all flex items-center justify-center">
-                    <div className="opacity-0 group-hover:opacity-100 transition-opacity">
-                      <div className="bg-white rounded-full p-3 shadow-lg">
-                        <Eye className="h-6 w-6 text-slate-700" />
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <Button
-                  variant="outline"
-                  className="w-full mt-3"
-                  onClick={() => setIsPreviewOpen(true)}
-                >
-                  <Zoom className="h-4 w-4 mr-2" />
-                  View Full Size
-                </Button>
-              </CardContent>
-            </Card>
-
             {/* Document Metadata */}
             <Card>
               <CardHeader>
@@ -496,6 +515,31 @@ export const RecordDetailsPage: React.FC = () => {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
+                  {/* Image Preview */}
+                  {primaryFile && primaryFile.mimeType?.startsWith('image/') && 
+                   ['jpg', 'jpeg', 'png', 'gif', 'webp', 'bmp', 'svg'].includes(
+                     primaryFile.mimeType?.split('/')[1]?.toLowerCase() || ''
+                   ) && (
+                    <div className="flex justify-center mb-6">
+                      <img
+                        src={primaryFile.storagePath}
+                        alt={record.title}
+                        className="max-w-full max-h-48 object-contain rounded-lg border border-slate-200"
+                        onError={(e) => {
+                          const target = e.target as HTMLImageElement;
+                          target.style.display = 'none';
+                          const parent = target.parentElement;
+                          if (parent) {
+                            const fallback = document.createElement('div');
+                            fallback.className = 'w-full max-h-48 bg-slate-100 rounded-lg flex items-center justify-center';
+                            fallback.innerHTML = '<svg class="h-12 w-12 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>';
+                            parent.appendChild(fallback);
+                          }
+                        }}
+                      />
+                    </div>
+                  )}
+
                   <div>
                     <p className="text-sm font-medium text-slate-600 mb-1">
                       Document ID
@@ -533,7 +577,7 @@ export const RecordDetailsPage: React.FC = () => {
                       Collection
                     </p>
                     <p className="text-sm text-slate-900">
-                      {record.collection.title}
+                      {record.collection?.title || "Unknown Collection"}
                     </p>
                   </div>
 
@@ -545,10 +589,10 @@ export const RecordDetailsPage: React.FC = () => {
                       <Badge
                         variant={
                           accessInfo.color === "success"
-                            ? "default"
+                            ? "success"
                             : accessInfo.color === "warning"
-                            ? "secondary"
-                            : "destructive"
+                            ? "warning"
+                            : "danger"
                         }
                         size="sm"
                         className="capitalize"
@@ -566,7 +610,7 @@ export const RecordDetailsPage: React.FC = () => {
                     <p className="text-sm font-medium text-slate-600 mb-1">
                       Version
                     </p>
-                    <Badge variant="outline" size="sm">
+                    <Badge variant="default" size="sm">
                       v{record.version}
                     </Badge>
                   </div>
@@ -642,16 +686,16 @@ export const RecordDetailsPage: React.FC = () => {
                       variant="outline"
                       size="sm"
                       className="w-full justify-start"
+                      icon={<ExternalLink className="h-4 w-4 mr-2" />}
                     >
-                      <ExternalLink className="h-4 w-4 mr-2" />
                       Contact Research Services
                     </Button>
                     <Button
                       variant="outline"
                       size="sm"
                       className="w-full justify-start"
+                      icon={<MapPin className="h-4 w-4 mr-2" />}
                     >
-                      <MapPin className="h-4 w-4 mr-2" />
                       Visit Reading Room
                     </Button>
                   </div>
@@ -661,81 +705,6 @@ export const RecordDetailsPage: React.FC = () => {
           </div>
         </div>
       </div>
-
-      {/* Document Preview Modal */}
-      <Modal
-        isOpen={isPreviewOpen}
-        onClose={() => setIsPreviewOpen(false)}
-        title={record.title}
-        size="xl"
-      >
-        <div className="space-y-4">
-          {/* Preview Controls - Only show for images */}
-          {isImage && (
-            <div className="flex items-center justify-between bg-slate-50 p-3 rounded-lg">
-              <div className="flex items-center space-x-2">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setZoomLevel(Math.max(50, zoomLevel - 25))}
-                >
-                  <ZoomOut className="h-4 w-4" />
-                </Button>
-                <span className="text-sm text-slate-600 min-w-[60px] text-center">
-                  {zoomLevel}%
-                </span>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setZoomLevel(Math.min(200, zoomLevel + 25))}
-                >
-                  <ZoomIn className="h-4 w-4" />
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setRotation((rotation + 90) % 360)}
-                >
-                  <RotateCw className="h-4 w-4" />
-                </Button>
-              </div>
-
-              <div className="flex items-center space-x-2">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
-                >
-                  <ChevronLeft className="h-4 w-4" />
-                </Button>
-                <span className="text-sm text-slate-600">
-                  Page {currentPage} of 1
-                </span>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setCurrentPage(currentPage + 1)}
-                >
-                  <ChevronRight className="h-4 w-4" />
-                </Button>
-              </div>
-            </div>
-          )}
-
-          {/* Preview Image */}
-          <div className="flex justify-center bg-slate-100 p-4 rounded-lg min-h-[400px]">
-            <img
-              src={previewUrl}
-              alt={record.title}
-              className="max-w-full max-h-[600px] object-contain shadow-lg"
-              style={{
-                transform: `scale(${zoomLevel / 100}) rotate(${rotation}deg)`,
-                transition: "transform 0.2s ease",
-              }}
-            />
-          </div>
-        </div>
-      </Modal>
 
       {/* Share Modal */}
       <Modal
@@ -777,7 +746,7 @@ export const RecordDetailsPage: React.FC = () => {
             <div className="flex">
               <textarea
                 value={`"${record.title}." ${
-                  record.collection.title
+                  record.collection?.title || "Unknown Collection"
                 }, ${formattedDate}. Web. ${formatDate(
                   new Date().toISOString()
                 )}.`}
@@ -791,7 +760,7 @@ export const RecordDetailsPage: React.FC = () => {
                 onClick={() =>
                   copyToClipboard(
                     `"${record.title}." ${
-                      record.collection.title
+                      record.collection?.title || "Unknown Collection"
                     }, ${formattedDate}. Web. ${formatDate(
                       new Date().toISOString()
                     )}.`

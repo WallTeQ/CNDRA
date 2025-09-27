@@ -257,9 +257,8 @@ export const NewsEventsPage: React.FC = () => {
                                 <Share2 className="h-4 w-4" />
                               </Button>
                               <Link to={`/news/${article.id}`}>
-                                <Button size="sm" className="flex items-center space-x-1">
-                                  <span>Read More</span>
-                                  <ChevronRight className="h-4 w-4" />
+                                <Button size="sm" icon={<ChevronRight className="h-4 w-4" />}>
+                                  Read More
                                 </Button>
                               </Link>
                             </div>
@@ -338,9 +337,8 @@ export const NewsEventsPage: React.FC = () => {
                             {event.price}
                           </span>
                           {event.registrationRequired && event.registrationUrl ? (
-                            <Button size="sm" className="flex items-center space-x-1">
-                              <span>Register</span>
-                              <ExternalLink className="h-3 w-3" />
+                            <Button size="sm" icon={<ExternalLink className="h-3 w-3" />}>
+                              Register
                             </Button>
                           ) : (
                             <Button variant="outline" size="sm">

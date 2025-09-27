@@ -1,8 +1,14 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import api from "../../../services/api";
 
-export const fetchRecords = createAsyncThunk("records/fetch", async () => {
-  const response = await api.get("/records");
+export const fetchRecords = createAsyncThunk("records/fetch", async (params?: { collectionId?: string; departmentId?: string; limit?: number }) => {
+  const queryParams = new URLSearchParams();
+  if (params?.collectionId) queryParams.append('collectionId', params.collectionId);
+  if (params?.departmentId) queryParams.append('departmentId', params.departmentId);
+  if (params?.limit) queryParams.append('limit', params.limit.toString());
+
+  const url = `/records${queryParams.toString() ? `?${queryParams.toString()}` : ''}`;
+  const response = await api.get(url);
   return response.data.data;
 });
 

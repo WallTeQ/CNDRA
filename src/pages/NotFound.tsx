@@ -22,18 +22,16 @@ export const NotFound: React.FC = () => {
         <div className="mt-8 space-y-4">
           <div className="text-center">
             <Link to="/">
-              <Button className="inline-flex items-center space-x-2">
-                <Home className="h-4 w-4" />
-                <span>Back to Home</span>
+              <Button icon={<Home className="h-4 w-4" />}>
+                Back to Home
               </Button>
             </Link>
           </div>
           
           <div className="text-center">
             <Link to="/search">
-              <Button variant="outline" className="inline-flex items-center space-x-2">
-                <Search className="h-4 w-4" />
-                <span>Search Archives</span>
+              <Button variant="outline" icon={<Search className="h-4 w-4" />}>
+                Search Archives
               </Button>
             </Link>
           </div>

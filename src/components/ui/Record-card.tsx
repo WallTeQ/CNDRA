@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { Card, CardContent } from "./Card";
 import { Badge } from "./Badge";
+import { FileText, Download, Eye } from "lucide-react";
 
 function mergeClasses(...classes: (string | undefined | boolean)[]): string {
   return classes.filter(Boolean).join(" ");
@@ -55,65 +56,106 @@ export function RecordCard({
   const formattedDate = new Date(createdAt).toLocaleDateString();
 
   return (
-    <Card
-      className={mergeClasses("hover:shadow-md transition-shadow", className)}
-    >
-      <CardContent className="p-6">
-        <div className="space-y-3">
-          <div className="flex items-start justify-between">
-            <Link href={href} className="flex-1">
-              <h3 className="font-semibold text-foreground hover:text-primary transition-colors line-clamp-2">
-                {title}
-              </h3>
-            </Link>
-            <Badge variant="outline" className="ml-2 text-xs">
-              {fileType}
-            </Badge>
-          </div>
-          <p className="text-sm text-muted-foreground line-clamp-3">
-            {description}
-          </p>
-          <div className="flex flex-wrap gap-1">
-            {subjectTags.slice(0, 3).map((tag) => (
-              <Badge key={tag} variant="secondary" className="text-xs">
-                {tag}
+    <Link to={href} className="block">
+      <Card
+        className={mergeClasses("hover:shadow-md transition-shadow cursor-pointer", className)}
+      >
+        <CardContent className="p-6">
+          {/* Image Preview */}
+          {fileAssets && fileAssets.length > 0 && (
+            (() => {
+              const firstFile = fileAssets[0];
+              const isImage = firstFile && ["jpg", "jpeg", "png", "gif", "webp", "bmp", "svg"].includes(
+                firstFile.mimeType?.split("/")[1]?.toLowerCase()
+              );
+
+              return isImage ? (
+                <img
+                  src={firstFile.storagePath}
+                  alt={title}
+                  className="w-full h-32 object-cover rounded mb-4"
+                  onError={(e) => {
+                    const target = e.target as HTMLImageElement;
+                    target.style.display = 'none';
+                  }}
+                />
+              ) : (
+                <div className="w-full h-32 bg-slate-100 rounded mb-4 flex items-center justify-center">
+                  <FileText className="h-8 w-8 text-slate-400" />
+                </div>
+              );
+            })()
+          )}
+
+          <div className="space-y-3">
+            <div className="flex items-start justify-between">
+              <div className="flex-1">
+                <h3 className="font-semibold text-foreground hover:text-primary transition-colors line-clamp-2">
+                  {title}
+                </h3>
+              </div>
+              <Badge variant="outline" className="ml-2 text-xs">
+                {fileType}
               </Badge>
-            ))}
-            {subjectTags.length > 3 && (
-              <Badge variant="outline" className="text-xs">
-                +{subjectTags.length - 3}
-              </Badge>
-            )}
-            <Badge
-              variant={accessLevel === "PUBLIC" ? "default" : "destructive"}
-              className="text-xs"
-            >
-              {accessLevel}
-            </Badge>
-          </div>
-          <div className="flex items-center justify-between text-xs text-muted-foreground pt-2 border-t border-border">
-            <div className="flex items-center space-x-4">
-              <span>{collection.title}</span>
-              <span>•</span>
-              <span>
-                {fileAssets.length} file{fileAssets.length !== 1 ? "s" : ""}
-              </span>
             </div>
-            <span>{formattedDate}</span>
-          </div>
-          <div className="flex items-center space-x-2 pt-2">
-            <Link to={href}>
-              <button className="text-sm text-primary hover:text-primary/80 font-medium">
+            <p className="text-sm text-muted-foreground line-clamp-3">
+              {description}
+            </p>
+            <div className="flex flex-wrap gap-1">
+              {subjectTags.slice(0, 3).map((tag) => (
+                <Badge key={tag} variant="secondary" className="text-xs">
+                  {tag}
+                </Badge>
+              ))}
+              {subjectTags.length > 3 && (
+                <Badge variant="outline" className="text-xs">
+                  +{subjectTags.length - 3}
+                </Badge>
+              )}
+              <Badge
+                variant={accessLevel === "PUBLIC" ? "default" : "destructive"}
+                className="text-xs"
+              >
+                {accessLevel}
+              </Badge>
+            </div>
+            <div className="flex items-center justify-between text-xs text-muted-foreground pt-2 border-t border-border">
+              <div className="flex items-center space-x-4">
+                <span>{collection.title}</span>
+                <span>•</span>
+                <span>
+                  {fileAssets.length} file{fileAssets.length !== 1 ? "s" : ""}
+                </span>
+              </div>
+              <span>{formattedDate}</span>
+            </div>
+            <div className="flex items-center gap-3 pt-2">
+              <button
+                className="inline-flex items-center gap-2 px-3 py-1 bg-primary text-primary-foreground text-sm font-medium rounded-md hover:bg-primary/90 transition-colors"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  // Handle view details action if needed
+                }}
+              >
+                <Eye className="h-4 w-4" />
                 View Details
               </button>
-            </Link>
-            <span className="text-muted-foreground">•</span>
-            <button className="text-sm text-muted-foreground hover:text-foreground">
-              Download
-            </button>
+              <button
+                className="inline-flex items-center gap-2 px-3 py-1 bg-secondary text-secondary-foreground text-sm font-medium rounded-md hover:bg-secondary/80 transition-colors"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  // Handle download action if needed
+                }}
+              >
+                <Download className="h-4 w-4" />
+                Download
+              </button>
+            </div>
           </div>
-        </div>
-      </CardContent>
-    </Card>
+        </CardContent>
+      </Card>
+    </Link>
   );
 }

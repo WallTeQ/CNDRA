@@ -123,9 +123,11 @@ export const Header: React.FC<HeaderProps> = () => {
                     to="/dashboard"
                     className="px-3 py-2 text-white hover:bg-blue-600 hover:bg-opacity-50 rounded transition-colors text-sm"
                   >
-                    <Button className="flex items-center space-x-2 bg-transparent hover:bg-blue-600 hover:bg-opacity-50 text-white border border-blue-300 border-opacity-50">
-                      <LayoutDashboard className="h-4 w-4" />
-                      <span>Dashboard</span>
+                    <Button 
+                      icon={<LayoutDashboard className="h-4 w-4" />}
+                      className="bg-transparent hover:bg-blue-600 hover:bg-opacity-50 text-white border border-blue-300 border-opacity-50"
+                    >
+                      Dashboard
                     </Button>
                   </Link>
                 )}
@@ -136,10 +138,10 @@ export const Header: React.FC<HeaderProps> = () => {
                   {user ? (
                     <Button
                       onClick={handleLogout}
-                      className="flex items-center space-x-2 bg-transparent hover:bg-blue-600 hover:bg-opacity-50 text-white border border-blue-300 border-opacity-50"
+                      icon={<User className="h-4 w-4" />}
+                      className="bg-transparent hover:bg-blue-600 hover:bg-opacity-50 text-white border border-blue-300 border-opacity-50"
                     >
-                      <User className="h-4 w-4" />
-                      <span>Logout</span>
+                      Logout
                     </Button>
                   ) : (
                     <Button
@@ -147,10 +149,10 @@ export const Header: React.FC<HeaderProps> = () => {
                         navigate("/login");
                         setIsMenuOpen(false);
                       }}
-                      className="flex items-center space-x-2 bg-transparent hover:bg-blue-600 hover:bg-opacity-50 text-white border border-blue-300 border-opacity-50"
+                      icon={<User className="h-4 w-4" />}
+                      className="bg-transparent hover:bg-blue-600 hover:bg-opacity-50 text-white border border-blue-300 border-opacity-50"
                     >
-                      <User className="h-4 w-4" />
-                      <span>Login</span>
+                      Login
                     </Button>
                   )}
                 </div>
@@ -218,9 +220,11 @@ export const Header: React.FC<HeaderProps> = () => {
                     to="/dashboard"
                     className="px-3 py-2 text-white hover:bg-blue-600 hover:bg-opacity-50 rounded transition-colors text-sm"
                   >
-                    <Button className="flex items-center space-x-2 bg-transparent hover:bg-blue-600 hover:bg-opacity-50 text-white border border-blue-300 border-opacity-50">
-                      <LayoutDashboard className="h-4 w-4" />
-                      <span>Dashboard</span>
+                    <Button 
+                      icon={<LayoutDashboard className="h-4 w-4" />}
+                      className="bg-transparent hover:bg-blue-600 hover:bg-opacity-50 text-white border border-blue-300 border-opacity-50"
+                    >
+                      Dashboard
                     </Button>
                   </Link>
                 )}
@@ -232,9 +236,9 @@ export const Header: React.FC<HeaderProps> = () => {
                       handleLogout();
                       setIsMenuOpen(false);
                     }}
+                    icon={<User className="h-4 w-4" />}
                     className="w-full bg-transparent hover:bg-blue-600 hover:bg-opacity-50 text-white border border-blue-300 border-opacity-50"
                   >
-                    <User className="h-4 w-4 mr-2" />
                     Logout
                   </Button>
                 </div>
@@ -245,9 +249,9 @@ export const Header: React.FC<HeaderProps> = () => {
                       navigate("/login");
                       setIsMenuOpen(false);
                     }}
+                    icon={<User className="h-4 w-4" />}
                     className="w-full bg-transparent hover:bg-blue-600 hover:bg-opacity-50 text-white border border-blue-300 border-opacity-50"
                   >
-                    <User className="h-4 w-4 mr-2" />
                     Login
                   </Button>
                 </div>

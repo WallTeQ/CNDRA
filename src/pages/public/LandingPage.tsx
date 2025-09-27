@@ -118,10 +118,9 @@ export const LandingPage: React.FC = () => {
             </p>
             <div className="flex flex-col sm:flex-row gap-4">
               <Link to="/search">
-                <Button size="lg" className="flex items-center space-x-2">
-                  <Search className="h-5 w-5" />
-                  <span>Search Our Records</span>
-                  <ArrowRight className="h-5 w-5" />
+                <Button size="lg" icon={<Search className="h-5 w-5" />}>
+                  Search Our Records
+                  <ArrowRight className="h-5 w-5 ml-2" />
                 </Button>
               </Link>
               <Button

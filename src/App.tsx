@@ -15,7 +15,7 @@ import { ProtectedRoute } from "./components/common/protectedRoute";
 // Public Pages
 import { LandingPage } from "./pages/public/LandingPage";
 import { SearchPage } from "./pages/public/SearchPage";
-import { RecordDetailsPage } from "./pages/public/DocumentDetails";
+import { RecordDetailsPage } from "./pages/public/RecordDetails";
 import { NewsEventsPage } from "./pages/public/NewsEventsPage";
 import { NewsArticlePage } from "./pages/public/NewsArticlePage";
 import PublicDepartmentsPage from "./pages/public/Departments";
