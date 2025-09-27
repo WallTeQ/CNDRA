@@ -18,17 +18,6 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   const { user, isAuthenticated, isLoading, isInitialized } = useAuth();
   const location = useLocation();
 
-  // Debug logging
-  console.group("ProtectedRoute Debug");
-  console.log("isLoading:", isLoading);
-  console.log("isInitialized:", isInitialized);
-  console.log("isAuthenticated:", isAuthenticated);
-  console.log("user:", user);
-  console.log("user roles:", user?.roles);
-  console.log("requireAdmin:", requireAdmin);
-  console.log("requiredRoles:", requiredRoles);
-  console.groupEnd();
-
   // Show loading while checking authentication, initializing, or fetching user profile
   if (isLoading || !isInitialized || (isAuthenticated && !user)) {
     return (
@@ -37,7 +26,7 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
           <p className="mt-4 text-gray-600">
             {!isInitialized
-              ? "Initializing..."
+              ? "Loading..."
               : isAuthenticated && !user
               ? "Loading profile..."
               : "Loading..."}
@@ -49,7 +38,6 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
 
   // Redirect to login if not authenticated
   if (!isAuthenticated || !user) {
-    console.log("Redirecting to login - not authenticated or no user");
     return <Navigate to={fallbackPath} state={{ from: location }} replace />;
   }
 
@@ -61,13 +49,7 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
       ["admin", "super-admin"].includes(roleName)
     );
 
-    console.log("Admin check:");
-    console.log("- User roles array:", userRoles);
-    console.log("- Role names:", roleNames);
-    console.log("- Is admin:", isAdmin);
-
     if (!isAdmin) {
-      console.log("Access denied - not admin");
       return (
         <Navigate
           to="/"
@@ -90,11 +72,6 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
       requiredRoles.includes(roleName)
     );
 
-    console.log("Role check:");
-    console.log("- Required roles:", requiredRoles);
-    console.log("- User role names:", roleNames);
-    console.log("- Has required role:", hasRequiredRole);
-
     if (!hasRequiredRole) {
       console.log("Access denied - missing required role");
       return (
@@ -111,7 +88,5 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
       );
     }
   }
-
-  console.log("Access granted - rendering children");
   return <>{children}</>;
 };

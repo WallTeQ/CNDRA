@@ -5,6 +5,7 @@ import { Card, CardContent } from "../components/ui/Card";
 import { Button } from "./ui/Button";
 import { fetchRecords } from "../store/slices/records/recordsThunk";
 import type { RootState, AppDispatch } from "../store";
+import { Link } from "react-router-dom";
 
 export default function FeaturedRecords() {
   const dispatch = useDispatch<AppDispatch>();
@@ -19,21 +20,23 @@ export default function FeaturedRecords() {
 
   return (
     <>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+      <div className="max-w-8xl mx-auto px-4 sm:px-12 lg:px-22 py-10">
         {/* Featured Records */}
-        <section className="mb-16">
+        <section className="mb-12">
           <div className="flex items-center justify-between mb-8">
             <div>
-              <h2 className="text-3xl font-bold text-foreground">
+              <h2 className=" text-lg md:text-3xl font-bold text-foreground">
                 Featured Records
               </h2>
-              <p className="text-muted-foreground">
+              <p className="text-muted-foreground text-xs md:text-base">
                 Recently published and frequently accessed documents
               </p>
             </div>
-            <Button variant="outline" asChild>
-              <a href="/search">View All Records</a>
-            </Button>
+            <div className="text-center mt-10 hidden md:block">
+              <Link to="/search">
+                <Button size="lg">View All records</Button>
+              </Link>
+            </div>
           </div>
 
           {recordsLoading ? (
@@ -55,8 +58,12 @@ export default function FeaturedRecords() {
               ))}
             </div>
           )}
+          <div className="text-center mt-10 md:hidden">
+            <Link to="/search">
+              <Button size="lg" className="text-sm md:text-base">View All records</Button>
+            </Link>
+          </div>
         </section>
-
       </div>
     </>
   );

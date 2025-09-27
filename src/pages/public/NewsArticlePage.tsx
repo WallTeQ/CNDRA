@@ -1,8 +1,6 @@
 import React from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { ArrowLeft, Calendar, User, Tag, Share2, Bookmark, Printer as Print } from 'lucide-react';
-import { Header } from '../../components/common/Header';
-import { Footer } from '../../components/common/Footer';
 import { Card } from '../../components/ui/Card';
 import { Button } from '../../components/ui/Button';
 import { Badge } from '../../components/ui/Badge';
@@ -15,7 +13,6 @@ export const NewsArticlePage: React.FC = () => {
   if (!article) {
     return (
       <div className="min-h-screen bg-gray-50">
-        <Header isPublic={true} />
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16 text-center">
           <h1 className="text-2xl font-bold text-slate-900 mb-4">Article Not Found</h1>
           <p className="text-slate-600 mb-8">The article you're looking for could not be found.</p>
@@ -23,7 +20,6 @@ export const NewsArticlePage: React.FC = () => {
             <Button>Back to News & Events</Button>
           </Link>
         </div>
-        <Footer />
       </div>
     );
   }
@@ -56,7 +52,6 @@ export const NewsArticlePage: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Header isPublic={true} />
 
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Back Button */}
@@ -199,7 +194,6 @@ export const NewsArticlePage: React.FC = () => {
         )}
       </div>
 
-      <Footer />
     </div>
   );
 };

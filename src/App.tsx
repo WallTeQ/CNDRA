@@ -1,24 +1,20 @@
 import React from "react";
 import { useEffect } from "react";
-import {
-  BrowserRouter as Router,
-  Routes,
-  Route,
-  // Navigate,
-} from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { Provider } from "react-redux";
 import { store } from "./store";
 import { useAuth } from "./hooks/useAuth";
 import { DashboardLayout } from "./layouts/DashboardLayout";
+import { PublicLayout } from "./layouts/PublicLayout";
 import { ProtectedRoute } from "./components/common/protectedRoute";
 
 // Public Pages
-import { LandingPage } from "./pages/public/LandingPage";
-import { SearchPage } from "./pages/public/SearchPage";
-import { RecordDetailsPage } from "./pages/public/RecordDetails";
+import { LandingPage } from "./pages/public/home/LandingPage";
+import { SearchPage } from "./pages/public/search/SearchPage";
+import { RecordDetailsPage } from "./pages/public/record-details/RecordDetails";
 import { NewsEventsPage } from "./pages/public/NewsEventsPage";
 import { NewsArticlePage } from "./pages/public/NewsArticlePage";
-import PublicDepartmentsPage from "./pages/public/Departments";
+import PublicDepartmentsPage from "./pages/public/department/Departments";
 
 // Auth Pages
 import { LoginPage } from "./pages/auth/LoginPage";
@@ -33,6 +29,7 @@ import Settings from "./pages/dashboard/Settings";
 import Reviews from "./pages/dashboard/Reviews";
 import CollectionsPage from "./pages/dashboard/Collections";
 import DepartmentsPage from "./pages/dashboard/Department";
+
 // Other Pages
 import { NotFound } from "./pages/NotFound";
 
@@ -59,15 +56,17 @@ const AppContent: React.FC = () => {
   return (
     <Router>
       <Routes>
-        {/* Public Routes */}
-        <Route path="/" element={<LandingPage />} />
-        <Route path="/search" element={<SearchPage />} />
-        <Route path="/departments" element={<PublicDepartmentsPage />} />
-        <Route path="/records/:id" element={<RecordDetailsPage />} />
-        <Route path="/news-events" element={<NewsEventsPage />} />
-        <Route path="/news/:id" element={<NewsArticlePage />} />
+        {/* Public Routes with PublicLayout */}
+        <Route path="/" element={<PublicLayout />}>
+          <Route index element={<LandingPage />} />
+          <Route path="search" element={<SearchPage />} />
+          <Route path="departments" element={<PublicDepartmentsPage />} />
+          <Route path="records/:id" element={<RecordDetailsPage />} />
+          <Route path="news-events" element={<NewsEventsPage />} />
+          <Route path="news/:id" element={<NewsArticlePage />} />
+        </Route>
 
-        {/* Auth Routes */}
+        {/* Auth Routes (standalone - no layout) */}
         <Route path="/login" element={<LoginPage />} />
         <Route path="/signup" element={<SignupPage />} />
 

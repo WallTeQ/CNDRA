@@ -60,7 +60,7 @@ export function RecordCard({
       <Card
         className={mergeClasses("hover:shadow-md transition-shadow cursor-pointer", className)}
       >
-        <CardContent className="p-6">
+        <CardContent className="p-2">
           {/* Image Preview */}
           {fileAssets && fileAssets.length > 0 && (
             (() => {

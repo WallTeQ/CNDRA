@@ -50,7 +50,7 @@ export const Header: React.FC<HeaderProps> = () => {
     <header className="bg-gradient-to-r from-blue-600 via-blue-500 to-blue-700 sticky top-0 z-50">
       {/* Top Section with Logo and Search */}
       <div className="bg-gradient-to-r from-blue-500 to-blue-600">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-8xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between py-4">
             {/* Logo Section */}
             <Link to="/" className="flex items-center space-x-4">
@@ -101,7 +101,7 @@ export const Header: React.FC<HeaderProps> = () => {
 
       {/* Navigation Section */}
       <div className="bg-gradient-to-r from-blue-700 to-blue-800">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-8xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-12">
             {/* Desktop Navigation */}
             <nav className="hidden md:flex items-center space-x-1">

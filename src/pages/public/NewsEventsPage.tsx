@@ -13,8 +13,6 @@ import {
   Bookmark,
   Share2
 } from 'lucide-react';
-import { Header } from '../../components/common/Header';
-import { Footer } from '../../components/common/Footer';
 import { Card } from '../../components/ui/Card';
 import { Button } from '../../components/ui/Button';
 import { Badge } from '../../components/ui/Badge';
@@ -87,7 +85,6 @@ export const NewsEventsPage: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Header isPublic={true} />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
@@ -362,7 +359,6 @@ export const NewsEventsPage: React.FC = () => {
         </div>
       </div>
 
-      <Footer />
     </div>
   );
 };
