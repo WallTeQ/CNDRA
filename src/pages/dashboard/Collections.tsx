@@ -5,6 +5,7 @@ import { Button } from "../../components/ui/Button";
 import { Input } from "../../components/ui/Input";
 import { Badge } from "../../components/ui/Badge";
 import { Modal } from "../../components/ui/Modal";
+import { Dropdown } from "../../components/ui/Dropdown";
 import {
   fetchCollections,
   addCollection,
@@ -14,6 +15,7 @@ import {
 import { fetchDepartments } from "../../store/slices/depatments/departmentThunk";
 import { clearError } from "../../store/slices/collections/collectionSlice";
 import { type RootState, type AppDispatch, useAppSelector, useAppDispatch } from "../../store";
+import { Plus, FolderOpen, Building2, CheckCircle, FileText, Search, RefreshCw, Filter, ChevronLeft, ChevronRight, MoreHorizontal, Edit, Trash2 } from "lucide-react";
 
 interface Collection {
   id: string;
@@ -22,10 +24,11 @@ interface Collection {
   departments: Array<{
     id: string;
     name: string;
-    description: string;
+    description?: string;
     createdAt: string;
     updatedAt: string;
   }>;
+  records?: any[]; // Make records optional but handle properly
   createdAt: string;
   updatedAt: string;
 }
@@ -46,6 +49,13 @@ export default function CollectionsPage() {
   const [departmentFilter, setDepartmentFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
   const [accessLevelFilter, setAccessLevelFilter] = useState("all");
+
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
+
+  // Dropdown state
+  const [dropdownOpen, setDropdownOpen] = useState<string | null>(null);
 
   const [newCollection, setNewCollection] = useState({
     title: "",
@@ -82,6 +92,34 @@ export default function CollectionsPage() {
     return matchesSearch && matchesDepartment;
   });
 
+  // Pagination logic
+  const totalPages = Math.ceil(filteredCollections.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const paginatedCollections = filteredCollections.slice(
+    startIndex,
+    startIndex + itemsPerPage
+  );
+
+  // Reset to first page when search changes
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm, departmentFilter]);
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = () => {
+      setDropdownOpen(null);
+    };
+    if (dropdownOpen) {
+      document.addEventListener('click', handleClickOutside);
+      return () => document.removeEventListener('click', handleClickOutside);
+    }
+  }, [dropdownOpen]);
+
+  const getRecordCount = (collection: Collection): number => {
+    return collection.records?.length || 0;
+  };
+
   const openCollectionDetail = (collection: Collection) => {
     setSelectedCollection(collection);
     setIsDetailModalOpen(true);
@@ -112,58 +150,58 @@ export default function CollectionsPage() {
     <div className="py-6">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8">
         {error && (
-          <div className="bg-destructive/10 border border-destructive/20 text-destructive px-4 py-3 rounded-lg">
-            {error}
-          </div>
+          <Card className="mb-6 border-destructive/50 bg-destructive/5">
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-3">
+                  <div className="w-8 h-8 bg-destructive/10 rounded-full flex items-center justify-center">
+                    <svg className="w-4 h-4 text-destructive" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                    </svg>
+                  </div>
+                  <div>
+                    <p className="font-medium text-destructive">Error Loading Collections</p>
+                    <p className="text-sm text-destructive/80">{error}</p>
+                  </div>
+                </div>
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  onClick={clearError}
+                  className="text-destructive hover:text-destructive hover:bg-destructive/10"
+                >
+                  ×
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
         )}
 
         {/* Header */}
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold text-foreground">Collections</h1>
-            <p className="text-muted-foreground">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
+          <div className="space-y-1">
+            <h1 className="text-3xl font-bold text-foreground tracking-tight">
+              Collections
+            </h1>
+            <p className="text-muted-foreground text-lg">
               Organize and manage record collections by category
             </p>
           </div>
           <div className="flex space-x-3">
-            <Button variant="outline">
-              <svg
-                className="w-4 h-4 mr-2"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-                />
-              </svg>
-              Export Collections
-            </Button>
-            <Button onClick={() => setIsNewCollectionModalOpen(true)}>
-              <svg
-                className="w-4 h-4 mr-2"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M12 6v6m0 0v6m0-6h6m-6 0H6"
-                />
-              </svg>
+            <Button 
+              onClick={() => setIsNewCollectionModalOpen(true)} 
+              size="md" 
+              icon={<Plus className="w-4 h-4" />}
+              className="shadow-sm hover:shadow-md transition-shadow"
+            >
               New Collection
             </Button>
           </div>
         </div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-          <Card>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+          <Card className="hover:shadow-lg transition-shadow">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
@@ -174,26 +212,14 @@ export default function CollectionsPage() {
                     {collections.length}
                   </p>
                 </div>
-                <div className="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center">
-                  <svg
-                    className="w-4 h-4 text-primary"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"
-                    />
-                  </svg>
+                <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900/20 rounded-lg flex items-center justify-center">
+                  <FolderOpen className="w-5 h-5 text-blue-600 dark:text-blue-400" />
                 </div>
               </div>
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="hover:shadow-lg transition-shadow">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
@@ -204,26 +230,14 @@ export default function CollectionsPage() {
                     {departments.length}
                   </p>
                 </div>
-                <div className="w-8 h-8 bg-chart-1/10 rounded-lg flex items-center justify-center">
-                  <svg
-                    className="w-4 h-4 text-chart-1"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
-                    />
-                  </svg>
+                <div className="w-10 h-10 bg-green-100 dark:bg-green-900/20 rounded-lg flex items-center justify-center">
+                  <Building2 className="w-5 h-5 text-green-600 dark:text-green-400" />
                 </div>
               </div>
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="hover:shadow-lg transition-shadow">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
@@ -234,50 +248,8 @@ export default function CollectionsPage() {
                     {collections.length}
                   </p>
                 </div>
-                <div className="w-8 h-8 bg-chart-2/10 rounded-lg flex items-center justify-center">
-                  <svg
-                    className="w-4 h-4 text-chart-2"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M5 13l4 4L19 7"
-                    />
-                  </svg>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-muted-foreground">
-                    Loading
-                  </p>
-                  <p className="text-2xl font-bold text-foreground">
-                    {loading ? "Yes" : "No"}
-                  </p>
-                </div>
-                <div className="w-8 h-8 bg-chart-3/10 rounded-lg flex items-center justify-center">
-                  <svg
-                    className="w-4 h-4 text-chart-3"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
-                    />
-                  </svg>
+                <div className="w-10 h-10 bg-emerald-100 dark:bg-emerald-900/20 rounded-lg flex items-center justify-center">
+                  <CheckCircle className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
                 </div>
               </div>
             </CardContent>
@@ -285,16 +257,22 @@ export default function CollectionsPage() {
         </div>
 
         {/* Filters */}
-        <Card>
+        <Card className="mb-8">
           <CardContent className="p-6">
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-              <Input
-                placeholder="Search collections..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-              />
+            <div className="flex flex-col lg:flex-row gap-4">
+              <div className="flex-1">
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
+                  <Input
+                    placeholder="Search collections..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="pl-10"
+                  />
+                </div>
+              </div>
               <select
-                className="flex h-10 w-full rounded-lg border border-border bg-input px-3 py-2 text-sm"
+                className="flex h-10 w-full lg:w-48 rounded-lg border border-border bg-input px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
                 value={departmentFilter}
                 onChange={(e) => setDepartmentFilter(e.target.value)}
               >
@@ -305,115 +283,220 @@ export default function CollectionsPage() {
                   </option>
                 ))}
               </select>
-              <Button
-                variant="outline"
-                onClick={() => dispatch(fetchCollections())}
-              >
-                <svg
-                  className="w-4 h-4 mr-2"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
+              <div className="flex gap-2 flex-shrink-0">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    dispatch(fetchCollections());
+                  }}
+                  className="whitespace-nowrap"
+                  icon={<RefreshCw className="w-4 h-4" />}
                 >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
-                  />
-                </svg>
-                Refresh
-              </Button>
-              <Button variant="outline">
-                <svg
-                  className="w-4 h-4 mr-2"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
+                  Refresh
+                </Button>
+                <Button 
+                  size="sm" 
+                  variant="outline" 
+                  className="whitespace-nowrap"
+                  icon={<Filter className="w-4 h-4" />}
                 >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"
-                  />
-                </svg>
-                Advanced Filters
-              </Button>
+                  Advanced Filters
+                </Button>
+              </div>
             </div>
           </CardContent>
         </Card>
 
+        {/* Collections Table */}
         {loading ? (
-          <div className="flex items-center justify-center py-12">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-            <span className="ml-2 text-muted-foreground">
-              Loading collections...
-            </span>
-          </div>
+          <Card className="py-12">
+            <CardContent>
+              <div className="flex flex-col items-center justify-center text-center">
+                <RefreshCw className="animate-spin w-8 h-8 text-primary mb-4" />
+                <h3 className="text-lg font-semibold text-foreground mb-2">Loading Collections</h3>
+                <p className="text-muted-foreground">Please wait while we fetch your collections...</p>
+              </div>
+            </CardContent>
+          </Card>
+        ) : filteredCollections.length === 0 ? (
+          <Card className="py-12">
+            <CardContent>
+              <div className="flex flex-col items-center justify-center text-center">
+                <FolderOpen className="w-12 h-12 text-muted-foreground mb-4" />
+                <h3 className="text-lg font-semibold text-foreground mb-2">
+                  {searchTerm || departmentFilter !== 'all' ? 'No Collections Found' : 'No Collections Yet'}
+                </h3>
+                <p className="text-muted-foreground mb-6 max-w-md">
+                  {searchTerm || departmentFilter !== 'all' 
+                    ? 'Try adjusting your search or filter criteria to find what you\'re looking for.'
+                    : 'Get started by creating your first collection to organize your records.'
+                  }
+                </p>
+                {(!searchTerm && departmentFilter === 'all') && (
+                  <Button onClick={() => setIsNewCollectionModalOpen(true)} icon={<Plus className="w-4 h-4" />}>
+                    Create Your First Collection
+                  </Button>
+                )}
+              </div>
+            </CardContent>
+          </Card>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredCollections.map((collection) => (
-              <Card
-                key={collection.id}
-                className="hover:shadow-md transition-shadow cursor-pointer"
-              >
-                <CardHeader>
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1">
-                      <CardTitle className="text-lg mb-2">
-                        {collection.title}
-                      </CardTitle>
-                      <p className="text-sm text-muted-foreground line-clamp-2">
-                        {collection.description}
-                      </p>
+          <Card>
+            <CardContent className="p-0">
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead className="bg-muted/50">
+                    <tr>
+                      <th className="px-6 py-4 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                        Collection
+                      </th>
+                      <th className="px-6 py-4 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                        Departments
+                      </th>
+                      <th className="px-6 py-4 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                        Records
+                      </th>
+                      <th className="px-6 py-4 text-right text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                        Actions
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="bg-card divide-y divide-border">
+                    {paginatedCollections.map((collection) => (
+                      <tr key={collection.id} className="hover:bg-muted/30 transition-colors">
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="flex items-center">
+                            <div className="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center mr-3 flex-shrink-0">
+                              <FolderOpen className="w-4 h-4 text-primary" />
+                            </div>
+                            <div>
+                              <div className="text-sm font-medium text-foreground">
+                                {collection.title}
+                              </div>
+                            </div>
+                          </div>
+                        </td>
+                        <td className="px-6 py-4">
+                          <div className="flex flex-wrap gap-1">
+                            {collection.departments.slice(0, 2).map((dept) => (
+                              <Badge
+                                key={dept.id}
+                                variant="default"
+                                size="xs"
+                                className="bg-blue-100 text-blue-800"
+                              >
+                                {dept.name}
+                              </Badge>
+                            ))}
+                            {collection.departments.length > 2 && (
+                              <Badge variant="default" size="xs" className="bg-muted text-muted-foreground">
+                                +{collection.departments.length - 2}
+                              </Badge>
+                            )}
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                            {getRecordCount(collection)}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                          <Dropdown
+                            trigger={
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="text-muted-foreground hover:text-foreground"
+                              >
+                                <MoreHorizontal className="w-4 h-4" />
+                              </Button>
+                            }
+                            items={[
+                              {
+                                label: "View Details",
+                                icon: <FileText className="w-4 h-4" />,
+                                onClick: () => openCollectionDetail(collection)
+                              },
+                              {
+                                label: "Edit",
+                                icon: <Edit className="w-4 h-4" />,
+                                onClick: () => {
+                                  // Handle edit - you can implement this
+                                }
+                              },
+                              {
+                                label: "Delete",
+                                icon: <Trash2 className="w-4 h-4" />,
+                                variant: "destructive",
+                                onClick: () => {
+                                  if (window.confirm("Are you sure you want to delete this collection?")) {
+                                    // Handle delete - you can implement this
+                                  }
+                                }
+                              }
+                            ]}
+                          />
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+
+              {/* Pagination */}
+              {totalPages > 1 && (
+                <div className="bg-muted/30 px-6 py-4 border-t border-border">
+                  <div className="flex items-center justify-between">
+                    <div className="text-sm text-muted-foreground">
+                      Showing {startIndex + 1} to {Math.min(startIndex + itemsPerPage, filteredCollections.length)} of {filteredCollections.length} collections
                     </div>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    <div className="flex items-center justify-between text-sm">
-                      <span className="text-muted-foreground">
-                        Departments:
-                      </span>
-                      <span className="font-medium">
-                        {collection.departments.length}
-                      </span>
-                    </div>
-                    <div className="flex flex-wrap gap-1">
-                      {collection.departments.slice(0, 2).map((dept) => (
-                        <Badge
-                          key={dept.id}
-                          variant="outline"
-                          className="text-xs"
-                        >
-                          {dept.name}
-                        </Badge>
-                      ))}
-                      {collection.departments.length > 2 && (
-                        <Badge variant="outline" className="text-xs">
-                          +{collection.departments.length - 2}
-                        </Badge>
-                      )}
-                    </div>
-                    <div className="flex items-center justify-between pt-2 border-t border-border">
-                      <span className="text-xs text-muted-foreground">
-                        Created:{" "}
-                        {new Date(collection.createdAt).toLocaleDateString()}
-                      </span>
+                    <div className="flex items-center space-x-2">
                       <Button
-                        variant="ghost"
+                        variant="outline"
                         size="sm"
-                        onClick={() => openCollectionDetail(collection)}
+                        onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                        disabled={currentPage === 1}
+                        className="flex items-center gap-1"
                       >
-                        View Details
+                        <ChevronLeft className="w-4 h-4" />
+                        Previous
+                      </Button>
+
+                      <div className="flex items-center space-x-1">
+                        {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                          const pageNum = Math.max(1, Math.min(totalPages - 4, currentPage - 2)) + i;
+                          if (pageNum > totalPages) return null;
+                          return (
+                            <Button
+                              key={pageNum}
+                              variant={currentPage === pageNum ? "primary" : "outline"}
+                              size="sm"
+                              onClick={() => setCurrentPage(pageNum)}
+                              className="w-8 h-8 p-0"
+                            >
+                              {pageNum}
+                            </Button>
+                          );
+                        })}
+                      </div>
+
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                        disabled={currentPage === totalPages}
+                        className="flex items-center gap-1"
+                      >
+                        Next
+                        <ChevronRight className="w-4 h-4" />
                       </Button>
                     </div>
                   </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+                </div>
+              )}
+            </CardContent>
+          </Card>
         )}
 
         {/* Collection Detail Modal */}
@@ -463,7 +546,7 @@ export default function CollectionsPage() {
                         key={dept.id}
                         className="flex items-center space-x-2"
                       >
-                        <Badge variant="outline">{dept.name}</Badge>
+                        <Badge variant="default" size="xs" className="bg-muted">{dept.name}</Badge>
                       </div>
                     ))}
                   </div>

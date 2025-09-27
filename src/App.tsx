@@ -27,7 +27,7 @@ import { SignupPage } from "./pages/auth/SignupPage";
 // Dashboard Pages
 import { DashboardHome } from "./pages/dashboard/DashboardHome";
 import UploadDocumentPage from "./pages/dashboard/UploadDocument";
-import Documents from "./pages/dashboard/Documents";
+import Records from "./pages/dashboard/Records";
 import Users from "./pages/dashboard/Users";
 import Settings from "./pages/dashboard/Settings";
 import Reviews from "./pages/dashboard/Reviews";
@@ -82,8 +82,8 @@ const AppContent: React.FC = () => {
         >
           <Route index element={<DashboardHome />} />
           <Route path="upload" element={<UploadDocumentPage />} />
-          <Route path="documents" element={<Documents />} />
-          <Route path="records" element={<Documents />} />
+          <Route path="documents" element={<Records />} />
+          <Route path="records" element={<Records />} />
           <Route path="departments" element={<DepartmentsPage />} />
           <Route path="collections" element={<CollectionsPage />} />
           <Route path="review" element={<Reviews />} />

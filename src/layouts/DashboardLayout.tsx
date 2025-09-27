@@ -3,7 +3,7 @@ import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
 import {
   Archive,
   LayoutDashboard,
-  Upload,
+  // Upload,
   FileText,
   Users,
   Settings,
@@ -19,7 +19,7 @@ import { useAuth } from "../hooks/useAuth";
 
 const navigation = [
   { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
-  { name: "Upload Document", href: "/dashboard/upload", icon: Upload },
+  // { name: "Upload Document", href: "/dashboard/upload", icon: Upload },
   { name: "Records", href: "/dashboard/records", icon: FileText },
   { name: "Departments", href: "/dashboard/departments", icon: Users },
   { name: "Collections", href: "/dashboard/collections", icon: ClipboardCheck },

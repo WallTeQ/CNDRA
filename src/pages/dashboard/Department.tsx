@@ -8,16 +8,8 @@ import {
 } from "../../components/ui/Card";
 import { Button } from "../../components/ui/Button";
 import { Input } from "../../components/ui/Input";
-import { Badge } from "../../components/ui/Badge";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "../../components/ui/Table";
 import { Modal } from "../../components/ui/Modal";
+import { Dropdown } from "../../components/ui/Dropdown";
 import {
   fetchDepartments,
   addDepartment,
@@ -26,6 +18,7 @@ import {
 } from "../../store/slices/depatments/departmentThunk";
 import { clearError } from "../../store/slices/depatments/departmentSlice";
 import { type RootState, type AppDispatch, useAppSelector } from "../../store";
+import { Plus, Building2, ChevronLeft, ChevronRight, MoreHorizontal, Eye, Edit, Trash2 } from "lucide-react";
 
 interface Collection {
   id: string;
@@ -62,6 +55,7 @@ export default function DepartmentsPage() {
   const [selectedDepartment, setSelectedDepartment] =
     useState<Department | null>(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isViewModalOpen, setIsViewModalOpen] = useState(false);
   const [newDepartmentForm, setNewDepartmentForm] =
     useState<DepartmentFormData>({
       name: "",
@@ -72,6 +66,10 @@ export default function DepartmentsPage() {
       name: "",
       description: "",
     });
+
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
 
   useEffect(() => {
     dispatch(fetchDepartments());
@@ -90,6 +88,34 @@ export default function DepartmentsPage() {
       (dept?.description &&
         dept?.description?.toLowerCase().includes(searchTerm.toLowerCase()))
   );
+
+  // Pagination logic
+  const totalPages = Math.ceil(filteredDepartments.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const paginatedDepartments = filteredDepartments.slice(
+    startIndex,
+    startIndex + itemsPerPage
+  );
+
+  // Reset to first page when search changes
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm]);
+
+  // Close dropdowns when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as Element;
+      if (!target.closest('[id^="dropdown-"]') && !target.closest('button')) {
+        document.querySelectorAll('[id^="dropdown-"]').forEach(dropdown => {
+          dropdown.classList.add('hidden');
+        });
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   const handleNewDepartmentSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -117,6 +143,11 @@ export default function DepartmentsPage() {
       description: department.description || "",
     });
     setIsEditModalOpen(true);
+  };
+
+  const handleViewDepartment = (department: Department) => {
+    setSelectedDepartment(department);
+    setIsViewModalOpen(true);
   };
 
   const handleEditDepartmentSubmit = async (e: React.FormEvent) => {
@@ -193,26 +224,14 @@ export default function DepartmentsPage() {
           <Button
             onClick={() => setIsNewDepartmentModalOpen(true)}
             disabled={loading}
+            icon={<Plus className="w-4 h-4" />}
           >
-            <svg
-              className="w-4 h-4 mr-2"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M12 6v6m0 0v6m0-6h6m-6 0H6"
-              />
-            </svg>
             {loading ? "Loading..." : "New Department"}
           </Button>
         </div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <Card>
             <CardContent className="p-6">
               <div className="flex items-center">
@@ -243,7 +262,7 @@ export default function DepartmentsPage() {
             </CardContent>
           </Card>
 
-          <Card>
+          {/* <Card>
             <CardContent className="p-6">
               <div className="flex items-center">
                 <div className="p-2 bg-success/10 rounded-lg">
@@ -271,7 +290,7 @@ export default function DepartmentsPage() {
                 </div>
               </div>
             </CardContent>
-          </Card>
+          </Card> */}
 
           <Card>
             <CardContent className="p-6">
@@ -350,90 +369,175 @@ export default function DepartmentsPage() {
         </Card>
 
         {/* Departments Table */}
-        <Card>
-          <CardHeader>
-            <CardTitle>
-              Departments ({filteredDepartments.length})
-              {loading && (
-                <span className="text-muted-foreground ml-2">(Loading...)</span>
-              )}
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Department</TableHead>
-                  <TableHead>Collections</TableHead>
-                  <TableHead>Records</TableHead>
-                  <TableHead>Created</TableHead>
-                  <TableHead>Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {filteredDepartments.map((department) => (
-                  <TableRow key={department.id}>
-                    <TableCell>
-                      <div>
-                        <p className="font-medium">{department.name}</p>
-                        {department.description && (
-                          <p className="text-sm text-muted-foreground">
-                            {department.description}
-                          </p>
-                        )}
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <Badge variant="outline">
-                        {department.collections?.length || 0}
-                      </Badge>
-                    </TableCell>
-                    <TableCell>
-                      <Badge variant="outline">
-                        {getRecordCount(department)}
-                      </Badge>
-                    </TableCell>
-                    <TableCell>
-                      <p className="text-sm text-muted-foreground">
-                        {new Date(department.createdAt).toLocaleDateString()}
-                      </p>
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex space-x-2">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => handleEditDepartment(department)}
-                          disabled={loading}
-                        >
-                          Edit
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => handleDeleteDepartment(department.id)}
-                          disabled={loading}
-                        >
-                          Delete
-                        </Button>
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ))}
-                {filteredDepartments.length === 0 && !loading && (
-                  <TableRow>
-                    <TableCell
-                      colSpan={5}
-                      className="text-center text-muted-foreground"
-                    >
-                      No departments found
-                    </TableCell>
-                  </TableRow>
+        {loading ? (
+          <Card className="py-12">
+            <CardContent>
+              <div className="flex flex-col items-center justify-center text-center">
+                <div className="animate-spin w-8 h-8 text-primary mb-4"></div>
+                <h3 className="text-lg font-semibold text-foreground mb-2">Loading Departments</h3>
+                <p className="text-muted-foreground">Please wait while we fetch your departments...</p>
+              </div>
+            </CardContent>
+          </Card>
+        ) : filteredDepartments.length === 0 ? (
+          <Card className="py-12">
+            <CardContent>
+              <div className="flex flex-col items-center justify-center text-center">
+                <Building2 className="w-12 h-12 text-muted-foreground mb-4" />
+                <h3 className="text-lg font-semibold text-foreground mb-2">
+                  {searchTerm ? 'No Departments Found' : 'No Departments Yet'}
+                </h3>
+                <p className="text-muted-foreground mb-6 max-w-md">
+                  {searchTerm
+                    ? 'Try adjusting your search criteria to find what you\'re looking for.'
+                    : 'Get started by creating your first department to organize your organizational structure.'
+                  }
+                </p>
+                {!searchTerm && (
+                  <Button onClick={() => setIsNewDepartmentModalOpen(true)} icon={<Plus className="w-4 h-4" />}>
+                    Create Your First Department
+                  </Button>
                 )}
-              </TableBody>
-            </Table>
-          </CardContent>
-        </Card>
+              </div>
+            </CardContent>
+          </Card>
+        ) : (
+          <Card>
+            <CardContent className="p-0">
+              <div className="overflow-x-auto">
+                <table className="w-full min-w-full divide-y divide-border">
+                  <thead className="bg-muted/50">
+                    <tr>
+                      <th className="px-6 py-4 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                        Department
+                      </th>
+                      <th className="px-6 py-4 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                        Collections
+                      </th>
+                      <th className="px-6 py-4 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                        Records
+                      </th>
+                      <th className="px-6 py-4 text-right text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                        Actions
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="bg-card divide-y divide-border">
+                    {paginatedDepartments.map((department) => (
+                      <tr key={department.id} className="hover:bg-muted/30 transition-colors">
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="flex items-center">
+                            <div className="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center mr-3 flex-shrink-0">
+                              <Building2 className="w-4 h-4 text-primary" />
+                            </div>
+                            <div>
+                              <div className="text-sm font-medium text-foreground">
+                                {department.name}
+                              </div>
+                            </div>
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                            {department.collections?.length || 0}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                            {getRecordCount(department)}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                          <Dropdown
+                            trigger={
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="text-muted-foreground hover:text-foreground"
+                              >
+                                <MoreHorizontal className="w-4 h-4" />
+                              </Button>
+                            }
+                            items={[
+                              {
+                                label: "View",
+                                icon: <Eye className="w-4 h-4" />,
+                                onClick: () => handleViewDepartment(department)
+                              },
+                              {
+                                label: "Edit",
+                                icon: <Edit className="w-4 h-4" />,
+                                onClick: () => handleEditDepartment(department)
+                              },
+                              {
+                                label: "Delete",
+                                icon: <Trash2 className="w-4 h-4" />,
+                                variant: "destructive",
+                                onClick: () => handleDeleteDepartment(department.id)
+                              }
+                            ]}
+                          />
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+
+              {/* Pagination */}
+              {totalPages > 1 && (
+                <div className="bg-muted/30 px-6 py-4 border-t border-border">
+                  <div className="flex items-center justify-between">
+                    <div className="text-sm text-muted-foreground">
+                      Showing {startIndex + 1} to {Math.min(startIndex + itemsPerPage, filteredDepartments.length)} of {filteredDepartments.length} departments
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                        disabled={currentPage === 1}
+                        className="flex items-center gap-1"
+                      >
+                        <ChevronLeft className="w-4 h-4" />
+                        Previous
+                      </Button>
+
+                      <div className="flex items-center space-x-1">
+                        {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                          const pageNum = Math.max(1, Math.min(totalPages - 4, currentPage - 2)) + i;
+                          if (pageNum > totalPages) return null;
+                          return (
+                            <Button
+                              key={pageNum}
+                              variant={currentPage === pageNum ? "primary" : "outline"}
+                              size="sm"
+                              onClick={() => setCurrentPage(pageNum)}
+                              className="w-8 h-8 p-0"
+                            >
+                              {pageNum}
+                            </Button>
+                          );
+                        })}
+                      </div>
+
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                        disabled={currentPage === totalPages}
+                        className="flex items-center gap-1"
+                      >
+                        Next
+                        <ChevronRight className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        )}
 
         {/* New Department Modal */}
         <Modal
@@ -494,6 +598,98 @@ export default function DepartmentsPage() {
               </Button>
             </div>
           </form>
+        </Modal>
+
+        {/* View Department Modal */}
+        <Modal
+          isOpen={isViewModalOpen}
+          onClose={() => {
+            setIsViewModalOpen(false);
+            setSelectedDepartment(null);
+          }}
+          title={`Department Details: ${selectedDepartment?.name}`}
+          size="lg"
+        >
+          {selectedDepartment && (
+            <div className="space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <h3 className="text-lg font-semibold text-foreground mb-4">Basic Information</h3>
+                  <div className="space-y-3">
+                    <div>
+                      <label className="text-sm font-medium text-muted-foreground">Department Name</label>
+                      <p className="text-foreground font-medium">{selectedDepartment.name}</p>
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium text-muted-foreground">Description</label>
+                      <p className="text-foreground">{selectedDepartment.description || 'No description provided'}</p>
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium text-muted-foreground">Created Date</label>
+                      <p className="text-foreground">{new Date(selectedDepartment.createdAt).toLocaleDateString()}</p>
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium text-muted-foreground">Last Updated</label>
+                      <p className="text-foreground">{new Date(selectedDepartment.updatedAt).toLocaleDateString()}</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div>
+                  <h3 className="text-lg font-semibold text-foreground mb-4">Statistics</h3>
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between p-3 bg-blue-50 rounded-lg">
+                      <span className="text-sm font-medium text-blue-900">Collections</span>
+                      <span className="text-lg font-bold text-blue-600">{selectedDepartment.collections?.length || 0}</span>
+                    </div>
+                    <div className="flex items-center justify-between p-3 bg-green-50 rounded-lg">
+                      <span className="text-sm font-medium text-green-900">Total Records</span>
+                      <span className="text-lg font-bold text-green-600">{getRecordCount(selectedDepartment)}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {selectedDepartment.collections && selectedDepartment.collections.length > 0 && (
+                <div>
+                  <h3 className="text-lg font-semibold text-foreground mb-4">Collections</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {selectedDepartment.collections.map((collection) => (
+                      <div key={collection.id} className="p-4 border border-border rounded-lg">
+                        <h4 className="font-medium text-foreground mb-2">{collection.title}</h4>
+                        <p className="text-sm text-muted-foreground mb-2">{collection.description}</p>
+                        <div className="flex items-center justify-between text-sm">
+                          <span className="text-muted-foreground">Records:</span>
+                          <span className="font-medium">{collection.records?.length || 0}</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              <div className="flex justify-end space-x-3 pt-4 border-t border-border">
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    setIsViewModalOpen(false);
+                    setSelectedDepartment(null);
+                  }}
+                >
+                  Close
+                </Button>
+                <Button
+                  onClick={() => {
+                    setIsViewModalOpen(false);
+                    handleEditDepartment(selectedDepartment);
+                  }}
+                  className="bg-primary hover:bg-primary/90"
+                >
+                  Edit Department
+                </Button>
+              </div>
+            </div>
+          )}
         </Modal>
 
         {/* Edit Department Modal */}

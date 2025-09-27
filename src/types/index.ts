@@ -56,3 +56,28 @@ export interface AuditLog {
   timestamp: string;
   details: string;
 }
+
+export interface FileAsset {
+  id: string;
+  filename: string;
+  mimeType: string;
+  size: string;
+  storagePath: string;
+}
+
+export interface Collection {
+  id: string;
+  title: string;
+}
+
+export interface Record {
+  id: string;
+  title: string;
+  description: string;
+  subjectTags: string[];
+  accessLevel: string;
+  collection?: Collection;
+  fileAssets: FileAsset[];
+  createdAt: string;
+  version: number;
+}

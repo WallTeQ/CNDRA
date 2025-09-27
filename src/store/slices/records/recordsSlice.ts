@@ -8,12 +8,13 @@ import {
   fetchConfidentialRecords,
 } from "./recordsThunk";
 import { createSlice } from "@reduxjs/toolkit";
+import { Record } from "../../../types";
 
 
 // Define the initial state using that type
 interface RecordsState {
-  records: any[];
-  currentRecord: any | null;
+  records: Record[];
+  currentRecord: Record | null;
   isLoading: boolean;
   error: string | null;
 }

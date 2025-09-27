@@ -1,7 +1,6 @@
 
 import type React from "react";
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import {
   Upload,
   X,
@@ -9,23 +8,22 @@ import {
   ImageIcon,
   Music,
   Video,
-  type File,
 } from "lucide-react";
 import { Button } from "../../components/ui/Button";
 import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/Card";
 import { useAppDispatch, useAppSelector } from "../../store/";
 import { fetchDepartments } from "../../store/slices/depatments/departmentThunk";
 import { fetchCollections } from "../../store/slices/collections/collectionThunk";
-import { addRecord } from "../../store/slices/records/recordsThunk";
+import { addRecord, updateRecord } from "../../store/slices/records/recordsThunk";
 import { Input } from "../../components/ui/Input";
+import { Modal } from "../../components/ui/Modal";
 
-export default function UploadDocumentPage() {
-  const navigate = useNavigate();
+export default function UploadDocumentPage({ isOpen = true, onClose, onSuccess, isEdit = false, record }: { isOpen?: boolean; onClose?: () => void; onSuccess?: () => void; isEdit?: boolean; record?: any }) {
   const dispatch = useAppDispatch();
-  const { departments, isLoading: departmentsLoading } = useAppSelector(
+  const { departments, loading: departmentsLoading } = useAppSelector(
     (state) => state.departments
   );
-  const { collections, isLoading: collectionsLoading } = useAppSelector(
+  const { collections, loading: collectionsLoading } = useAppSelector(
     (state) => state.collections
   );
   const { isLoading: recordsLoading, error } = useAppSelector(
@@ -34,6 +32,7 @@ export default function UploadDocumentPage() {
 
   const [dragActive, setDragActive] = useState(false);
   const [files, setFiles] = useState<File[]>([]);
+  const [existingFiles, setExistingFiles] = useState<any[]>([]);
   const [formData, setFormData] = useState({
     title: "",
     description: "",
@@ -42,6 +41,55 @@ export default function UploadDocumentPage() {
     accessLevel: "PUBLIC",
   });
   const [selectedDepartment, setSelectedDepartment] = useState("");
+
+  useEffect(() => {
+    if (isOpen) {
+      // Reset form when modal opens
+      setFiles([]);
+      setExistingFiles([]);
+      setFormData({
+        title: "",
+        description: "",
+        tags: "",
+        collectionId: "",
+        accessLevel: "PUBLIC",
+      });
+      setSelectedDepartment("");
+
+      // Pre-fill if editing
+      if (isEdit && record) {
+        setFormData({
+          title: record.title || "",
+          description: record.description || "",
+          tags: record.subjectTags ? record.subjectTags.join(", ") : "",
+          collectionId: record.collection?.id || "",
+          accessLevel: record.accessLevel || "PUBLIC",
+        });
+        // Set existing files
+        setExistingFiles(record.fileAssets || []);
+        // Department will be set in the other useEffect when departments load
+      }
+    }
+  }, [isOpen, isEdit, record]);
+
+  useEffect(() => {
+    if (isEdit && record && departments.length > 0) {
+      setFormData({
+        title: record.title || "",
+        description: record.description || "",
+        tags: record.subjectTags ? record.subjectTags.join(", ") : "",
+        collectionId: record.collection?.id || "",
+        accessLevel: record.accessLevel || "PUBLIC",
+      });
+      // Find the department that contains this collection
+      const dept = departments.find(d => d.collections?.some(c => c.id === record.collection?.id));
+      if (dept) {
+        setSelectedDepartment(dept.id);
+      }
+      // Set existing files
+      setExistingFiles(record.fileAssets || []);
+    }
+  }, [isEdit, record, departments]);
 
   useEffect(() => {
     dispatch(fetchDepartments());
@@ -121,13 +169,10 @@ export default function UploadDocumentPage() {
       return;
     }
 
-    if (files.length === 0) {
+    if (!isEdit && files.length === 0) {
       alert("Please select at least one file");
       return;
     }
-    console.log("Selected files:", files);
-    console.log("file details:", files.map(file => ({ name: file.name, size: file.size, type: file.type })));
-    console.log("Form data:", formData);
 
     const recordData = {
       title: formData.title,
@@ -140,18 +185,26 @@ export default function UploadDocumentPage() {
         .filter((tag) => tag),
       files: files,
     };
-    console.log("Record data to submit:", recordData);
 
     try {
-      await dispatch(addRecord(recordData)).unwrap();
-      navigate("dashboard/records");
+      if (isEdit && record) {
+        await dispatch(updateRecord({ id: record.id, data: recordData })).unwrap();
+      } else {
+        await dispatch(addRecord(recordData)).unwrap();
+      }
+      // Close modal - records will be refetched by parent component
+      onClose?.();
     } catch (error) {
-      console.error("Failed to create record:", error);
+      console.error("Failed to save record:", error);
     }
   };
 
   const handleInputChange = (field: string, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const handleCloseModal = () => {
+    onClose?.();
   };
 
   // Filter collections based on selected department
@@ -161,31 +214,22 @@ export default function UploadDocumentPage() {
       )
     : collections;
 
+  if (!isOpen) return null;
+
   return (
-    <div className="py-6">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8">
-        {/* Header */}
-        <div className="flex items-center justify-between pb-6">
-          <div>
-            <h1 className="text-2xl font-bold text-foreground">
-              Upload Document
-            </h1>
-            <p className="text-muted-foreground">
-              Add a new document to the archive system.
-            </p>
-          </div>
-          <Button variant="outline" onClick={() => navigate("/records")}>
-            Back to Records
-          </Button>
+    <Modal
+      isOpen={isOpen}
+      onClose={handleCloseModal}
+      title={isEdit ? "Edit Record" : "Upload Document"}
+      size="xl"
+    >
+      {error && (
+        <div className="bg-destructive/10 border border-destructive/20 text-destructive px-4 py-3 rounded-lg mb-4">
+          {error}
         </div>
+      )}
 
-        {error && (
-          <div className="bg-destructive/10 border border-destructive/20 text-destructive px-4 py-3 rounded-lg">
-            {error}
-          </div>
-        )}
-
-        <form onSubmit={handleSubmit} className="space-y-6">
+      <form onSubmit={handleSubmit} className="space-y-6">
           {/* File Upload */}
           <Card>
             <CardHeader>
@@ -208,7 +252,7 @@ export default function UploadDocumentPage() {
                   <div className="mt-4">
                     <label htmlFor="file-upload" className="cursor-pointer">
                       <span className="mt-2 block text-sm font-medium text-foreground">
-                        Drop files here or click to browse
+                        {isEdit ? "Add new files to the record" : "Drop files here or click to browse"}
                       </span>
                       <input
                         id="file-upload"
@@ -220,17 +264,48 @@ export default function UploadDocumentPage() {
                       />
                     </label>
                     <p className="mt-2 text-xs text-muted-foreground">
-                      PDF, images, audio, video files up to 50MB each
+                      {isEdit ? "Add new files (optional)" : "PDF, images, audio, video files up to 50MB each"}
                     </p>
                   </div>
                 </div>
               </div>
 
+              {/* Existing Files (for edit mode) */}
+              {isEdit && record?.fileAssets && record.fileAssets.length > 0 && (
+                <div className="mt-4">
+                  <h4 className="text-sm font-medium text-foreground mb-2">
+                    Existing Files
+                  </h4>
+                  {record.fileAssets.map((fileAsset: any, index: number) => {
+                    const FileIcon = getFileIcon(fileAsset.filename || '');
+                    return (
+                      <div
+                        key={index}
+                        className="flex items-center justify-between p-3 bg-muted/50 rounded-lg"
+                      >
+                        <div className="flex items-center space-x-3">
+                          <FileIcon className="h-5 w-5 text-muted-foreground" />
+                          <div>
+                            <p className="text-sm font-medium text-foreground">
+                              {fileAsset.filename || "Unnamed file"}
+                            </p>
+                            <p className="text-xs text-muted-foreground">
+                              {formatFileSize(fileAsset.size || '0')}
+                            </p>
+                          </div>
+                        </div>
+                        <span className="text-xs text-muted-foreground">Existing</span>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+
               {/* File List */}
               {files.length > 0 && (
                 <div className="mt-4 space-y-2">
                   <h4 className="text-sm font-medium text-foreground">
-                    Selected Files
+                    New Files to Upload
                   </h4>
                   {files.map((file, index) => {
                     const FileIcon = getFileIcon(file.type);
@@ -266,10 +341,10 @@ export default function UploadDocumentPage() {
             </CardContent>
           </Card>
 
-          {/* Document Metadata */}
+          {/* Record Metadata */}
           <Card>
             <CardHeader>
-              <CardTitle>Document Information</CardTitle>
+              <CardTitle>Record Information</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div>
@@ -399,7 +474,7 @@ export default function UploadDocumentPage() {
             <Button
               type="button"
               variant="outline"
-              onClick={() => navigate("/records")}
+              onClick={handleCloseModal}
             >
               Cancel
             </Button>
@@ -409,11 +484,10 @@ export default function UploadDocumentPage() {
                 recordsLoading || !formData.title || !formData.collectionId
               }
             >
-              {recordsLoading ? "Uploading..." : "Upload Document"}
+              {recordsLoading ? (isEdit ? "Updating..." : "Uploading...") : (isEdit ? "Update Record" : "Upload Record")}
             </Button>
           </div>
         </form>
-      </div>
-    </div>
+    </Modal>
   );
 }
