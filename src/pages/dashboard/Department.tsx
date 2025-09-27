@@ -1,10 +1,10 @@
 import { useState, useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import {
   Card,
   CardContent,
-  CardHeader,
-  CardTitle,
+  // CardHeader,
+  // CardTitle,
 } from "../../components/ui/Card";
 import { Button } from "../../components/ui/Button";
 import { Input } from "../../components/ui/Input";
@@ -357,7 +357,7 @@ export default function DepartmentsPage() {
         </div>
 
         {/* Search */}
-        <Card>
+        <Card className="mb-6">
           <CardContent className="p-6">
             <Input
               placeholder="Search departments..."
@@ -404,7 +404,7 @@ export default function DepartmentsPage() {
         ) : (
           <Card>
             <CardContent className="p-0">
-              <div className="overflow-x-auto">
+              <div>
                 <table className="w-full min-w-full divide-y divide-border">
                   <thead className="bg-muted/50">
                     <tr>

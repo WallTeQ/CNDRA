@@ -344,7 +344,7 @@ export default function CollectionsPage() {
         ) : (
           <Card>
             <CardContent className="p-0">
-              <div className="overflow-x-auto">
+              <div>
                 <table className="w-full">
                   <thead className="bg-muted/50">
                     <tr>

@@ -47,10 +47,9 @@ export const Dropdown: React.FC<DropdownProps> = ({
       const dropdownHeight = 200; // Approximate dropdown height
       const viewportHeight = window.innerHeight;
       const spaceBelow = viewportHeight - rect.bottom;
-      const spaceAbove = rect.top;
 
-      // Drop up if there's less space below than above, or if dropdown would go off screen
-      setDropUp(spaceBelow < dropdownHeight && spaceAbove > spaceBelow);
+      // Drop up if there's not enough space below
+      setDropUp(spaceBelow < dropdownHeight);
     }
     setIsOpen(!isOpen);
   };
@@ -68,7 +67,7 @@ export const Dropdown: React.FC<DropdownProps> = ({
 
       {isOpen && (
         <div
-          className={`absolute ${align === 'right' ? 'right-0' : 'left-0'} w-48 bg-white border border-border rounded-md shadow-lg z-50 ${
+          className={`absolute ${align === 'right' ? 'right-0' : 'left-0'} w-48 bg-white border border-border rounded-md shadow-lg z-[1000] ${
             dropUp ? 'bottom-full mb-2' : 'top-full mt-2'
           }`}
         >
