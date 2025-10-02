@@ -1,55 +1,55 @@
-// hooks/useDepartments.ts
+
 import { useState, useEffect } from "react";
-import { useDispatch } from "react-redux";
-import {
-  fetchDepartments,
-  addDepartment,
-  updateDepartment,
-  deleteDepartment,
-} from "../../../store/slices/depatments/departmentThunk";
-import { clearError } from "../../../store/slices/depatments/departmentSlice";
-import { type RootState, type AppDispatch, useAppSelector } from "../../../store";
 import { Department, DepartmentFormData } from "../../../types/departments";
+import {
+  useDepartments as useDepartmentsQuery,
+  useCreateDepartment,
+  useUpdateDepartment,
+  useDeleteDepartment,
+} from "../../../hooks/useDepartments";
 
 export const useDepartments = () => {
-  const dispatch = useDispatch<AppDispatch>();
-  const { departments, loading, error } = useAppSelector(
-    (state: RootState) => state.departments
-  );
+  // React Query hooks
+  const { data: departments = [], isLoading: loading, error } = useDepartmentsQuery();
+  const createMutation = useCreateDepartment();
+  const updateMutation = useUpdateDepartment();
+  const deleteMutation = useDeleteDepartment();
 
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
 
   // Modal states
-  const [isNewDepartmentModalOpen, setIsNewDepartmentModalOpen] =
-    useState(false);
+  const [isNewDepartmentModalOpen, setIsNewDepartmentModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
-  const [selectedDepartment, setSelectedDepartment] =
-    useState<Department | null>(null);
+  const [selectedDepartment, setSelectedDepartment] = useState<Department | null>(null);
 
   // Form states
-  const [newDepartmentForm, setNewDepartmentForm] =
-    useState<DepartmentFormData>({
-      name: "",
-      description: "",
-    });
-  const [editDepartmentForm, setEditDepartmentForm] =
-    useState<DepartmentFormData>({
-      name: "",
-      description: "",
-    });
+  const [newDepartmentForm, setNewDepartmentForm] = useState<DepartmentFormData>({
+    name: "",
+    description: "",
+  });
+  const [editDepartmentForm, setEditDepartmentForm] = useState<DepartmentFormData>({
+    name: "",
+    description: "",
+  });
 
-  useEffect(() => {
-    dispatch(fetchDepartments());
-  }, [dispatch]);
+  // Error message state (for UI display)
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
+  // Handle errors from mutations
   useEffect(() => {
-    if (error) {
-      console.error("Department error:", error);
+    if (createMutation.error) {
+      setErrorMessage("Failed to create department");
+    } else if (updateMutation.error) {
+      setErrorMessage("Failed to update department");
+    } else if (deleteMutation.error) {
+      setErrorMessage("Failed to delete department");
+    } else if (error) {
+      setErrorMessage("Failed to load departments");
     }
-  }, [error]);
+  }, [createMutation.error, updateMutation.error, deleteMutation.error, error]);
 
   // Reset to first page when search changes
   useEffect(() => {
@@ -75,15 +75,14 @@ export const useDepartments = () => {
     if (!newDepartmentForm?.name?.trim()) return;
 
     try {
-      await dispatch(
-        addDepartment({
-          name: newDepartmentForm.name.trim(),
-          description: newDepartmentForm.description.trim() || undefined,
-        })
-      ).unwrap();
+      await createMutation.mutateAsync({
+        name: newDepartmentForm.name.trim(),
+        description: newDepartmentForm.description.trim() || undefined,
+      });
 
       setNewDepartmentForm({ name: "", description: "" });
       setIsNewDepartmentModalOpen(false);
+      setErrorMessage(null);
     } catch (error) {
       console.error("Failed to create department:", error);
     }
@@ -108,19 +107,18 @@ export const useDepartments = () => {
     if (!selectedDepartment || !editDepartmentForm.name.trim()) return;
 
     try {
-      await dispatch(
-        updateDepartment({
-          id: selectedDepartment.id,
-          updates: {
-            name: editDepartmentForm.name.trim(),
-            description: editDepartmentForm.description.trim() || undefined,
-          },
-        })
-      ).unwrap();
+      await updateMutation.mutateAsync({
+        id: selectedDepartment.id,
+        data: {
+          name: editDepartmentForm.name.trim(),
+          description: editDepartmentForm.description.trim() || undefined,
+        },
+      });
 
       setSelectedDepartment(null);
       setEditDepartmentForm({ name: "", description: "" });
       setIsEditModalOpen(false);
+      setErrorMessage(null);
     } catch (error) {
       console.error("Failed to update department:", error);
     }
@@ -129,7 +127,8 @@ export const useDepartments = () => {
   const handleDeleteDepartment = async (id: string) => {
     if (window.confirm("Are you sure you want to delete this department?")) {
       try {
-        await dispatch(deleteDepartment(id)).unwrap();
+        await deleteMutation.mutateAsync(id);
+        setErrorMessage(null);
       } catch (error) {
         console.error("Failed to delete department:", error);
       }
@@ -137,7 +136,7 @@ export const useDepartments = () => {
   };
 
   const clearErrorMessage = () => {
-    dispatch(clearError());
+    setErrorMessage(null);
   };
 
   const handleEditFromView = (department: Department) => {
@@ -158,8 +157,8 @@ export const useDepartments = () => {
     // State
     departments: paginatedDepartments,
     allDepartments: departments,
-    loading,
-    error,
+    loading: loading || createMutation.isPending || updateMutation.isPending || deleteMutation.isPending,
+    error: errorMessage,
     searchTerm,
     currentPage,
     totalPages,

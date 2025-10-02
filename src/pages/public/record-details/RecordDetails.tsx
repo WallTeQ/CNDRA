@@ -1,14 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
-import {
-  fetchRecordById,
-  fetchRecords,
-} from "../../../store/slices/records/recordsThunk";
-import type { RootState, AppDispatch } from "../../../store";
+import { useRecord, useRecords } from "../../../hooks/useRecords";
 import { formatFileSize } from "./recordUtils";
-
-// Components
 import { LoadingState } from "./LoadingState";
 import { NotFoundState } from "./NotFound";
 import { NavigationAndBreadcrumb } from "./NavigationAndBreadcrumb";
@@ -28,38 +21,31 @@ import { ShareModal } from "./ShareModal";
 export const RecordDetailsPage: React.FC = () => {
   const params = useParams();
   const navigate = useNavigate();
-  const dispatch = useDispatch<AppDispatch>();
-  const {
-    currentRecord: record,
-    isLoading,
-    records: allRecords,
-  } = useSelector((state: RootState) => state.records);
+  
+  // Fetch the current record
+  const { 
+    data: record, 
+    isLoading, 
+    isError 
+  } = useRecord(params.id as string);
+
+  // Fetch related records from the same collection
+  const { data: allRecords = [] } = useRecords(
+    record?.collection?.id ? { collectionId: record.collection.id } : undefined
+  );
 
   const [isShareOpen, setIsShareOpen] = useState(false);
   const [relatedRecords, setRelatedRecords] = useState<any[]>([]);
 
   useEffect(() => {
-    if (params.id) {
-      dispatch(fetchRecordById(params.id as string));
+    if (record && allRecords.length > 0) {
+      // Filter out the current record and limit to 3 related records
+      const filtered = allRecords
+        .filter((r: any) => r.id !== record.id)
+        .slice(0, 3);
+      setRelatedRecords(filtered);
     }
-  }, [dispatch, params.id]);
-
-  useEffect(() => {
-    if (record?.collection?.id) {
-      // Fetch related records from the same collection
-      dispatch(
-        fetchRecords({ collectionId: record.collection.id, limit: 6 })
-      ).then((action) => {
-        if (fetchRecords.fulfilled.match(action)) {
-          // Filter out the current record and limit to 3-5 related records
-          const filtered = action.payload
-            .filter((r: any) => r.id !== record.id)
-            .slice(0, 3);
-          setRelatedRecords(filtered);
-        }
-      });
-    }
-  }, [dispatch, record?.id, record?.collection?.id]);
+  }, [record, allRecords]);
 
   const handleNavigateToSearch = () => navigate("/search");
   const handleBackClick = () => navigate("/search");
@@ -70,12 +56,12 @@ export const RecordDetailsPage: React.FC = () => {
     return <LoadingState />;
   }
 
-  if (!record) {
+  if (isError || !record) {
     return <NotFoundState onNavigateToSearch={handleNavigateToSearch} />;
   }
 
   // Extract data from record
-  const primaryFile = record.fileAssets[0];
+  const primaryFile = record.fileAssets?.[0];
   const fileType = primaryFile
     ? primaryFile.mimeType.split("/")[1].toUpperCase()
     : "UNKNOWN";

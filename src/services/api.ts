@@ -1,12 +1,13 @@
 import axios, { AxiosInstance, AxiosResponse, AxiosError } from "axios";
-import { ApiResponse,  
-  SignupRequestData, 
+import {
+  ApiResponse,
+  SignupRequestData,
   VerifyOtpData,
-   CompleteRegistrationData, 
-   LoginData, 
-    AuthUser, 
-    AuthResponse } 
-     from "../types/api";
+  CompleteRegistrationData,
+  LoginData,
+  AuthUser,
+  AuthResponse,
+} from "../types/api";
 
 // API Configuration
 const API_BASE_URL =
@@ -14,8 +15,7 @@ const API_BASE_URL =
 
 // Create axios instance
 const api: AxiosInstance = axios.create({
-  baseURL: API_BASE_URL,
-  timeout: 10000,
+  baseURL: API_BASE_URL, 
   headers: {
     "Content-Type": "application/json",
   },
@@ -39,16 +39,31 @@ export const tokenManager = {
   },
 };
 
+// ✅ Public endpoints that should NOT have Authorization headers
+const PUBLIC_ENDPOINTS = [
+  "/auth/login",
+  "/auth/signup/request-otp",
+  "/auth/signup/verify-otp",
+];
+
 // Request interceptor to add auth token
 api.interceptors.request.use(
   (config) => {
     const token = tokenManager.getToken();
     const tempToken = tokenManager.getTempToken();
 
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    } else if (tempToken && config.url?.includes("/auth/signup/complete")) {
-      config.headers.Authorization = `Bearer ${tempToken}`;
+    // ✅ Check if this is a public endpoint
+    const isPublicEndpoint = PUBLIC_ENDPOINTS.some((endpoint) =>
+      config.url?.includes(endpoint)
+    );
+
+    // ✅ Only add Authorization header if NOT a public endpoint
+    if (!isPublicEndpoint) {
+      if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
+      } else if (tempToken && config.url?.includes("/auth/signup/complete")) {
+        config.headers.Authorization = `Bearer ${tempToken}`;
+      }
     }
 
     return config;
@@ -60,20 +75,21 @@ api.interceptors.request.use(
 api.interceptors.response.use(
   (response: AxiosResponse) => response,
   (error: AxiosError) => {
+    console.error("API error:", error.response?.status, error.config?.url);
     if (error.response?.status === 401) {
-      tokenManager.clearAll();
-      // Redirect to login page
-      if (
-        window.location.pathname !== "/login" &&
-        !window.location.pathname.startsWith("/signup")
-      ) {
+      console.log("401 detected - clearing tokens and redirecting");
+      // Only clear tokens and redirect if we're not already on public pages
+      const isPublicPage = window.location.pathname === "/login" || 
+                          window.location.pathname.startsWith("/signup");
+      
+      if (!isPublicPage) {
+        tokenManager.clearAll();
         window.location.href = "/login";
       }
     }
     return Promise.reject(error);
   }
 );
-
 
 export const authApi = {
   // Step 1: Request OTP
@@ -103,40 +119,92 @@ export const authApi = {
     api.post("/auth/logout").then((res) => res.data),
 };
 
-// Documents API
-export const documentsApi = {
+// Records API
+export const recordsApi = {
   getAll: (params?: any): Promise<ApiResponse<any[]>> =>
-    api.get("/documents", { params }).then((res) => res.data),
+    api.get('/records', { params }).then(res => res.data),
 
   getById: (id: string): Promise<ApiResponse<any>> =>
-    api.get(`/documents/${id}`).then((res) => res.data),
+    api.get(`/records/${id}`).then(res => res.data),
 
-  create: (data: any): Promise<ApiResponse<any>> =>
-    api.post("/documents", data).then((res) => res.data),
+  create: (data: FormData | any): Promise<ApiResponse<any>> => {
+    // Handle FormData for file uploads
+    if (data instanceof FormData) {
+      return api.post('/records', data, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      }).then(res => res.data);
+    }
+    // Handle regular JSON data
+    return api.post('/records', data).then(res => res.data);
+  },
 
-  update: (id: string, data: any): Promise<ApiResponse<any>> =>
-    api.put(`/documents/${id}`, data).then((res) => res.data),
+  update: (id: string, data: FormData | any): Promise<ApiResponse<any>> => {
+    // Handle FormData for file uploads
+    if (data instanceof FormData) {
+      return api.put(`/records/${id}`, data, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      }).then(res => res.data);
+    }
+    // Handle regular JSON data
+    return api.put(`/records/${id}`, data).then(res => res.data);
+  },
 
   delete: (id: string): Promise<ApiResponse> =>
-    api.delete(`/documents/${id}`).then((res) => res.data),
+    api.delete(`/records/${id}`).then(res => res.data),
+
+  getRestricted: (): Promise<ApiResponse<any[]>> =>
+    api.get('/records/restricted').then(res => res.data),
+
+  getConfidential: (): Promise<ApiResponse<any[]>> =>
+    api.get('/records/confidential').then(res => res.data),
 };
 
 // Users API
 export const usersApi = {
-  // getAll: (params?: any): Promise<ApiResponse<any[]>> =>
-  //   api.get("/users", { params }).then((res) => res.data),
-
   getById: (id: string): Promise<ApiResponse<any>> =>
     api.get(`auth/users/${id}`).then((res) => res.data),
 
   create: (data: any): Promise<ApiResponse<any>> =>
     api.post("auth/users", data).then((res) => res.data),
-
-  // update: (id: string, data: any): Promise<ApiResponse<any>> =>
-  //   api.put(`auth/users/${id}`, data).then((res) => res.data),
-
-  // delete: (id: string): Promise<ApiResponse> =>
-  //   api.delete(`auth/users/${id}`).then((res) => res.data),
 };
 
+//departments API
+export const departmentsApi = {
+  getAll: (params?: any): Promise<ApiResponse<any[]>> =>
+    api.get("/departments", { params }).then((res) => res.data),
+
+  getById: (id: string): Promise<ApiResponse<any>> =>
+    api.get(`/departments/${id}`).then((res) => res.data),
+
+  create: (data: any): Promise<ApiResponse<any>> =>
+    api.post("/departments", data).then((res) => res.data),
+
+  update: (id: string, data: any): Promise<ApiResponse<any>> =>
+    api.put(`/departments/${id}`, data).then((res) => res.data),
+
+  delete: (id: string): Promise<ApiResponse> =>
+    api.delete(`/departments/${id}`).then((res) => res.data),
+};
+
+//collections API
+export const collectionsApi = {
+  getAll: (params?: any): Promise<ApiResponse<any[]>> =>
+    api.get("/collections", { params }).then((res) => res.data),
+
+  getById: (id: string): Promise<ApiResponse<any>> =>
+    api.get(`/collections/${id}`).then((res) => res.data),
+
+  create: (data: any): Promise<ApiResponse<any>> =>
+    api.post("/collections", data).then((res) => res.data),
+
+  update: (id: string, data: any): Promise<ApiResponse<any>> =>
+    api.put(`/collections/${id}`, data).then((res) => res.data),
+
+  delete: (id: string): Promise<ApiResponse> =>
+    api.delete(`/collections/${id}`).then((res) => res.data),
+};
 export default api;

@@ -1,18 +1,4 @@
-import { useState, useEffect } from "react";
 import { Building2, CheckCircle, FolderOpen, Plus } from "lucide-react";
-
-// Redux imports
-import { useAppSelector, useAppDispatch } from "../../../store";
-import {
-  fetchCollections,
-  addCollection,
-  updateCollection,
-  deleteCollection,
-} from "../../../store/slices/collections/collectionThunk";
-import { fetchDepartments } from "../../../store/slices/depatments/departmentThunk";
-import { clearError } from "../../../store/slices/collections/collectionSlice";
-
-// Component imports
 import { Button } from "../../../components/ui/Button";
 import { StatCard } from "../components/StatsCard";
 import CollectionFilters from "./CollectionFilters";
@@ -22,113 +8,52 @@ import EmptyState from "../components/EmptyState";
 import CollectionsTable from "./CollectionTable";
 import CollectionDetailModal from "./CollectionDetailModal";
 import CreateCollectionModal from "./CreateCollectionModal";
-
-// Types
-import { Collection, NewCollectionForm } from "../../../types";
+import EditCollectionModal from "./EditCollectionModal";
+import { useCollections } from "./hook";
 
 export default function CollectionsPage() {
-  const dispatch = useAppDispatch();
-  const { collections, loading, error } = useAppSelector(
-    (state) => state.collections
-  );
-  const { departments } = useAppSelector((state) => state.departments);
-
-  // State
-  const [selectedCollection, setSelectedCollection] =
-    useState<Collection | null>(null);
-  const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
-  const [isNewCollectionModalOpen, setIsNewCollectionModalOpen] =
-    useState(false);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [departmentFilter, setDepartmentFilter] = useState("all");
-  const [currentPage, setCurrentPage] = useState(1);
-  const [newCollection, setNewCollection] = useState<NewCollectionForm>({
-    title: "",
-    description: "",
-    departmentIds: [],
-  });
-
-  const itemsPerPage = 10;
-
-  // Effects
-  useEffect(() => {
-    dispatch(fetchCollections());
-    dispatch(fetchDepartments());
-  }, [dispatch]);
-
-  useEffect(() => {
-    if (error) {
-      const timer = setTimeout(() => {
-        dispatch(clearError());
-      }, 5000);
-      return () => clearTimeout(timer);
-    }
-  }, [error, dispatch]);
-
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [searchTerm, departmentFilter]);
-
-  // Filter and pagination logic
-  const filteredCollections = collections.filter((collection) => {
-    const matchesSearch =
-      collection.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (collection.description &&
-        collection.description
-          .toLowerCase()
-          .includes(searchTerm.toLowerCase()));
-
-    const matchesDepartment =
-      departmentFilter === "all" ||
-      collection.departments.some((dept) => dept.name === departmentFilter);
-
-    return matchesSearch && matchesDepartment;
-  });
-
-  const totalPages = Math.ceil(filteredCollections.length / itemsPerPage);
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const paginatedCollections = filteredCollections.slice(
-    startIndex,
-    startIndex + itemsPerPage
-  );
-
-  // Event handlers
-  const handleCreateCollection = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (newCollection.title && newCollection.departmentIds.length > 0) {
-      await dispatch(addCollection(newCollection));
-      setNewCollection({ title: "", description: "", departmentIds: [] });
-      setIsNewCollectionModalOpen(false);
-    }
-  };
-
-  const handleViewDetails = (collection: Collection) => {
-    setSelectedCollection(collection);
-    setIsDetailModalOpen(true);
-  };
-
-  const handleEdit = (collection: Collection) => {
-    // Implement edit functionality
-    console.log("Edit collection:", collection);
-  };
-
-  const handleDelete = (collection: Collection) => {
-    // Implement delete functionality
-    console.log("Delete collection:", collection);
-  };
-
-  const handleRefresh = () => {
-    dispatch(fetchCollections());
-  };
-
-  const hasFilters = searchTerm !== "" || departmentFilter !== "all";
+  const {
+    collections,
+    allCollections,
+    departments,
+    loading,
+    error,
+    selectedCollection,
+    isDetailModalOpen,
+    isNewCollectionModalOpen,
+    isEditModalOpen,
+    newCollection,
+    editCollection,
+    searchTerm,
+    departmentFilter,
+    currentPage,
+    totalPages,
+    itemsPerPage,
+    totalItems,
+    hasFilters,
+    setSearchTerm,
+    setDepartmentFilter,
+    setCurrentPage,
+    setNewCollection,
+    setEditCollection,
+    setIsDetailModalOpen,
+    setIsNewCollectionModalOpen,
+    setIsEditModalOpen,
+    handleCreateCollection,
+    handleViewDetails,
+    handleEdit,
+    handleEditSubmit,
+    handleDelete,
+    handleEditFromDetail,
+    clearError,
+  } = useCollections();
 
   return (
     <div className="py-6">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8">
         {/* Error Display */}
         {error && (
-          <ErrorDisplay error={error} onClose={() => dispatch(clearError())} />
+          <ErrorDisplay error={error} onClose={clearError} />
         )}
 
         {/* Header */}
@@ -147,6 +72,7 @@ export default function CollectionsPage() {
               size="md"
               icon={<Plus className="w-4 h-4" />}
               className="shadow-sm hover:shadow-md transition-shadow"
+              disabled={loading}
             >
               New Collection
             </Button>
@@ -157,7 +83,7 @@ export default function CollectionsPage() {
         <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4 mb-8">
           <StatCard
             name="Total Collections"
-            value={collections.length.toString()}
+            value={allCollections.length.toString()}
             icon={FolderOpen}
             color="blue"
           />
@@ -171,7 +97,7 @@ export default function CollectionsPage() {
 
           <StatCard
             name="Active Collections"
-            value={collections.length.toString()}
+            value={allCollections.length.toString()}
             icon={CheckCircle}
             color="purple"
           />
@@ -184,13 +110,16 @@ export default function CollectionsPage() {
           departmentFilter={departmentFilter}
           setDepartmentFilter={setDepartmentFilter}
           departments={departments}
-          onRefresh={handleRefresh}
+          onRefresh={() => {
+            // React Query will automatically refetch
+            window.location.reload();
+          }}
         />
 
         {/* Content */}
         {loading ? (
           <LoadingState />
-        ) : filteredCollections.length === 0 ? (
+        ) : totalItems === 0 ? (
           <EmptyState
             hasFilters={hasFilters}
             title="collection"
@@ -199,13 +128,13 @@ export default function CollectionsPage() {
           />
         ) : (
           <CollectionsTable
-            collections={paginatedCollections}
+            collections={collections}
             onViewDetails={handleViewDetails}
             onEdit={handleEdit}
             onDelete={handleDelete}
             currentPage={currentPage}
             totalPages={totalPages}
-            totalItems={filteredCollections.length}
+            totalItems={totalItems}
             itemsPerPage={itemsPerPage}
             onPageChange={setCurrentPage}
           />
@@ -216,6 +145,7 @@ export default function CollectionsPage() {
           isOpen={isDetailModalOpen}
           onClose={() => setIsDetailModalOpen(false)}
           collection={selectedCollection}
+          onEdit={handleEditFromDetail}
         />
 
         <CreateCollectionModal
@@ -226,6 +156,20 @@ export default function CollectionsPage() {
           departments={departments}
           onSubmit={handleCreateCollection}
           loading={loading}
+        />
+
+        <EditCollectionModal
+          isOpen={isEditModalOpen}
+          onClose={() => {
+            setIsEditModalOpen(false);
+            setEditCollection({ title: "", description: "", departmentIds: [] });
+          }}
+          editCollection={editCollection}
+          setEditCollection={setEditCollection}
+          departments={departments}
+          onSubmit={handleEditSubmit}
+          loading={loading}
+          collectionTitle={selectedCollection?.title}
         />
       </div>
     </div>

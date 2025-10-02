@@ -1,22 +1,13 @@
-import { useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
 import { RecordCard } from "./ui/Record-card";
 import { Card, CardContent } from "../components/ui/Card";
 import { Button } from "./ui/Button";
-import { fetchRecords } from "../store/slices/records/recordsThunk";
-import type { RootState, AppDispatch } from "../store";
 import { Link } from "react-router-dom";
+import { useRecords } from "../hooks/useRecords";
 
 export default function FeaturedRecords() {
-  const dispatch = useDispatch<AppDispatch>();
-  const { records, isLoading: recordsLoading } = useSelector(
-    (state: RootState) => state.records
-  );
+  const { data: records = [], isLoading: recordsLoading } = useRecords();
 
-  useEffect(() => {
-    dispatch(fetchRecords()); 
-  }, [dispatch]);
-  const featuredRecords = records.slice(0, 3);
+  const featuredRecords = records.slice(0, 6);
 
   return (
     <>
@@ -25,7 +16,7 @@ export default function FeaturedRecords() {
         <section className="mb-12">
           <div className="flex items-center justify-between mb-8">
             <div>
-              <h2 className=" text-lg md:text-3xl font-bold text-foreground">
+              <h2 className="text-lg md:text-3xl font-bold text-foreground">
                 Featured Records
               </h2>
               <p className="text-muted-foreground text-xs md:text-base">
@@ -60,7 +51,9 @@ export default function FeaturedRecords() {
           )}
           <div className="text-center mt-10 md:hidden">
             <Link to="/search">
-              <Button size="lg" className="text-sm md:text-base">View All records</Button>
+              <Button size="lg" className="text-sm md:text-base">
+                View All records
+              </Button>
             </Link>
           </div>
         </section>

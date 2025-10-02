@@ -1,14 +1,9 @@
-
 import { useEffect, useState } from "react";
 import { Plus, FileText, Building2, CheckCircle } from "lucide-react";
-
-// Redux imports
+import { useRecords, useDeleteRecord } from "../../../hooks/useRecords";
+import { useDepartments } from "../../../hooks/useDepartments";
 import { useAppDispatch, useAppSelector } from "../../../store";
-import { fetchRecords, deleteRecord } from "../../../store/slices/records/recordsThunk";
-import { fetchDepartments } from "../../../store/slices/depatments/departmentThunk";
 import { clearError } from "../../../store/slices/auth/authSlice";
-
-// Component imports
 import { Button } from "../../../components/ui/Button";
 import { StatsGrid } from "../overview/StatGrid";
 import ErrorDisplay from "../components/ErrorDisplay";
@@ -17,43 +12,47 @@ import { RecordsTable } from "./RecordsTable";
 import EmptyState from "../components/EmptyState";
 import UploadDocumentPage from "../UploadDocument";
 import { RecordPreviewModal } from "./RecordPreviewModal";
-
-// Types
-import { Record } from "../../../types/record";
+import { Record } from "../../../types";
 import { RecordsLoadingState } from "./RecordsLoadingState";
 
 export default function RecordsPage() {
   const dispatch = useAppDispatch();
-  const { records, isLoading, error } = useAppSelector((state) => state.records);
-  const { departments } = useAppSelector((state) => state.departments);
+  const { error } = useAppSelector((state) => state.auth); 
 
-  // State
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedDepartment, setSelectedDepartment] = useState("");
   const [selectedAccessLevel, setSelectedAccessLevel] = useState("");
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const [selectedRecord, setSelectedRecord] = useState<Record | null>(null);
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
-  const [shouldRefetchRecords, setShouldRefetchRecords] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
-  const [selectedRecordForEdit, setSelectedRecordForEdit] = useState<Record | null>(null);
+  const [selectedRecordForEdit, setSelectedRecordForEdit] =
+    useState<Record | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
 
   const itemsPerPage = 10;
 
+  // React Query hooks
+  const {
+    data: records = [],
+    isLoading: recordsLoading,
+    error: recordsError,
+    refetch: refetchRecords,
+  } = useRecords({
+    search: searchTerm,
+    department: selectedDepartment,
+    accessLevel: selectedAccessLevel,
+  });
+
+  const { data: departments = [], isLoading: departmentsLoading } =
+    useDepartments();
+
+  const deleteRecordMutation = useDeleteRecord();
+
+  // Combined loading state
+  const isLoading = recordsLoading || departmentsLoading;
+
   // Effects
-  useEffect(() => {
-    if (shouldRefetchRecords) {
-      dispatch(fetchRecords());
-      setShouldRefetchRecords(false);
-    }
-  }, [shouldRefetchRecords, dispatch]);
-
-  useEffect(() => {
-    dispatch(fetchRecords());
-    dispatch(fetchDepartments());
-  }, [dispatch]);
-
   useEffect(() => {
     if (error) {
       const timer = setTimeout(() => {
@@ -68,71 +67,56 @@ export default function RecordsPage() {
   }, [searchTerm, selectedDepartment, selectedAccessLevel]);
 
   // Calculate statistics for StatCards
-  const activeRecords = records.filter(record => record.accessLevel !== 'CONFIDENTIAL').length;
-  const totalFileAssets = records.reduce((sum, record) => sum + (record.fileAssets?.length || 0), 0);
+  const activeRecords = records.filter(
+    (record) => record.accessLevel !== "CONFIDENTIAL"
+  ).length;
+  const totalFileAssets = records.reduce(
+    (sum, record) => sum + (record.fileAssets?.length || 0),
+    0
+  );
 
   // Stats configuration for reusable StatCard components
   const recordStats = [
     {
-      name: 'Total Records',
+      name: "Total Records",
       value: records.length.toString(),
-      change: '+12%',
-      changeType: 'increase' as const,
+      change: "+12%",
+      changeType: "increase" as const,
       icon: FileText,
-      color: 'blue' as const
+      color: "blue" as const,
     },
     {
-      name: 'Departments',
+      name: "Departments",
       value: departments.length.toString(),
-      change: '+3%',
-      changeType: 'increase' as const,
+      change: "+3%",
+      changeType: "increase" as const,
       icon: Building2,
-      color: 'green' as const
+      color: "green" as const,
     },
     {
-      name: 'Active Records',
+      name: "Active Records",
       value: activeRecords.toString(),
-      change: '+8%',
-      changeType: 'increase' as const,
+      change: "+8%",
+      changeType: "increase" as const,
       icon: CheckCircle,
-      color: 'purple' as const
+      color: "purple" as const,
     },
     {
-      name: 'File Assets',
+      name: "File Assets",
       value: totalFileAssets.toString(),
-      change: '+15%',
-      changeType: 'increase' as const,
+      change: "+15%",
+      changeType: "increase" as const,
       icon: FileText,
-      color: 'yellow' as const
-    }
+      color: "yellow" as const,
+    },
   ];
 
-  // Filter and pagination logic
+  // Filter and pagination logic (now handled by React Query, but keeping for client-side pagination)
   const filteredRecords = (records || [])
     .filter((record) => {
-      if (!record || typeof record !== 'object') return false;
+      if (!record || typeof record !== "object") return false;
       if (!record.id) return false;
-
-      const matchesSearch =
-        (record.title?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
-        (record.description?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
-        record.subjectTags?.some((tag) =>
-          tag?.toLowerCase().includes(searchTerm.toLowerCase())
-        ) || false;
-
-      const matchesDepartment =
-        !selectedDepartment ||
-        (record.collection &&
-          departments.find(
-            (dept) =>
-              dept.collections?.some((col) => col.id === record.collection?.id) &&
-              dept.id === selectedDepartment
-          ));
-
-      const matchesAccessLevel =
-        !selectedAccessLevel || record.accessLevel === selectedAccessLevel;
-
-      return matchesSearch && matchesDepartment && matchesAccessLevel;
+      return true;
     })
     .sort((a, b) => {
       const dateA = new Date(a.createdAt || 0);
@@ -150,7 +134,7 @@ export default function RecordsPage() {
   // Event handlers
   const handleDeleteRecord = async (id: string) => {
     try {
-      await dispatch(deleteRecord(id)).unwrap();
+      await deleteRecordMutation.mutateAsync(id);
     } catch (error) {
       console.error("Failed to delete record:", error);
     }
@@ -167,10 +151,16 @@ export default function RecordsPage() {
   };
 
   const handleRefresh = () => {
-    dispatch(fetchRecords());
+    refetchRecords();
   };
 
-  const hasFilters = searchTerm !== "" || selectedDepartment !== "" || selectedAccessLevel !== "";
+  const hasFilters =
+    searchTerm !== "" ||
+    selectedDepartment !== "" ||
+    selectedAccessLevel !== "";
+
+  // Handle React Query errors
+  const displayError = error || recordsError;
 
   return (
     <div className="py-6">
@@ -194,8 +184,11 @@ export default function RecordsPage() {
         </div>
 
         {/* Error Display */}
-        {error && (
-          <ErrorDisplay error={error} onClose={() => dispatch(clearError())} />
+        {displayError && (
+          <ErrorDisplay
+            error={displayError}
+            onClose={() => dispatch(clearError())}
+          />
         )}
 
         {/* Stats Cards - Using Reusable StatsGrid Component */}
@@ -211,6 +204,7 @@ export default function RecordsPage() {
           setSelectedAccessLevel={setSelectedAccessLevel}
           departments={departments}
           onRefresh={handleRefresh}
+          isLoading={isLoading}
         />
 
         {/* Content */}
@@ -234,6 +228,7 @@ export default function RecordsPage() {
             onViewRecord={handleViewRecord}
             onEditRecord={handleEditRecord}
             onDeleteRecord={handleDeleteRecord}
+            isDeleting={deleteRecordMutation.isPending}
           />
         )}
 
@@ -251,9 +246,10 @@ export default function RecordsPage() {
             setIsUploadModalOpen(false);
             setIsEditMode(false);
             setSelectedRecordForEdit(null);
-            setShouldRefetchRecords(true);
           }}
-          onSuccess={() => {}}
+          onSuccess={() => {
+            // React Query will automatically refetch
+          }}
           isEdit={isEditMode}
           record={selectedRecordForEdit}
         />

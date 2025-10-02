@@ -1,28 +1,19 @@
-import { useState, useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useState } from "react";
 import { SearchBar } from "../../../components/ui/Search-bar";
 import { Badge } from "../../../components/ui/Badge";
-import { fetchDepartments } from "../../../store/slices/depatments/departmentThunk";
-import type { RootState, AppDispatch } from "../../../store";
-import { DepartmentFilters } from ".//DepartmentFilters";
+import { DepartmentFilters } from "./DepartmentFilters";
 import { DepartmentCard } from "./DepartmentCard";
 import { EmptyState } from "./EmptyState";
 import { LoadingSkeleton } from "../../../components/common/LoadingSkeleton";
 import { filterDepartments, sortDepartments } from "./DepartmentUtils";
+import { useDepartments } from "../../../hooks/useDepartments";
 
 export default function PublicDepartmentsPage() {
-  const dispatch = useDispatch<AppDispatch>();
-  const { departments, loading } = useSelector(
-    (state: RootState) => state.departments
-  );
+  const { data: departments = [], isLoading: loading } = useDepartments();
 
   const [searchQuery, setSearchQuery] = useState("");
   const [sortBy, setSortBy] = useState("name");
   const [filterByRecords, setFilterByRecords] = useState("all");
-
-  useEffect(() => {
-    dispatch(fetchDepartments());
-  }, [dispatch]);
 
   const handleSearch = (query: string) => {
     setSearchQuery(query);
@@ -88,7 +79,7 @@ export default function PublicDepartmentsPage() {
                 </p>
               )}
             </div>
-            <Badge variant="outline">
+            <Badge >
               {sortedDepartments.length} departments found
             </Badge>
           </div>

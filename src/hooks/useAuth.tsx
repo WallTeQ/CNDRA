@@ -46,20 +46,13 @@ export const useAuth = () => {
     }
   }, [dispatch, isInitialized]);
 
-  // Fetch profile when authenticated but no user data
-  useEffect(() => {
-    if (isInitialized && isAuthenticated && !user && !isLoading) {
-      dispatch(getProfile());
-    }
-  }, []);
 
   const login = async (data: LoginData) => {
     const result = await dispatch(loginAction(data));
     const success = result.type === "auth/login/fulfilled";
-    if (success) {
-      await dispatch(getProfile());
-    }
-    const userData = success ? (result.payload as any)?.user : null;
+
+    // ✅ Return user from login response, no getProfile call needed
+    const userData = success ? (result.payload as { user: typeof user })?.user : null;
     return { success, user: userData };
   };
 
@@ -80,9 +73,7 @@ export const useAuth = () => {
   const signupComplete = async (data: CompleteRegistrationData) => {
     const result = await dispatch(completeRegistration(data));
     const success = result.type === "auth/completeRegistration/fulfilled";
-    if (success) {
-      await dispatch(getProfile());
-    }
+    // ✅ No getProfile call - registration response contains user data
     return success;
   };
 
@@ -102,11 +93,12 @@ export const useAuth = () => {
     dispatch(setSignupEmail(email));
   };
 
-  // const refreshProfile = async () => {
-  //   if (isAuthenticated) {
-  //     await dispatch(getProfile());
-  //   }
-  // };
+  // ✅ Only call getProfile manually when you need fresh user data
+  const refreshProfile = async () => {
+    if (isAuthenticated) {
+      await dispatch(getProfile());
+    }
+  };
 
   const initializeAuth = () => {
     if (!hasInitializedRef.current && !isInitialized) {
@@ -146,15 +138,15 @@ export const useAuth = () => {
     return hasRole("super-admin") ? "super-admin" : null;
   };
 
-  // Computed loading state - consider loading if not initialized or actively loading
+  // ✅ Simplified loading state
   const computedIsLoading = !isInitialized || isLoading;
 
   return {
     // State
     user,
     isAuthenticated,
-    isLoading: computedIsLoading, // For app initialization
-    isLoginLoading: isLoading, // For login-specific loading
+    isLoading: computedIsLoading,
+    isLoginLoading: isLoading,
     error,
     signupStep,
     signupEmail,
@@ -172,7 +164,7 @@ export const useAuth = () => {
     resetSignupFlow,
     setCurrentSignupStep,
     setCurrentSignupEmail,
-    refreshProfile,
+    refreshProfile, 
     initializeAuth,
 
     // Helper functions

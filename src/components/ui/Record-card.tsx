@@ -58,16 +58,22 @@ export function RecordCard({
   return (
     <Link to={href} className="block">
       <Card
-        className={mergeClasses("hover:shadow-md transition-shadow cursor-pointer", className)}
+        className={mergeClasses(
+          "hover:shadow-md transition-shadow cursor-pointer",
+          className
+        )}
       >
         <CardContent className="p-2">
           {/* Image Preview */}
-          {fileAssets && fileAssets.length > 0 && (
+          {fileAssets &&
+            fileAssets.length > 0 &&
             (() => {
               const firstFile = fileAssets[0];
-              const isImage = firstFile && ["jpg", "jpeg", "png", "gif", "webp", "bmp", "svg"].includes(
-                firstFile.mimeType?.split("/")[1]?.toLowerCase()
-              );
+              const isImage =
+                firstFile &&
+                ["jpg", "jpeg", "png", "gif", "webp", "bmp", "svg"].includes(
+                  firstFile.mimeType?.split("/")[1]?.toLowerCase()
+                );
 
               return isImage ? (
                 <img
@@ -76,7 +82,7 @@ export function RecordCard({
                   className="w-full h-32 object-cover rounded mb-4"
                   onError={(e) => {
                     const target = e.target as HTMLImageElement;
-                    target.style.display = 'none';
+                    target.style.display = "none";
                   }}
                 />
               ) : (
@@ -84,8 +90,7 @@ export function RecordCard({
                   <FileText className="h-8 w-8 text-slate-400" />
                 </div>
               );
-            })()
-          )}
+            })()}
 
           <div className="space-y-3">
             <div className="flex items-start justify-between">
@@ -94,7 +99,7 @@ export function RecordCard({
                   {title}
                 </h3>
               </div>
-              <Badge variant="outline" className="ml-2 text-xs">
+              <Badge  className="ml-2 text-xs">
                 {fileType}
               </Badge>
             </div>
@@ -103,12 +108,13 @@ export function RecordCard({
             </p>
             <div className="flex flex-wrap gap-1">
               {subjectTags.slice(0, 3).map((tag) => (
-                <Badge key={tag} variant="secondary" className="text-xs">
-                  {tag}
+                <Badge key={tag.id} variant="default" size="xs">
+                  {tag.term}
                 </Badge>
               ))}
+
               {subjectTags.length > 3 && (
-                <Badge variant="outline" className="text-xs">
+                <Badge  className="text-xs">
                   +{subjectTags.length - 3}
                 </Badge>
               )}

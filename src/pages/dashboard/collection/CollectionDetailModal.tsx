@@ -1,4 +1,3 @@
-// components/collections/CollectionDetailModal.tsx
 import { Modal } from "../../../components/ui/Modal";
 import { Button } from "../../../components/ui/Button";
 import { Badge } from "../../../components/ui/Badge";
@@ -8,12 +7,14 @@ interface CollectionDetailModalProps {
   isOpen: boolean;
   onClose: () => void;
   collection: Collection | null;
+  onEdit?: (collection: Collection) => void;
 }
 
 export default function CollectionDetailModal({
   isOpen,
   onClose,
   collection,
+  onEdit,
 }: CollectionDetailModalProps) {
   if (!collection) return null;
 
@@ -49,13 +50,16 @@ export default function CollectionDetailModal({
           </div>
           <div>
             <h3 className="font-semibold text-foreground mb-3">Departments</h3>
-            <div className="space-y-2">
+            <div className="flex flex-wrap gap-2">
               {collection.departments.map((dept) => (
-                <div key={dept.id} className="flex items-center space-x-2">
-                  <Badge variant="default" size="xs" className="bg-muted">
-                    {dept.name}
-                  </Badge>
-                </div>
+                <Badge
+                  key={dept.id}
+                  variant="default"
+                  size="sm"
+                  className="bg-blue-100 text-blue-800"
+                >
+                  {dept.name}
+                </Badge>
               ))}
             </div>
           </div>
@@ -68,9 +72,25 @@ export default function CollectionDetailModal({
           </p>
         </div>
 
+        {collection.records && collection.records.length > 0 && (
+          <div>
+            <h3 className="font-semibold text-foreground mb-3">Records</h3>
+            <div className="bg-muted p-3 rounded-lg">
+              <p className="text-sm">
+                <span className="font-medium">Total Records:</span>{" "}
+                {collection.records.length}
+              </p>
+            </div>
+          </div>
+        )}
+
         <div className="flex justify-end space-x-3 pt-4 border-t border-border">
-          <Button variant="outline">Edit Collection</Button>
-          <Button>View Records</Button>
+          <Button variant="outline" onClick={onClose}>
+            Close
+          </Button>
+          {onEdit && (
+            <Button onClick={() => onEdit(collection)}>Edit Collection</Button>
+          )}
         </div>
       </div>
     </Modal>

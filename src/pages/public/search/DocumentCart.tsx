@@ -147,9 +147,9 @@ const DocumentCard: React.FC<DocumentCardProps> = ({ record }) => {
 
           {record.subjectTags.length > 0 && (
             <div className="flex flex-wrap gap-1 mb-4">
-              {record.subjectTags.slice(0, 3).map((tag, index) => (
-                <Badge key={index} variant="outline" size="sm">
-                  {tag}
+              {record.subjectTags.slice(0, 3).map((tag) => (
+                <Badge key={tag.id} variant="outline" size="sm">
+                  {tag.term}
                 </Badge>
               ))}
               {record.subjectTags.length > 3 && (

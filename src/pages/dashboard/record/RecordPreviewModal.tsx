@@ -32,8 +32,6 @@ export const RecordPreviewModal: React.FC<RecordPreviewModalProps> = ({
         return "warning";
       case "CONFIDENTIAL":
         return "danger";
-      case "SECRET":
-        return "info";
       default:
         return "default";
     }
@@ -194,9 +192,9 @@ export const RecordPreviewModal: React.FC<RecordPreviewModalProps> = ({
                   Subject Tags
                 </label>
                 <div className="flex flex-wrap gap-1 mt-1">
-                  {record.subjectTags.map((tag: string) => (
-                    <Badge key={tag} variant="default" size="xs">
-                      {tag}
+                  {record.subjectTags.map((tag) => (
+                    <Badge key={tag.id} variant="default" size="xs">
+                      {tag.term}
                     </Badge>
                   ))}
                 </div>

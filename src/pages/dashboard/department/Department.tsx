@@ -40,7 +40,7 @@ export default function DepartmentsPage() {
     handleDeleteDepartment,
     handleEditFromView,
     clearErrorMessage,
-    resetModalsAndForms,
+    // resetModalsAndForms,
     setNewDepartmentForm,
     setEditDepartmentForm,
   } = useDepartments();
@@ -49,15 +49,15 @@ export default function DepartmentsPage() {
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       const target = event.target as Element;
-      if (!target.closest('[id^="dropdown-"]') && !target.closest('button')) {
-        document.querySelectorAll('[id^="dropdown-"]').forEach(dropdown => {
-          dropdown.classList.add('hidden');
+      if (!target.closest('[id^="dropdown-"]') && !target.closest("button")) {
+        document.querySelectorAll('[id^="dropdown-"]').forEach((dropdown) => {
+          dropdown.classList.add("hidden");
         });
       }
     };
 
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
   const filteredDepartments = allDepartments?.filter(

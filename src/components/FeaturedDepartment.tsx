@@ -1,21 +1,12 @@
-import {  useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
 import { Card, CardContent } from "../components/ui/Card";
 import { Button } from "../components/ui/Button";
 import { Badge } from "../components/ui/Badge";
-import { fetchDepartments } from "../store/slices/depatments/departmentThunk";
-import type { RootState, AppDispatch } from "../store/";
 import { Link } from "react-router-dom";
+import { useDepartments } from "../hooks/useDepartments";
+import { Collection } from "../types";
 
 export default function FeaturedDepartments() {
-  const dispatch = useDispatch<AppDispatch>();
-  const { departments, loading } = useSelector(
-    (state: RootState) => state.departments
-  );
-
-  useEffect(() => {
-    dispatch(fetchDepartments());
-  }, [dispatch]);
+  const { data: departments = [], isLoading: loading } = useDepartments();
 
   const displayDepartments = departments.slice(0, 4);
 
@@ -57,7 +48,7 @@ export default function FeaturedDepartments() {
                 const collectionsCount = department.collections?.length || 0;
                 const recordsCount =
                   department.collections?.reduce(
-                    (total, collection) =>
+                    (total: number, collection: Collection) =>
                       total + (collection.records?.length || 0),
                     0
                   ) || 0;
@@ -72,12 +63,12 @@ export default function FeaturedDepartments() {
                         <h3 className="font-semibold text-foreground text-sm md:text-base">
                           {department.name}
                         </h3>
-                        <div className="flex  gap-2">
-                          <Badge variant="secondary" className="white-space-nowrap">
+                        <div className="flex gap-2">
+                          <Badge  className="white-space-nowrap">
                             {collectionsCount} collection
                             {collectionsCount !== 1 ? "s" : ""}
                           </Badge>
-                          <Badge variant="outline">
+                          <Badge >
                             {recordsCount} record
                             {recordsCount !== 1 ? "s" : ""}
                           </Badge>
@@ -90,7 +81,6 @@ export default function FeaturedDepartments() {
                         variant="ghost"
                         size="sm"
                         className="p-0 h-auto text-primary hover:text-primary/80"
-                        asChild
                       >
                         <a href={`/departments`}>Browse Department →</a>
                       </Button>
@@ -102,7 +92,9 @@ export default function FeaturedDepartments() {
           )}
           <div className="text-center mt-10 md:hidden">
             <Link to="/departments">
-              <Button size="lg" className="text-sm md:text-base">View All Deparments</Button>
+              <Button size="lg" className="text-sm md:text-base">
+                View All Departments
+              </Button>
             </Link>
           </div>
         </section>

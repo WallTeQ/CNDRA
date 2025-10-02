@@ -61,20 +61,13 @@ const authSlice = createSlice({
       tokenManager.removeTempToken();
     },
     initializeAuth: (state) => {
-      if (state.isInitialized) return; // Prevent re-initialization
-      
-      const token = tokenManager.getToken();
-      const tempToken = tokenManager.getTempToken();
-
-      if (token) {
-        state.isAuthenticated = true;
-      }
-
-      if (tempToken) {
-        state.tempToken = tempToken;
-      }
-
-      state.isInitialized = true; 
+      state.isInitialized = true;
+      console.log(
+        "✅ Auth initialized - isAuthenticated:",
+        state.isAuthenticated,
+        "hasUser:",
+        !!state.user
+      );
     },
   },
   extraReducers: (builder) => {
@@ -139,38 +132,41 @@ const authSlice = createSlice({
       })
       // Get Profile
       .addCase(getProfile.pending, (state) => {
-      // Only set loading if we don't have a user yet
+        // Only set loading if we don't have a user yet
         if (!state.user) {
-       state.isLoading = true;
-      }
-      state.error = null; // Clear any previous errors
+          state.isLoading = true;
+        }
+        state.error = null; // Clear any previous errors
       })
       .addCase(getProfile.fulfilled, (state, action) => {
-    state.isLoading = false;
-    state.user = action.payload; 
-    state.isAuthenticated = true;
-  })
-  .addCase(getProfile.rejected, (state, action: any) => {
-    state.isLoading = false;
-    
-    // Only clear auth if it's an authentication error
-    if (action.payload?.status === 401 || action.error?.message?.includes('401')) {
-      state.isAuthenticated = false;
-      state.user = null;
-      tokenManager.clearAll();
-    }
-    state.error = action.payload?.message || "Failed to load profile";
-  })
-    // Logout
-    .addCase(logout.fulfilled, (state) => {
-      state.user = null;
-      state.isAuthenticated = false;
-      state.isLoading = false;
-      state.error = null;
-      state.signupStep = 1;
-      state.signupEmail = "";
-      state.tempToken = null;
-    });
+        state.isLoading = false;
+        state.user = action.payload;
+        state.isAuthenticated = true;
+      })
+      .addCase(getProfile.rejected, (state, action: any) => {
+        state.isLoading = false;
+
+        // Only clear auth if it's an authentication error
+        if (
+          action.payload?.status === 401 ||
+          action.error?.message?.includes("401")
+        ) {
+          state.isAuthenticated = false;
+          state.user = null;
+          tokenManager.clearAll();
+        }
+        state.error = action.payload?.message || "Failed to load profile";
+      })
+      // Logout
+      .addCase(logout.fulfilled, (state) => {
+        state.user = null;
+        state.isAuthenticated = false;
+        state.isLoading = false;
+        state.error = null;
+        state.signupStep = 1;
+        state.signupEmail = "";
+        state.tempToken = null;
+      });
   },
 });
 

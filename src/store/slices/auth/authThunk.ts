@@ -1,8 +1,6 @@
+
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import {
-  authApi,
-  tokenManager,
-} from "../../../services/api";
+import { authApi, tokenManager } from "../../../services/api";
 import {
   SignupRequestData,
   VerifyOtpData,
@@ -80,6 +78,8 @@ export const login = createAsyncThunk(
       if (authData?.access_token) {
         tokenManager.setToken(authData.access_token);
       }
+
+      // ✅ Return the full auth data including user
       return authData;
     } catch (error: any) {
       console.error("Login error:", error);
