@@ -65,9 +65,31 @@ export interface FileAsset {
   storagePath: string;
 }
 
+// export interface Collection {
+//   id: string;
+//   title: string;
+// }
+
 export interface Collection {
   id: string;
   title: string;
+  description?: string;
+  departments: Array<{
+    id: string;
+    name: string;
+    description?: string;
+    createdAt: string;
+    updatedAt: string;
+  }>;
+  records?: Record[];
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface NewCollectionForm {
+  title: string;
+  description: string;
+  departmentIds: string[];
 }
 
 export interface Record {

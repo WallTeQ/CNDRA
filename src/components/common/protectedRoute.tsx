@@ -28,7 +28,7 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
             {!isInitialized
               ? "Loading..."
               : isAuthenticated && !user
-              ? "Loading profile..."
+              ? "Loading..."
               : "Loading..."}
           </p>
         </div>

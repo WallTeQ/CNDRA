@@ -21,14 +21,14 @@ import { LoginPage } from "./pages/auth/LoginPage";
 import { SignupPage } from "./pages/auth/SignupPage";
 
 // Dashboard Pages
-import { DashboardHome } from "./pages/dashboard/DashboardHome";
+import { DashboardHome } from "./pages/dashboard/overview/DashboardHome";
 import UploadDocumentPage from "./pages/dashboard/UploadDocument";
-import Records from "./pages/dashboard/Records";
+import RecordsPage from "./pages/dashboard/record/Records";
 import Users from "./pages/dashboard/Users";
 import Settings from "./pages/dashboard/Settings";
 import Reviews from "./pages/dashboard/Reviews";
-import CollectionsPage from "./pages/dashboard/Collections";
-import DepartmentsPage from "./pages/dashboard/Department";
+import CollectionsPage from "./pages/dashboard/collection/Collections";
+import DepartmentsPage from "./pages/dashboard/department/Department";
 
 // Other Pages
 import { NotFound } from "./pages/NotFound";
@@ -47,7 +47,7 @@ const AppContent: React.FC = () => {
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Initializing...</p>
+          <p className="mt-4 text-gray-600">Loading...</p>
         </div>
       </div>
     );
@@ -81,8 +81,8 @@ const AppContent: React.FC = () => {
         >
           <Route index element={<DashboardHome />} />
           <Route path="upload" element={<UploadDocumentPage />} />
-          <Route path="documents" element={<Records />} />
-          <Route path="records" element={<Records />} />
+          <Route path="documents" element={<RecordsPage />} />
+          <Route path="records" element={<RecordsPage />} />
           <Route path="departments" element={<DepartmentsPage />} />
           <Route path="collections" element={<CollectionsPage />} />
           <Route path="review" element={<Reviews />} />

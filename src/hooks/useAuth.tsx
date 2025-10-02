@@ -49,12 +49,9 @@ export const useAuth = () => {
   // Fetch profile when authenticated but no user data
   useEffect(() => {
     if (isInitialized && isAuthenticated && !user && !isLoading) {
-      console.log(
-        "useAuth: Fetching profile because authenticated but no user data"
-      );
       dispatch(getProfile());
     }
-  }, [dispatch, isInitialized, isAuthenticated, user, isLoading]);
+  }, []);
 
   const login = async (data: LoginData) => {
     const result = await dispatch(loginAction(data));
@@ -105,11 +102,11 @@ export const useAuth = () => {
     dispatch(setSignupEmail(email));
   };
 
-  const refreshProfile = async () => {
-    if (isAuthenticated) {
-      await dispatch(getProfile());
-    }
-  };
+  // const refreshProfile = async () => {
+  //   if (isAuthenticated) {
+  //     await dispatch(getProfile());
+  //   }
+  // };
 
   const initializeAuth = () => {
     if (!hasInitializedRef.current && !isInitialized) {
