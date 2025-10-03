@@ -1,6 +1,5 @@
-import React, { useEffect } from "react";
-import { useAppDispatch, useAppSelector } from "../../../store";
-import { fetchRecords } from "../../../store/slices/records/recordsThunk";
+// pages/search/SearchPage.tsx
+import React from "react";
 import SearchHeader from "./Searchheader";
 import SearchFilters from "./SearchFilters";
 import SearchResults from "./SearchResult";
@@ -10,21 +9,10 @@ import Pagination from "../../../components/Pagination";
 import LoadingState from "./LoadingState";
 import ErrorState from "./ErrorState";
 import { useSearchLogic } from "./useSearch";
-
-interface SearchFilters {
-  keyword: string;
-  type: string[];
-  dateRange: { start: string; end: string };
-  author: string;
-  collection: string;
-  accessLevel: string[];
-}
+import { useRecords } from "../../../hooks/useRecords";
 
 export const SearchPage: React.FC = () => {
-  const dispatch = useAppDispatch();
-  const { records, isLoading, error } = useAppSelector(
-    (state) => state.records
-  );
+  const { data: records = [], isLoading, error, refetch } = useRecords();
 
   const {
     searchQuery,
@@ -42,16 +30,12 @@ export const SearchPage: React.FC = () => {
     clearAllFilters,
   } = useSearchLogic(records);
 
-  useEffect(() => {
-    dispatch(fetchRecords());
-  }, [dispatch]);
-
   if (isLoading && records.length === 0) {
     return <LoadingState />;
   }
 
   if (error) {
-    return <ErrorState onRetry={() => dispatch(fetchRecords())} />;
+    return <ErrorState onRetry={() => refetch()} />;
   }
 
   return (
