@@ -29,7 +29,8 @@ import Settings from "./pages/dashboard/Settings";
 import Reviews from "./pages/dashboard/Reviews";
 import CollectionsPage from "./pages/dashboard/collection/Collections";
 import DepartmentsPage from "./pages/dashboard/department/Department";
-
+import RestrictedRecordsPage from "./pages/public/Confidential";
+import RequestAccessPage from "./pages/public/RequestAccess";
 // Other Pages
 import { NotFound } from "./pages/NotFound";
 
@@ -62,6 +63,11 @@ const AppContent: React.FC = () => {
           <Route path="search" element={<SearchPage />} />
           <Route path="departments" element={<PublicDepartmentsPage />} />
           <Route path="records/:id" element={<RecordDetailsPage />} />
+          <Route path="confidential" element={<RestrictedRecordsPage />} />
+          <Route
+            path="records/request-access/:id"
+            element={<RequestAccessPage />}
+          />
           <Route path="news-events" element={<NewsEventsPage />} />
           <Route path="news/:id" element={<NewsArticlePage />} />
         </Route>

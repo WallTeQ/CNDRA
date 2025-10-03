@@ -22,7 +22,7 @@ export const useSearchLogic = (records: any[]) => {
   });
   const [currentPage, setCurrentPage] = useState(1);
 
-  const documentsPerPage = 6;
+  const documentsPerPage = 10;
 
   // Real-time search with debouncing effect through useMemo
   const filteredRecords = useMemo(() => {
@@ -35,7 +35,7 @@ export const useSearchLogic = (records: any[]) => {
         (record) =>
           record.title.toLowerCase().includes(query) ||
           record.description.toLowerCase().includes(query) ||
-          record.subjectTags.some((tag) => tag.toLowerCase().includes(query))
+          record.subjectTags.some((tag) => tag.term.toLowerCase().includes(query))
       );
     }
 
@@ -91,8 +91,6 @@ export const useSearchLogic = (records: any[]) => {
   );
 
   const handleSearch = () => {
-    // This function is now mainly for explicit search button clicks
-    // The actual filtering happens in real-time through useMemo
     setCurrentPage(1);
   };
 
