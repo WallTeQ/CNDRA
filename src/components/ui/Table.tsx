@@ -11,7 +11,7 @@ interface TableProps extends React.HTMLAttributes<HTMLTableElement> {
 
 export function Table({ className, children, ...props }: TableProps) {
   return (
-    <div className="relative w-full overflow-auto">
+    <div className="relative w-full overflow-auto min-w-[900px]">
       <table
         className={mergeClasses("w-full caption-bottom text-sm", className)}
         {...props}

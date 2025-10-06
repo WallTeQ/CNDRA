@@ -15,6 +15,8 @@ import { RecordDetailsPage } from "./pages/public/record-details/RecordDetails";
 import { NewsEventsPage } from "./pages/public/NewsEventsPage";
 import { NewsArticlePage } from "./pages/public/NewsArticlePage";
 import PublicDepartmentsPage from "./pages/public/department/Departments";
+import RestrictedRecordsPage from "./pages/public/Confidential";
+import RequestAccessPage from "./pages/public/RequestAccess";
 
 // Auth Pages
 import { LoginPage } from "./pages/auth/LoginPage";
@@ -29,8 +31,8 @@ import Settings from "./pages/dashboard/Settings";
 import Reviews from "./pages/dashboard/Reviews";
 import CollectionsPage from "./pages/dashboard/collection/Collections";
 import DepartmentsPage from "./pages/dashboard/department/Department";
-import RestrictedRecordsPage from "./pages/public/Confidential";
-import RequestAccessPage from "./pages/public/RequestAccess";
+import AccessRequestsPage from "./pages/dashboard/access/AccessRequest";
+
 // Other Pages
 import { NotFound } from "./pages/NotFound";
 
@@ -91,6 +93,7 @@ const AppContent: React.FC = () => {
           <Route path="records" element={<RecordsPage />} />
           <Route path="departments" element={<DepartmentsPage />} />
           <Route path="collections" element={<CollectionsPage />} />
+          <Route path="access-requests" element={<AccessRequestsPage />} />
           <Route path="review" element={<Reviews />} />
           <Route
             path="users"
