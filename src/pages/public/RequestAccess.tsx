@@ -12,7 +12,7 @@ import { Input } from "../../components/ui/Input";
 import { Badge } from "../../components/ui/Badge";
 import { ArrowLeft, Lock, ShieldAlert, AlertCircle } from "lucide-react";
 import { useRecord } from "../../hooks/useRecords";
-
+import { useAuth } from "../../hooks/useAuth";
 interface AccessRequestForm {
   recordId: string;
   requesterId: string;
@@ -37,6 +37,8 @@ export default function RequestAccessPage() {
   const { id } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
+  const { user } = useAuth();
+  const userId = user?.id || "";
 
   // Get record from location state or fetch it
   const recordFromState = location.state?.record;
@@ -49,7 +51,7 @@ export default function RequestAccessPage() {
   // Initialize form with default values
   const [requestForm, setRequestForm] = useState<AccessRequestForm>({
     recordId: id || "",
-    requesterId: "", // This should be set to current user's ID from auth context
+    requesterId: userId,
     requesterName: "",
     requesterEmail: "",
     organization: "",

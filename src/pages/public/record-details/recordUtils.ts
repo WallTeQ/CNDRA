@@ -6,14 +6,6 @@ export const formatFileSize = (sizeInBytes: string) => {
   return Math.round((bytes / Math.pow(1024, i)) * 100) / 100 + " " + sizes[i];
 };
 
-export const formatDate = (dateString: string) => {
-  return new Date(dateString).toLocaleDateString("en-US", {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  });
-};
-
 export const getAccessLevelInfo = (level: string) => {
   switch (level.toLowerCase()) {
     case "public":

@@ -15,6 +15,7 @@ import {
   useRestrictedRecords,
   useConfidentialRecords,
 } from "../../hooks/useRecords";
+import { useAuth } from "../../hooks/useAuth";
 
 export default function RestrictedRecordsPage() {
   const navigate = useNavigate();
@@ -22,6 +23,7 @@ export default function RestrictedRecordsPage() {
     useRestrictedRecords();
   const { data: confidentialRecords = [], isLoading: confidentialLoading } =
     useConfidentialRecords();
+    const { user } = useAuth();
 
   const [searchTerm, setSearchTerm] = useState("");
   const [accessTypeFilter, setAccessTypeFilter] = useState<
@@ -51,7 +53,10 @@ export default function RestrictedRecordsPage() {
   const loading = restrictedLoading || confidentialLoading;
 
   const handleRequestAccess = (record: any) => {
-    // Navigate to request access page with record data
+    // Navigate to request access page with record data if user is logged in else to login
+    if (!user) {
+      return navigate("/login", { state: { from: "/records/restricted" } });
+    }
     navigate(`/records/request-access/${record.id}`, {
       state: { record },
     });

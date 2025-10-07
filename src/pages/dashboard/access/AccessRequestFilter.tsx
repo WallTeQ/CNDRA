@@ -54,8 +54,12 @@ export const AccessRequestsFilters: React.FC<AccessRequestsFiltersProps> = ({
             <option value="medium">Medium Priority</option>
             <option value="low">Low Priority</option>
           </select>
-          <Button variant="outline">
-            <Filter className="w-4 h-4 mr-2" />
+          <Button
+            variant="outline"
+            size="sm"
+            className="whitespace-nowrap"
+            icon={<Filter className="w-4 h-4" />}
+          >
             Advanced Filters
           </Button>
         </div>

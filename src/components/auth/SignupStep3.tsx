@@ -219,15 +219,6 @@ export const SignupStep3: React.FC<SignupStep3Props> = ({
           </div>
         )}
 
-        {/* Debug Info - Remove in production */}
-        <div className="bg-blue-50 border border-blue-200 text-blue-700 px-4 py-3 rounded-lg text-sm">
-          <p>Debug Info:</p>
-          <p>verifiedOtpCode: {verifiedOtpCode || "Not available"}</p>
-          <p>signupEmail: {signupEmail || "Not available"}</p>
-          <p>isLoading: {isLoading.toString()}</p>
-          <p>Form errors: {Object.keys(errors).length}</p>
-        </div>
-
         {/* Personal Information */}
         <div>
           <h3 className="text-lg font-medium text-slate-900 mb-4">

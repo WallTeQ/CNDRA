@@ -4,10 +4,10 @@ import { Card, CardContent } from "../../../components/ui/Card";
 import { Button } from "../../../components/ui/Button";
 import { Badge } from "../../../components/ui/Badge";
 import {
-  formatDate,
   getAccessLevelInfo,
   handleDownloadFile,
 } from "./recordUtils";
+import { formatDate } from "../../../utils/FormatDate";
 
 interface RecordHeaderProps {
   record: any;

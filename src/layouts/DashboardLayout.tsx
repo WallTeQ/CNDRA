@@ -13,6 +13,7 @@ import {
   Bell,
   Search,
   ClipboardCheck,
+  Building,
 } from "lucide-react";
 import { Button } from "../components/ui/Button";
 import { useAuth } from "../hooks/useAuth";
@@ -23,8 +24,14 @@ const navigation = [
   { name: "Records", href: "/dashboard/records", icon: FileText },
   { name: "Departments", href: "/dashboard/departments", icon: Users },
   { name: "Collections", href: "/dashboard/collections", icon: ClipboardCheck },
-  { name: "Access Requests", href: "/dashboard/access-requests", icon: ClipboardCheck },
+  {
+    name: "Access Requests",
+    href: "/dashboard/access-requests",
+    icon: ClipboardCheck,
+  },
+  { name: "Governance", href: "/dashboard/governance", icon: Building },
   { name: "Users", href: "/dashboard/users", icon: Users },
+  { name: "Roles", href: "/dashboard/roles", icon: Users },
   { name: "Settings", href: "/dashboard/settings", icon: Settings },
 ];
 

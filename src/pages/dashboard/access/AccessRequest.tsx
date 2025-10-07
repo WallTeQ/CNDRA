@@ -189,8 +189,11 @@ export default function AccessRequestsPage() {
             </p>
           </div>
           <div className="flex space-x-3">
-            <Button variant="outline">
-              <Download className="w-4 h-4 mr-2" />
+            <Button variant="outline"
+              size="sm"
+              className="whitespace-nowrap"
+              icon={<Download className="w-4 h-4" />}
+            >
               Export Report
             </Button>
           </div>

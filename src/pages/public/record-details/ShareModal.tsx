@@ -1,6 +1,7 @@
 import { Modal } from "../../../components/ui/Modal";
 import { Button } from "../../../components/ui/Button";
-import { formatDate, copyToClipboard } from "./recordUtils";
+import { copyToClipboard } from "./recordUtils";
+import { formatDate } from "../../../utils/FormatDate";
 
 interface ShareModalProps {
   isOpen: boolean;
