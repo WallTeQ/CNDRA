@@ -55,7 +55,7 @@ export const RelatedArticles: React.FC<RelatedArticlesProps> = ({
                 <Badge variant="info" size="sm" className="capitalize">
                   News
                 </Badge>
-                <h4 className="font-medium text-slate-900 text-sm line-clamp-2 group-hover:text-blue-600 transition-colors">
+                <h4 className="font-medium text-slate-900 text-sm line-clamp-2 group-hover:text-red-600 transition-colors">
                   {article.title}
                 </h4>
                 <p className="text-xs text-slate-600">

@@ -18,7 +18,7 @@ export const DashboardHome: React.FC = () => {
       change: "+12%",
       changeType: "increase" as const,
       icon: FileText,
-      color: "blue" as const,
+      color: "red" as const,
     },
     {
       name: "Pending Reviews",

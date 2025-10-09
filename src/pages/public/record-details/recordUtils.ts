@@ -7,7 +7,7 @@ export const formatFileSize = (sizeInBytes: string) => {
 };
 
 export const getAccessLevelInfo = (level: string) => {
-  switch (level.toLowerCase()) {
+  switch (level?.toLowerCase()) {
     case "public":
       return {
         color: "success",
@@ -29,7 +29,7 @@ export const getAccessLevelInfo = (level: string) => {
 };
 
 export const copyToClipboard = (text: string) => {
-  navigator.clipboard.writeText(text);
+  navigator?.clipboard?.writeText(text);
   // You could add a toast notification here
 };
 

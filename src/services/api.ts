@@ -8,6 +8,16 @@ import {
   AuthUser,
   AuthResponse,
 } from "../types/api";
+import {
+  SubmitAccessRequestData,
+  UpdateRequestStatusData,
+  SendChatMessageData,
+  AccessRequestFilters,
+  AccessRequest,
+  Communication,
+  ChatRoom,
+  ChatMessage,
+} from "../types/access";
 
 // API Configuration
 const API_BASE_URL =
@@ -24,6 +34,7 @@ const api: AxiosInstance = axios.create({
 // Token management
 const TOKEN_KEY = "auth_token";
 const TEMP_TOKEN_KEY = "temp_auth_token";
+let forceLogout = false;
 
 export const tokenManager = {
   getToken: (): string | null => localStorage.getItem(TOKEN_KEY),
@@ -39,12 +50,24 @@ export const tokenManager = {
   },
 };
 
+const setForceLogout = (value: boolean) => {
+  forceLogout = value;
+}
+
 // ✅ Public endpoints that should NOT have Authorization headers
 const PUBLIC_ENDPOINTS = [
   "/auth/login",
   "/auth/signup/request-otp",
   "/auth/signup/verify-otp",
 ];
+
+export const forceUserLogout = () => {
+  if (!forceLogout) {
+    setForceLogout(true);
+    tokenManager.clearAll();
+    window.location.href = "/login";
+  }
+}
 
 // Request interceptor to add auth token
 api.interceptors.request.use(
@@ -87,6 +110,12 @@ api.interceptors.response.use(
         window.location.href = "/login";
       }
     }
+
+    //force logout if 403 forbidden
+    if (error.response?.status === 403) {
+      forceUserLogout();
+    }
+
     return Promise.reject(error);
   }
 );
@@ -156,10 +185,13 @@ export const recordsApi = {
   delete: (id: string): Promise<ApiResponse> =>
     api.delete(`/records/${id}`).then(res => res.data),
 
-  getRestricted: (): Promise<ApiResponse<any[]>> =>
+  getRestricted: (): Promise<ApiResponse<[]>> =>
     api.get('/records/restricted').then(res => res.data),
 
-  getConfidential: (): Promise<ApiResponse<any[]>> =>
+  getPublic: (): Promise<ApiResponse<[]>> =>
+    api.get('/records/public').then(res => res.data),
+
+  getConfidential: (): Promise<ApiResponse<[]>> =>
     api.get('/records/confidential').then(res => res.data),
 };
 
@@ -206,6 +238,56 @@ export const collectionsApi = {
 
   delete: (id: string): Promise<ApiResponse> =>
     api.delete(`/collections/${id}`).then((res) => res.data),
+};
+
+// Access Request API
+export const accessApi = {
+  // Access Request Management
+  submit: (data: SubmitAccessRequestData): Promise<ApiResponse<AccessRequest>> =>
+    api.post('/access/submit', data).then(res => res.data),
+
+  getAll: (filters?: AccessRequestFilters): Promise<ApiResponse<AccessRequest[]>> =>
+    api.get('/access', { params: filters }).then(res => res.data),
+
+  getById: (id: string): Promise<ApiResponse<AccessRequest>> =>
+    api.get(`/access/${id}`).then(res => res.data),
+
+  updateStatus: (requestId: string, data: UpdateRequestStatusData): Promise<ApiResponse<AccessRequest>> =>
+    api.put(`/access/status/${requestId}`, data).then(res => res.data),
+
+  getOverdue: (): Promise<ApiResponse<AccessRequest[]>> =>
+    api.get('/access/overdue').then(res => res.data),
+
+  // Communications
+  getCommunications: (requestId: string): Promise<ApiResponse<Communication[]>> =>
+    api.get(`/access/communication/${requestId}`).then(res => res.data),
+
+  getDetailedCommunications: (requestId: string): Promise<ApiResponse<Communication[]>> =>
+    api.get(`/access/${requestId}/communications/detailed`).then(res => res.data),
+
+  // Chat functionality
+  chat: {
+    getRooms: (): Promise<ApiResponse<ChatRoom[]>> =>
+      api.get('/access/chat/rooms').then(res => res.data),
+
+    getMessages: (requestId: string): Promise<ApiResponse<ChatMessage[]>> =>
+      api.get(`/access/${requestId}/chat/messages`).then(res => res.data),
+
+    sendMessage: (requestId: string, data: SendChatMessageData): Promise<ApiResponse<ChatMessage>> =>
+      api.post(`/access/${requestId}/chat/message`, data).then(res => res.data),
+
+    getUnreadMessages: (requestId: string): Promise<ApiResponse<ChatMessage[]>> =>
+      api.get(`/access/${requestId}/chat/unread-messages`).then(res => res.data),
+
+    markMessageRead: (messageId: string): Promise<ApiResponse<void>> =>
+      api.post(`/access/chat/message/${messageId}/read`).then(res => res.data),
+
+    markAllRead: (requestId: string): Promise<ApiResponse<void>> =>
+      api.post(`/access/${requestId}/chat/mark-all-read`).then(res => res.data),
+
+    getUnreadCount: (requestId: string): Promise<ApiResponse<{ count: number }>> =>
+      api.get(`/access/${requestId}/chat/unread-count`).then(res => res.data),
+  },
 };
 
 // Governance API

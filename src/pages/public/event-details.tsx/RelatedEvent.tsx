@@ -49,7 +49,7 @@ export const RelatedEvents: React.FC<RelatedEventsProps> = ({ events }) => {
                 <Badge variant="info" size="sm">
                   Event
                 </Badge>
-                <h4 className="font-medium text-slate-900 text-sm line-clamp-2 group-hover:text-blue-600 transition-colors mt-2">
+                <h4 className="font-medium text-slate-900 text-sm line-clamp-2 group-hover:text-red-600 transition-colors mt-2">
                   {event.title}
                 </h4>
                 <p className="text-xs text-slate-600 mt-1 flex items-center">

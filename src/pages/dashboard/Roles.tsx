@@ -12,6 +12,7 @@ import {
   TableRow,
 } from "../../components/ui/Table";
 import { Modal } from "../../components/ui/Modal";
+import { icons, Plus } from "lucide-react";
 
 interface Role {
   id: string;
@@ -135,149 +136,204 @@ export default function RolesPage() {
   };
 
   return (
-      <div className="p-6">
-        {/* Header */}
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold text-foreground">
-              Role Management
-            </h1>
-            <p className="text-muted-foreground">
-              Manage user roles and permissions
-            </p>
-          </div>
-          <Button onClick={() => setIsNewRoleModalOpen(true)}>
-            <svg
-              className="w-4 h-4 mr-2"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M12 6v6m0 0v6m0-6h6m-6 0H6"
-              />
-            </svg>
-            New Role
-          </Button>
+    <div className="p-6">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-bold text-foreground">
+            Role Management
+          </h1>
+          <p className="text-muted-foreground">
+            Manage user roles and permissions
+          </p>
         </div>
+        <Button
+          size="sm"
+          className="whitespace-nowrap"
+          icon={<Plus className="w-4 h-4" />}
+          onClick={() => setIsNewRoleModalOpen(true)}
+        >
+          New Role
+        </Button>
+      </div>
 
-        {/* Search */}
-        <Card>
-          <CardContent className="p-6">
-            <Input
-              placeholder="Search roles..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="max-w-md"
-            />
-          </CardContent>
-        </Card>
+      {/* Search */}
+      <Card>
+        <CardContent className="p-6">
+          <Input
+            placeholder="Search roles..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="max-w-md"
+          />
+        </CardContent>
+      </Card>
 
-        {/* Roles Table */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Roles ({filteredRoles.length})</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Role Name</TableHead>
-                  <TableHead>Description</TableHead>
-                  <TableHead>Users</TableHead>
-                  <TableHead>Permissions</TableHead>
-                  <TableHead>Type</TableHead>
-                  <TableHead>Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {filteredRoles.map((role) => (
-                  <TableRow key={role.id}>
-                    <TableCell>
-                      <div>
-                        <p className="font-medium">{role.name}</p>
-                        <p className="text-sm text-muted-foreground">
-                          ID: {role.id}
-                        </p>
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <p className="text-sm">{role.description}</p>
-                    </TableCell>
-                    <TableCell>
-                      <Badge variant="outline">{role.userCount} users</Badge>
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex flex-wrap gap-1">
-                        {role.permissions.slice(0, 2).map((permission) => (
-                          <Badge
-                            key={permission}
-                            variant="secondary"
-                            className="text-xs"
-                          >
-                            {permission === "all"
-                              ? "All"
-                              : permission.replace("_", " ")}
-                          </Badge>
-                        ))}
-                        {role.permissions.length > 2 && (
-                          <Badge variant="outline" className="text-xs">
-                            +{role.permissions.length - 2}
-                          </Badge>
-                        )}
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <Badge variant={role.isSystem ? "outline" : "secondary"}>
-                        {role.isSystem ? "System" : "Custom"}
-                      </Badge>
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex space-x-2">
+      {/* Roles Table */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Roles ({filteredRoles.length})</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Role Name</TableHead>
+                <TableHead>Description</TableHead>
+                <TableHead>Users</TableHead>
+                <TableHead>Permissions</TableHead>
+                <TableHead>Type</TableHead>
+                <TableHead>Actions</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {filteredRoles.map((role) => (
+                <TableRow key={role.id}>
+                  <TableCell>
+                    <div>
+                      <p className="font-medium">{role.name}</p>
+                      <p className="text-sm text-muted-foreground">
+                        ID: {role.id}
+                      </p>
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    <p className="text-sm">{role.description}</p>
+                  </TableCell>
+                  <TableCell>
+                    <Badge variant="outline">{role.userCount} users</Badge>
+                  </TableCell>
+                  <TableCell>
+                    <div className="flex flex-wrap gap-1">
+                      {role.permissions.slice(0, 2).map((permission) => (
+                        <Badge
+                          key={permission}
+                          variant="secondary"
+                          className="text-xs"
+                        >
+                          {permission === "all"
+                            ? "All"
+                            : permission.replace("_", " ")}
+                        </Badge>
+                      ))}
+                      {role.permissions.length > 2 && (
+                        <Badge variant="outline" className="text-xs">
+                          +{role.permissions.length - 2}
+                        </Badge>
+                      )}
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    <Badge variant={role.isSystem ? "outline" : "secondary"}>
+                      {role.isSystem ? "System" : "Custom"}
+                    </Badge>
+                  </TableCell>
+                  <TableCell>
+                    <div className="flex space-x-2">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleEditRole(role)}
+                      >
+                        Edit
+                      </Button>
+                      {!role.isSystem && (
                         <Button
                           variant="ghost"
                           size="sm"
-                          onClick={() => handleEditRole(role)}
+                          className="text-destructive"
                         >
-                          Edit
+                          Delete
                         </Button>
-                        {!role.isSystem && (
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            className="text-destructive"
-                          >
-                            Delete
-                          </Button>
-                        )}
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </CardContent>
-        </Card>
+                      )}
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
 
-        {/* New Role Modal */}
-        <Modal
-          isOpen={isNewRoleModalOpen}
-          onClose={() => setIsNewRoleModalOpen(false)}
-          title="Create New Role"
-          size="lg"
-        >
+      {/* New Role Modal */}
+      <Modal
+        isOpen={isNewRoleModalOpen}
+        onClose={() => setIsNewRoleModalOpen(false)}
+        title="Create New Role"
+        size="lg"
+      >
+        <form className="space-y-6">
+          <Input label="Role Name" placeholder="Enter role name" required />
+          <div>
+            <label className="text-sm font-medium text-foreground">
+              Description
+            </label>
+            <textarea
+              className="mt-2 flex min-h-[80px] w-full rounded-lg border border-border bg-input px-3 py-2 text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              placeholder="Enter role description"
+            />
+          </div>
+
+          <div>
+            <label className="text-sm font-medium text-foreground mb-4 block">
+              Permissions
+            </label>
+            <div className="space-y-4 max-h-64 overflow-y-auto">
+              {Object.entries(getPermissionsByCategory()).map(
+                ([category, permissions]) => (
+                  <div key={category}>
+                    <h4 className="font-medium text-sm text-foreground mb-2">
+                      {category}
+                    </h4>
+                    <div className="grid grid-cols-2 gap-2 ml-4">
+                      {permissions.map((permission) => (
+                        <label
+                          key={permission.id}
+                          className="flex items-center space-x-2"
+                        >
+                          <input
+                            type="checkbox"
+                            className="rounded border-border text-primary focus:ring-primary"
+                          />
+                          <span className="text-sm">{permission.name}</span>
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+                )
+              )}
+            </div>
+          </div>
+
+          <div className="flex justify-end space-x-3 pt-4">
+            <Button
+              variant="outline"
+              onClick={() => setIsNewRoleModalOpen(false)}
+            >
+              Cancel
+            </Button>
+            <Button type="submit">Create Role</Button>
+          </div>
+        </form>
+      </Modal>
+
+      {/* Edit Role Modal */}
+      <Modal
+        isOpen={isEditModalOpen}
+        onClose={() => setIsEditModalOpen(false)}
+        title={`Edit Role: ${selectedRole?.name}`}
+        size="lg"
+      >
+        {selectedRole && (
           <form className="space-y-6">
-            <Input label="Role Name" placeholder="Enter role name" required />
+            <Input label="Role Name" value={selectedRole.name} />
             <div>
               <label className="text-sm font-medium text-foreground">
                 Description
               </label>
               <textarea
                 className="mt-2 flex min-h-[80px] w-full rounded-lg border border-border bg-input px-3 py-2 text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                placeholder="Enter role description"
+                value={selectedRole.description}
               />
             </div>
 
@@ -301,6 +357,9 @@ export default function RolesPage() {
                             <input
                               type="checkbox"
                               className="rounded border-border text-primary focus:ring-primary"
+                              defaultChecked={selectedRole.permissions.includes(
+                                permission.id
+                              )}
                             />
                             <span className="text-sm">{permission.name}</span>
                           </label>
@@ -315,81 +374,15 @@ export default function RolesPage() {
             <div className="flex justify-end space-x-3 pt-4">
               <Button
                 variant="outline"
-                onClick={() => setIsNewRoleModalOpen(false)}
+                onClick={() => setIsEditModalOpen(false)}
               >
                 Cancel
               </Button>
-              <Button type="submit">Create Role</Button>
+              <Button type="submit">Save Changes</Button>
             </div>
           </form>
-        </Modal>
-
-        {/* Edit Role Modal */}
-        <Modal
-          isOpen={isEditModalOpen}
-          onClose={() => setIsEditModalOpen(false)}
-          title={`Edit Role: ${selectedRole?.name}`}
-          size="lg"
-        >
-          {selectedRole && (
-            <form className="space-y-6">
-              <Input label="Role Name" value={selectedRole.name} />
-              <div>
-                <label className="text-sm font-medium text-foreground">
-                  Description
-                </label>
-                <textarea
-                  className="mt-2 flex min-h-[80px] w-full rounded-lg border border-border bg-input px-3 py-2 text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                  value={selectedRole.description}
-                />
-              </div>
-
-              <div>
-                <label className="text-sm font-medium text-foreground mb-4 block">
-                  Permissions
-                </label>
-                <div className="space-y-4 max-h-64 overflow-y-auto">
-                  {Object.entries(getPermissionsByCategory()).map(
-                    ([category, permissions]) => (
-                      <div key={category}>
-                        <h4 className="font-medium text-sm text-foreground mb-2">
-                          {category}
-                        </h4>
-                        <div className="grid grid-cols-2 gap-2 ml-4">
-                          {permissions.map((permission) => (
-                            <label
-                              key={permission.id}
-                              className="flex items-center space-x-2"
-                            >
-                              <input
-                                type="checkbox"
-                                className="rounded border-border text-primary focus:ring-primary"
-                                defaultChecked={selectedRole.permissions.includes(
-                                  permission.id
-                                )}
-                              />
-                              <span className="text-sm">{permission.name}</span>
-                            </label>
-                          ))}
-                        </div>
-                      </div>
-                    )
-                  )}
-                </div>
-              </div>
-
-              <div className="flex justify-end space-x-3 pt-4">
-                <Button
-                  variant="outline"
-                  onClick={() => setIsEditModalOpen(false)}
-                >
-                  Cancel
-                </Button>
-                <Button type="submit">Save Changes</Button>
-              </div>
-            </form>
-          )}
-        </Modal>
-      </div>
+        )}
+      </Modal>
+    </div>
   );
 }

@@ -119,7 +119,7 @@ export default function UsersPage() {
       change: "+8%",
       changeType: "increase" as const,
       icon: Users,
-      color: "blue" as const,
+      color: "red" as const,
     },
     {
       name: "Active Users",

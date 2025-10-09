@@ -12,7 +12,7 @@ interface TagsKeywordsSectionProps {
 }
 
 export function TagsKeywordsSection({ subjectTags }: TagsKeywordsSectionProps) {
-  if (subjectTags.length === 0) return null;
+  if (subjectTags?.length === 0) return null;
 
   return (
     <Card>
@@ -21,7 +21,7 @@ export function TagsKeywordsSection({ subjectTags }: TagsKeywordsSectionProps) {
       </CardHeader>
       <CardContent>
         <div className="flex flex-wrap gap-2">
-          {subjectTags.map((tag, index) => (
+          {subjectTags?.map((tag, index) => (
             <Link
               key={index}
               to={`/search?tag=${encodeURIComponent(tag)}`}

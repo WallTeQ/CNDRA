@@ -9,7 +9,7 @@ interface StatItem {
   change: string;
   changeType: "increase" | "decrease";
   icon: LucideIcon;
-  color: "blue" | "yellow" | "green" | "purple" | "red" | "gray";
+  color: "red" | "yellow" | "green" | "purple" | "red" | "gray";
 }
 
 interface StatsGridProps {

@@ -99,7 +99,7 @@ export const RequestDetailModal: React.FC<RequestDetailModalProps> = ({
                   variant={getStatusVariant(request.status)}
                   className="capitalize"
                 >
-                  {request.status.replace("_", " ")}
+                  {request.status.name}
                 </Badge>
                 <Badge
                   variant={getPriorityVariant(request.priority)}

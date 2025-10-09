@@ -56,7 +56,7 @@
 //       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
 //         {/* Back Button */}
 //         <div className="mb-6">
-//           <Link to="/news-events" className="inline-flex items-center space-x-2 text-blue-600 hover:text-blue-700 transition-colors">
+//           <Link to="/news-events" className="inline-flex items-center space-x-2 text-red-600 hover:text-red-700 transition-colors">
 //             <ArrowLeft className="h-4 w-4" />
 //             <span>Back to News & Events</span>
 //           </Link>
@@ -180,7 +180,7 @@
 //                     <Badge variant={getCategoryColor(relatedArticle.category)} size="sm" className="capitalize">
 //                       {relatedArticle.category}
 //                     </Badge>
-//                     <h4 className="font-medium text-slate-900 text-sm line-clamp-2 group-hover:text-blue-600 transition-colors">
+//                     <h4 className="font-medium text-slate-900 text-sm line-clamp-2 group-hover:text-red-600 transition-colors">
 //                       {relatedArticle.title}
 //                     </h4>
 //                     <p className="text-xs text-slate-600">
@@ -282,7 +282,7 @@ export const NewsArticlePage: React.FC = () => {
         <div className="mb-6">
           <Link
             to="/news-events"
-            className="inline-flex items-center space-x-2 text-blue-600 hover:text-blue-700 transition-colors"
+            className="inline-flex items-center space-x-2 text-red-600 hover:text-red-700 transition-colors"
           >
             <ArrowLeft className="h-4 w-4" />
             <span>Back to News & Events</span>

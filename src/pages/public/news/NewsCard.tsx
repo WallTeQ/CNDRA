@@ -60,7 +60,7 @@ export const NewsCard: React.FC<NewsCardProps> = ({
           <h3 className="text-xl font-semibold text-slate-900 mb-3">
             <Link
               to={`/news/${article.id}`}
-              className="hover:text-blue-600 transition-colors"
+              className="hover:text-red-600 transition-colors"
             >
               {article.title}
             </Link>

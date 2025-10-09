@@ -48,6 +48,24 @@ export default function PublicDepartmentsPage() {
           Explore all departments, their collections, and records in our digital
           archive system.
         </p>
+        <div className="mt-4 mb-8 text-sm text-muted-foreground leading-relaxed space-y-3">
+          <p className="">
+            The National Archives of Liberia preserves records from various
+            government ministries, agencies, and public offices. <br /> Each department
+            holds a unique collection of documents that capture the nation’s
+            governance, development, and historical growth over the years.
+          </p>
+          <p>
+            Browse through the list of departments to explore their available
+            public records and discover valuable insights into Liberia’s
+            administrative and cultural evolution.
+          </p>
+          <p>
+            Use the search and filter options below to quickly find departments
+            or collections of interest.
+          </p>
+        </div>
+
         <SearchBar
           onSearch={handleSearch}
           placeholder="Search departments..."
@@ -79,9 +97,7 @@ export default function PublicDepartmentsPage() {
                 </p>
               )}
             </div>
-            <Badge >
-              {sortedDepartments.length} departments found
-            </Badge>
+            <Badge>{sortedDepartments.length} departments found</Badge>
           </div>
 
           {loading ? (

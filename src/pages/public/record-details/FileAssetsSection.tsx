@@ -16,11 +16,13 @@ export function FileAssetsSection({ fileAssets }: FileAssetsSectionProps) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Document Files ({fileAssets.length})</CardTitle>
+        <CardTitle>
+          Document Files ({fileAssets && fileAssets.length > 0})
+        </CardTitle>
       </CardHeader>
       <CardContent>
         <div className="space-y-3">
-          {fileAssets.map((file) => {
+          {fileAssets?.map((file) => {
             const isImage = file.mimeType?.startsWith("image/");
             const imageTypes = [
               "jpg",

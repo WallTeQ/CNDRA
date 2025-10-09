@@ -13,6 +13,8 @@ import { Badge } from "../../components/ui/Badge";
 import { ArrowLeft, Lock, ShieldAlert, AlertCircle } from "lucide-react";
 import { useRecord } from "../../hooks/useRecords";
 import { useAuth } from "../../hooks/useAuth";
+import { useSubmitAccessRequest } from "../../hooks/useAccess";
+import { AccessRequest } from "../../types/access";
 interface AccessRequestForm {
   recordId: string;
   requesterId: string;
@@ -39,6 +41,9 @@ export default function RequestAccessPage() {
   const location = useLocation();
   const { user } = useAuth();
   const userId = user?.id || "";
+  const email = user?.email || "";
+  const name = user?.displayName || "";
+
 
   // Get record from location state or fetch it
   const recordFromState = location.state?.record;
@@ -47,24 +52,24 @@ export default function RequestAccessPage() {
     !recordFromState
   );
   const record = recordFromState || fetchedRecord;
+  const submitAccessRequest = useSubmitAccessRequest();
 
   // Initialize form with default values
-  const [requestForm, setRequestForm] = useState<AccessRequestForm>({
+  const [requestForm, setRequestForm] = useState<AccessRequest>({
     recordId: id || "",
     requesterId: userId,
-    requesterName: "",
-    requesterEmail: "",
-    organization: "",
-    requestType: "research",
-    recordDescription: "",
-    dateRange: "",
-    reason: "",
-    preferredFormat: "digital",
-    status: "pending",
-    priority: "medium",
-    purpose: "",
-    estimatedHours: 0,
-    notes: "",
+    requesterName: name || "",
+    requesterEmail: email || "",
+    // organization: "",
+    // requestType: "research",
+    // recordDescription: "",
+    // dateRange: "",
+    // reason: "",
+    // preferredFormat: "digital",
+    // priority: "medium",
+    // purpose: "",
+    // estimatedHours: 0,
+    // notes: "",
     communicationThread: [],
     dueAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(), // 30 days from now
   });
@@ -76,7 +81,7 @@ export default function RequestAccessPage() {
       setRequestForm((prev) => ({
         ...prev,
         recordId: record.id,
-        recordDescription: record.title,
+        // recordDescription: record.title,
       }));
     }
   }, [record]);
@@ -87,6 +92,7 @@ export default function RequestAccessPage() {
 
     try {
       // TODO: Implement API call to submit access request
+      await submitAccessRequest.mutateAsync(requestForm);
       console.log("Submitting access request:", requestForm);
 
       // Simulate API call
@@ -94,7 +100,7 @@ export default function RequestAccessPage() {
 
       // Show success message and navigate back
       alert("Access request submitted successfully!");
-      navigate("/records/restricted");
+      navigate("/");
     } catch (error) {
       console.error("Failed to submit access request:", error);
       alert("Failed to submit access request. Please try again.");
@@ -248,7 +254,7 @@ export default function RequestAccessPage() {
                     required
                   />
                 </div>
-                <div className="mt-4">
+                {/* <div className="mt-4">
                   <Input
                     label="Organization (Optional)"
                     placeholder="Your organization or institution"
@@ -260,7 +266,7 @@ export default function RequestAccessPage() {
                       })
                     }
                   />
-                </div>
+                </div> */}
               </div>
 
               {/* Request Details */}
@@ -269,7 +275,7 @@ export default function RequestAccessPage() {
                   Request Details
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                  <div>
+                  {/* <div>
                     <label className="text-sm font-medium text-foreground mb-2 block">
                       Request Type
                     </label>
@@ -289,8 +295,8 @@ export default function RequestAccessPage() {
                       <option value="research">Research</option>
                       <option value="other">Other</option>
                     </select>
-                  </div>
-                  <div>
+                  </div> */}
+                  {/* <div>
                     <label className="text-sm font-medium text-foreground mb-2 block">
                       Priority
                     </label>
@@ -308,10 +314,10 @@ export default function RequestAccessPage() {
                       <option value="medium">Medium</option>
                       <option value="high">High</option>
                     </select>
-                  </div>
+                  </div> */}
                 </div>
 
-                <div className="mb-4">
+                {/* <div className="mb-4">
                   <Input
                     label="Date Range (Optional)"
                     placeholder="e.g., January 2020 - December 2023"
@@ -323,7 +329,7 @@ export default function RequestAccessPage() {
                       })
                     }
                   />
-                </div>
+                </div> */}
 
                 <div className="mb-4">
                   <label className="text-sm font-medium text-foreground mb-2 block">
@@ -340,7 +346,7 @@ export default function RequestAccessPage() {
                   />
                 </div>
 
-                <div className="mb-4">
+                {/* <div className="mb-4">
                   <label className="text-sm font-medium text-foreground mb-2 block">
                     Purpose (Optional)
                   </label>
@@ -355,9 +361,9 @@ export default function RequestAccessPage() {
                       })
                     }
                   />
-                </div>
+                </div> */}
 
-                <div>
+                {/* <div>
                   <label className="text-sm font-medium text-foreground mb-2 block">
                     Preferred Format
                   </label>
@@ -375,11 +381,11 @@ export default function RequestAccessPage() {
                     <option value="physical">Physical Copy</option>
                     <option value="inspection">In-Person Inspection</option>
                   </select>
-                </div>
+                </div> */}
               </div>
 
               {/* Additional Information */}
-              <div>
+              {/* <div>
                 <h3 className="font-semibold text-foreground mb-4">
                   Additional Information
                 </h3>
@@ -396,17 +402,17 @@ export default function RequestAccessPage() {
                     }
                   />
                 </div>
-              </div>
+              </div> */}
 
               {/* Important Notice */}
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+              <div className="bg-red-50 border border-red-200 rounded-lg p-4">
                 <div className="flex">
-                  <AlertCircle className="w-5 h-5 text-blue-600 mr-3 flex-shrink-0 mt-0.5" />
+                  <AlertCircle className="w-5 h-5 text-red-600 mr-3 flex-shrink-0 mt-0.5" />
                   <div>
-                    <h4 className="font-medium text-blue-900 mb-1">
+                    <h4 className="font-medium text-red-900 mb-1">
                       Important Notice
                     </h4>
-                    <p className="text-sm text-blue-800">
+                    <p className="text-sm text-red-800">
                       Your request will be reviewed by our records management
                       team. You will receive an email notification once your
                       request has been processed. Processing time may vary

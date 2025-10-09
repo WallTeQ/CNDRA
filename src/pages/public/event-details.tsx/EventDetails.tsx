@@ -108,7 +108,7 @@ export const EventDetailPage: React.FC = () => {
         <div className="mb-6">
           <Link
             to="/news-events"
-            className="inline-flex items-center space-x-2 text-blue-600 hover:text-blue-700 transition-colors"
+            className="inline-flex items-center space-x-2 text-red-600 hover:text-red-700 transition-colors"
           >
             <ArrowLeft className="h-4 w-4" />
             <span>Back to News & Events</span>

@@ -20,7 +20,7 @@ export const RecentActivity: React.FC<RecentActivityProps> = ({
       case "upload":
         return "text-green-600 bg-green-100";
       case "view":
-        return "text-blue-600 bg-blue-100";
+        return "text-red-600 bg-red-100";
       case "download":
         return "text-purple-600 bg-purple-100";
       case "edit":

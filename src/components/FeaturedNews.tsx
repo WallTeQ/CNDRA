@@ -1,14 +1,29 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { User, ChevronRight, FileText, HelpCircle } from "lucide-react";
-import { Card } from "./ui/Card";
+import { User, Calendar, MapPin } from "lucide-react";
 import { Button } from "./ui/Button";
 import { Badge } from "./ui/Badge";
 import { formatDate } from "../utils/FormatDate";
-import { mockNews } from "../data/newsData";
+import { usePublishedNews, usePublishedEvents } from "../hooks/useGovernance";
 
 const FeaturedNewsSection: React.FC = () => {
-  const featuredNews = mockNews.filter((article) => article.featured);
+  const {
+    data: newsData,
+    isLoading: newsLoading,
+    error: newsError,
+  } = usePublishedNews();
+  const {
+    data: eventsData,
+    isLoading: eventsLoading,
+    error: eventsError,
+  } = usePublishedEvents();
+
+  const upcomingEvents = eventsData
+    ?.filter((event) => new Date(event.startsAt) > new Date())
+    .sort(
+      (a, b) => new Date(a.startsAt).getTime() - new Date(b.startsAt).getTime()
+    )
+    .slice(0, 3);
 
   const getCategoryColor = (category: string) => {
     const colors: {
@@ -26,63 +41,68 @@ const FeaturedNewsSection: React.FC = () => {
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
       {/* News Section */}
       <div className="lg:col-span-2">
-        <div className="space-y-6">
-          {featuredNews.slice(0, 4).map((article) => (
+        <h2 className="text-2xl font-bold text-slate-900 mb-6">Latest News</h2>
+        <div className="grid grid-cols-1 gap-2">
+          {newsData?.slice(0, 4).map((article) => (
             <Link key={article.id} to={`/news/${article.id}`}>
-            <div key={article.id} className="overflow-hidden p-2 border bg-gray-100 ">
-              <div className="">
-                <div className="flex items-start gap-4">
+              <div className="overflow-hidden p-4 border bg-white rounded-lg hover:shadow-lg transition-all duration-300 hover:border-red-300 space-y-12">
+                <div className="flex items-start gap-4 ">
                   {/* Image on the left */}
-                  <div className=" w-32 md:h-24 flex-shrink-0 bg-slate-200 rounded-lg overflow-hidden">
-                    {article.imageUrl && (
+                  <div className="w-32 h-24 flex-shrink-0 bg-slate-200 rounded-lg overflow-hidden">
+                    {article.fileAssets?.[0]?.storagePath ? (
                       <img
-                        src={article.imageUrl}
+                        src={article.fileAssets[0].storagePath}
                         alt={article.title}
                         className="w-full h-full object-cover"
                       />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-slate-100 to-slate-200">
+                        <svg
+                          className="w-8 h-8 text-slate-400"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"
+                          />
+                        </svg>
+                      </div>
                     )}
                   </div>
 
                   {/* Content on the right */}
-                  <div className="flex-1">
-                    <div className="flex items-start justify-between">
-                      <div className="flex-1">
-                        <div className="flex items-center space-x-2 mb-2">
-                          <Badge
-                            variant={getCategoryColor(article.category)}
-                            size="xs"
-                            className="capitalize text-xs "
-                          >
-                            {article.category}
-                          </Badge>
-                          <span className="text-xs md:text-sm text-slate-500">
-                            {formatDate(article.publishedAt)}
-                          </span>
-                        </div>
-                        <h4 className="text-xs md:text-md font-semibold text-slate-900 mb-2 line-clamp-2">
-                          {article.title}
-                        </h4>
-                        {/* <p className="text-slate-600 text-sm mb-3 line-clamp-2">
-                          {article.excerpt}
-                        </p> */}
-                        <div className="flex items-center space-x-2 text-xs md:text-sm text-slate-500">
-                          <User className="h-4 w-4" />
-                          <span>{article.author}</span>
-                        </div>
-                      </div>
-                      <Link to={`/news/${article.id}`} className="ml-2 hidden md:block">
-                        <button
-                          className="p-1 rounded flex  items-center space-x-1 shadow-sm bg-blue-600 text-white hover:bg-blue-700 transition"
-                        >
-                          <span>Read More</span>
-                          {/* <ChevronRight className="h-4 w-4" /> */}
-                        </button>
-                      </Link>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 mb-2">
+                      <Badge
+                        variant={getCategoryColor(article.category)}
+                        size="xs"
+                        className="capitalize"
+                      >
+                        {article.category}
+                      </Badge>
+                      <span className="text-xs text-slate-500">
+                        {formatDate(article.createdAt)}
+                      </span>
                     </div>
+                    <h4 className="text-base font-semibold text-slate-900 mb-2 line-clamp-2 hover:text-red-600 transition-colors">
+                      {article.title}
+                    </h4>
+                    <p className="text-sm text-slate-700 mb-4 line-clamp-3">
+                      {article.content.replace(/<[^>]*>/g, "")}
+                    </p>
+                    {article?.author && (
+                      <div className="flex items-center gap-2 text-sm text-slate-600">
+                        <User className="h-3.5 w-3.5" />
+                        <span>{article.author}</span>
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
-            </div>
             </Link>
           ))}
         </div>
@@ -90,47 +110,68 @@ const FeaturedNewsSection: React.FC = () => {
 
       {/* Quick Actions Section */}
       <div>
-        <h2 className="text-2xl font-bold text-slate-900 mb-6">
-          Quick Actions
-        </h2>
-        <div className="space-y-4">
-          <Card className="p-0" hover>
-            <div className="">
-              <div className="flex items-center space-x-3 mb-3">
-                <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-                  <FileText className="w-5 h-5 text-blue-600" />
-                </div>
-                <h3 className="font-semibold text-slate-900">Request Access</h3>
+        
+        <div className="space-y-6">
+          {/* Upcoming Events */}
+          <div className="bg-gradient-to-br from-red-50 to-indigo-50 rounded-xl p-6 border border-red-200">
+            <div className="flex items-center gap-2 mb-4">
+              <div className="w-10 h-10 bg-red-600 rounded-lg flex items-center justify-center">
+                <Calendar className="w-5 h-5 text-white" />
               </div>
-              <p className="text-sm text-slate-600 mb-4">
-                Submit a Freedom of Information request for restricted records
-              </p>
-              <Link to="/public/request">
-                <Button size="sm" className="w-full">
-                  Submit Request
-                </Button>
-              </Link>
+              <h3 className="font-semibold text-slate-900 text-lg">
+                Upcoming Events
+              </h3>
             </div>
-          </Card>
 
-          <Card className="p-0" hover>
-            <div className="">
-              <div className="flex items-center space-x-3 mb-3">
-                <div className="w-10 h-10 bg-slate-100 rounded-lg flex items-center justify-center">
-                  <HelpCircle className="w-5 h-5 text-slate-600" />
-                </div>
-                <h3 className="font-semibold text-slate-900">Need Help?</h3>
+            {upcomingEvents && upcomingEvents.length > 0 ? (
+              <div className="space-y-3">
+                {upcomingEvents.map((event) => (
+                  <div
+                    key={event.id}
+                    className="bg-white rounded-lg p-4 border border-slate-200 hover:shadow-md transition-shadow"
+                  >
+                    <h4 className="font-semibold text-slate-900 text-sm mb-2 line-clamp-2">
+                      {event.title}
+                    </h4>
+                    <p className="text-xs text-slate-600 mb-3 line-clamp-2">
+                      {event.description.replace(/<[^>]*>/g, "")}
+                    </p>
+                    <div className="flex items-center gap-2 text-xs text-slate-500 mb-2">
+                      <Calendar className="h-3.5 w-3.5" />
+                      <span>{formatDate(event.startsAt)}</span>
+                    </div>
+                    {event.location && (
+                      <div className="flex items-center gap-2 text-xs text-slate-500 mb-3">
+                        <MapPin className="h-3.5 w-3.5" />
+                        <span className="line-clamp-1">{event.location}</span>
+                      </div>
+                    )}
+                    {event.requiresRegistration && (
+                      <Link
+                        to={event.registrationUrl || `/events/${event.id}`}
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        <Button size="sm" className="w-full">
+                          Register Now
+                        </Button>
+                      </Link>
+                    )}
+                  </div>
+                ))}
+                <Link to="/news-events">
+                  <Button variant="outline" size="sm" className="w-full mt-2">
+                    View All Events
+                  </Button>
+                </Link>
               </div>
-              <p className="text-sm text-slate-600 mb-4">
-                Contact our support team for assistance with record searches
-              </p>
-              <Link to="/contact">
-                <Button variant="outline" size="sm" className="w-full">
-                  Contact Support
-                </Button>
-              </Link>
-            </div>
-          </Card>
+            ) : (
+              <div className="bg-white rounded-lg p-6 text-center">
+                <Calendar className="h-8 w-8 text-slate-300 mx-auto mb-2" />
+                <p className="text-sm text-slate-500">No upcoming events</p>
+              </div>
+            )}
+          </div>
+
         </div>
       </div>
     </div>

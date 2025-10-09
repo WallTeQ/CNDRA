@@ -48,7 +48,7 @@ export const SignupPage: React.FC = () => {
         {/* Header */}
         <div className="text-center mb-8">
           <Link to="/" className="inline-flex items-center space-x-2 mb-6">
-            <Archive className="h-10 w-10 text-blue-600" />
+            <Archive className="h-10 w-10 text-red-600" />
             <span className="text-2xl font-bold text-slate-900">
               National Archive
             </span>
@@ -63,7 +63,7 @@ export const SignupPage: React.FC = () => {
                     step < signupStep
                       ? "bg-green-500 text-white"
                       : step === signupStep
-                      ? "bg-blue-500 text-white"
+                      ? "bg-red-500 text-white"
                       : "bg-slate-300 text-slate-600"
                   }`}
                 >

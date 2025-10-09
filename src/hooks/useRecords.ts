@@ -40,6 +40,14 @@ export const useRestrictedRecords = () => {
   });
 };
 
+export const usePublicRecords = () => {
+  return useQuery({
+    queryKey: recordsKeys.restricted(),
+    queryFn: () => recordsApi.getPublic(),
+    select: (data) => data.data || [],
+  });
+};
+
 export const useConfidentialRecords = () => {
   return useQuery({
     queryKey: recordsKeys.confidential(),

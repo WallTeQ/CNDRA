@@ -37,7 +37,7 @@ export const DepartmentStats: React.FC<DepartmentStatsProps> = ({
         change=""
         changeType="increase"
         icon={Building2}
-        color="blue"
+        color="red"
       />
 
       <StatCard

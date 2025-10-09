@@ -35,7 +35,7 @@ export const EventCard: React.FC<EventCardProps> = ({
   formatEventDate,
 }) => {
   return (
-    <Card hover>
+    <div className="border rounded-lg overflow-hidden shadow-sm p-4">
       {event.imageUrl && (
         <img
           src={event.imageUrl}
@@ -116,6 +116,6 @@ export const EventCard: React.FC<EventCardProps> = ({
           </div>
         )}
       </div>
-    </Card>
+    </div>
   );
 };

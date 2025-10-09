@@ -18,6 +18,7 @@ import PublicDepartmentsPage from "./pages/public/department/Departments";
 import RestrictedRecordsPage from "./pages/public/Confidential";
 import RequestAccessPage from "./pages/public/RequestAccess";
 import { EventDetailPage } from "./pages/public/event-details.tsx/EventDetails";
+import UserProfilePage from "./pages/public/profile/profile-page";
 
 // Auth Pages
 import { LoginPage } from "./pages/auth/LoginPage";
@@ -35,6 +36,7 @@ import DepartmentsPage from "./pages/dashboard/department/Department";
 import AccessRequestsPage from "./pages/dashboard/access/AccessRequest";
 import { GovernanceDashboard } from "./pages/dashboard/governance/Governance";
 import { LoadingSpinner } from "./components/ui/LoadingSpinner";
+import RequestDetailPage from "./pages/dashboard/access/RequestDetails";
 // Other Pages
 import { NotFound } from "./pages/NotFound";
 import RolesPage from "./pages/dashboard/Roles";
@@ -71,6 +73,8 @@ const AppContent: React.FC = () => {
           />
           <Route path="news-events" element={<NewsEventsPage />} />
           <Route path="news/:id" element={<NewsArticlePage />} />
+          <Route path="profile" element={<UserProfilePage />} />
+          <Route path="profile/requests/:id" element={<RequestDetailPage />} />
         </Route>
 
         {/* Auth Routes (standalone - no layout) */}
@@ -93,6 +97,7 @@ const AppContent: React.FC = () => {
           <Route path="departments" element={<DepartmentsPage />} />
           <Route path="collections" element={<CollectionsPage />} />
           <Route path="access-requests" element={<AccessRequestsPage />} />
+          <Route path="access-request/:id" element={<RequestDetailPage />} />
           <Route path="governance" element={<GovernanceDashboard />} />
           <Route path="review" element={<Reviews />} />
           <Route path="roles" element={<RolesPage />} />

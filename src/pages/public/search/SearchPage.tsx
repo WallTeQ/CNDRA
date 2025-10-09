@@ -9,10 +9,10 @@ import Pagination from "../../../components/Pagination";
 import LoadingState from "./LoadingState";
 import ErrorState from "./ErrorState";
 import { useSearchLogic } from "./useSearch";
-import { useRecords } from "../../../hooks/useRecords";
+import { usePublicRecords } from "../../../hooks/useRecords";
 
 export const SearchPage: React.FC = () => {
-  const { data: records = [], isLoading, error, refetch } = useRecords();
+  const { data: records = [], isLoading, error, refetch } = usePublicRecords();
 
   const {
     searchQuery,

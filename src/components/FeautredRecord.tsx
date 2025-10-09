@@ -2,10 +2,10 @@ import { RecordCard } from "./ui/Record-card";
 import { Card, CardContent } from "../components/ui/Card";
 import { Button } from "./ui/Button";
 import { Link } from "react-router-dom";
-import { useRecords } from "../hooks/useRecords";
+import { usePublicRecords } from "../hooks/useRecords";
 
 export default function FeaturedRecords() {
-  const { data: records = [], isLoading: recordsLoading } = useRecords();
+  const { data: records = [], isLoading: recordsLoading } = usePublicRecords();
 
   const featuredRecords = records.slice(0, 6);
 
@@ -43,7 +43,7 @@ export default function FeaturedRecords() {
               ))}
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
               {featuredRecords.map((record) => (
                 <RecordCard key={record.id} {...record} />
               ))}

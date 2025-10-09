@@ -135,7 +135,7 @@ export const SignupStep2: React.FC<SignupStep2Props> = ({ onNext, onBack }) => {
             type="text"
             id="code"
             maxLength={6}
-            className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors text-center text-2xl font-mono tracking-widest ${
+            className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent transition-colors text-center text-2xl font-mono tracking-widest ${
               errors.code ? "border-red-300" : "border-slate-300"
             }`}
             placeholder="000000"
@@ -188,7 +188,7 @@ export const SignupStep2: React.FC<SignupStep2Props> = ({ onNext, onBack }) => {
             disabled={!canResend || isLoading}
             className={`text-sm font-medium flex items-center justify-center space-x-1 mx-auto ${
               canResend && !isLoading
-                ? "text-blue-600 hover:text-blue-700"
+                ? "text-red-600 hover:text-red-700"
                 : "text-slate-400 cursor-not-allowed"
             }`}
           >

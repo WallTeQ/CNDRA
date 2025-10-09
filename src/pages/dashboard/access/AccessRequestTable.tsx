@@ -95,7 +95,6 @@ export const AccessRequestsTable: React.FC<AccessRequestsTableProps> = ({
                 <TableHead>Type</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead>Priority</TableHead>
-                <TableHead>Due Date</TableHead>
                 <TableHead>Assigned To</TableHead>
                 <TableHead>Actions</TableHead>
               </TableRow>
@@ -131,7 +130,7 @@ export const AccessRequestsTable: React.FC<AccessRequestsTableProps> = ({
                         variant={getStatusVariant(request.status)}
                         className="capitalize"
                       >
-                        {request.status.replace("_", " ")}
+                        {request.status.name}
                       </Badge>
                     </TableCell>
                     <TableCell>
@@ -141,24 +140,6 @@ export const AccessRequestsTable: React.FC<AccessRequestsTableProps> = ({
                       >
                         {request.priority}
                       </Badge>
-                    </TableCell>
-                    <TableCell>
-                      <div>
-                        <p className="text-sm">{request.dueDate}</p>
-                        <p
-                          className={`text-xs ${
-                            daysRemaining < 0
-                              ? "text-destructive"
-                              : daysRemaining <= 3
-                              ? "text-chart-2"
-                              : "text-muted-foreground"
-                          }`}
-                        >
-                          {daysRemaining < 0
-                            ? `${Math.abs(daysRemaining)} days overdue`
-                            : `${daysRemaining} days left`}
-                        </p>
-                      </div>
                     </TableCell>
                     <TableCell>{request.assignedTo || "Unassigned"}</TableCell>
                     <TableCell>
@@ -172,7 +153,7 @@ export const AccessRequestsTable: React.FC<AccessRequestsTableProps> = ({
                         </Button>
                         <select
                           className="text-xs border border-border rounded px-2 py-1"
-                          value={request.status}
+                          value={request.status.name}
                           onChange={(e) =>
                             onStatusUpdate(
                               request.id,
@@ -180,14 +161,10 @@ export const AccessRequestsTable: React.FC<AccessRequestsTableProps> = ({
                             )
                           }
                         >
-                          <option value="pending">Pending</option>
-                          <option value="under_review">Under Review</option>
-                          <option value="information_gathering">
-                            Info Gathering
-                          </option>
-                          <option value="approved">Approved</option>
-                          <option value="rejected">Rejected</option>
-                          <option value="completed">Completed</option>
+                          <option value="PENDING">Pending</option>
+                          <option value="UNDER_REVIEW">Under Review</option>
+                          <option value="APPROVED">Approved</option>
+                          <option value="REJECTED">Rejected</option>
                         </select>
                       </div>
                     </TableCell>

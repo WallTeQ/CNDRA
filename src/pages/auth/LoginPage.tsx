@@ -75,7 +75,7 @@ export const LoginPage: React.FC = React.memo(() => {
         {/* Header */}
         <div className="text-center mb-8">
           <Link to="/" className="inline-flex items-center space-x-2 mb-6">
-            <Archive className="h-10 w-10 text-blue-600" />
+            <Archive className="h-10 w-10 text-red-600" />
             <span className="text-2xl font-bold text-slate-900">
               National Archive
             </span>
@@ -106,7 +106,7 @@ export const LoginPage: React.FC = React.memo(() => {
                 {...register("email")}
                 id="email"
                 type="email"
-                className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent ${
                   errors.email ? "border-red-300" : "border-slate-300"
                 }`}
                 placeholder="Enter your email"
@@ -130,7 +130,7 @@ export const LoginPage: React.FC = React.memo(() => {
                   {...register("password")}
                   id="password"
                   type={showPassword ? "text" : "password"}
-                  className={`w-full px-3 py-2 pr-10 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                  className={`w-full px-3 py-2 pr-10 border rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent ${
                     errors.password ? "border-red-300" : "border-slate-300"
                   }`}
                   placeholder="Enter your password"
@@ -158,11 +158,11 @@ export const LoginPage: React.FC = React.memo(() => {
               <label className="flex items-center">
                 <input
                   type="checkbox"
-                  className="rounded border-slate-300 text-blue-600 focus:ring-blue-500"
+                  className="rounded border-slate-300 text-red-600 focus:ring-red-500"
                 />
                 <span className="ml-2 text-sm text-slate-600">Remember me</span>
               </label>
-              <a href="#" className="text-sm text-blue-600 hover:text-blue-700">
+              <a href="#" className="text-sm text-red-600 hover:text-red-700">
                 Forgot password?
               </a>
             </div>
@@ -178,18 +178,18 @@ export const LoginPage: React.FC = React.memo(() => {
                 Don't have an account?{" "}
                 <Link
                   to="/signup"
-                  className="text-blue-600 hover:text-blue-700 font-medium"
+                  className="text-red-600 hover:text-red-700 font-medium"
                 >
                   Create one here
                 </Link>
               </p>
             </div>
 
-            <div className="bg-blue-50 p-4 rounded-lg">
-              <h3 className="text-sm font-medium text-blue-900 mb-2">
+            <div className="bg-red-50 p-4 rounded-lg">
+              <h3 className="text-sm font-medium text-red-900 mb-2">
                 Demo Credentials
               </h3>
-              <div className="text-sm text-blue-700 space-y-1">
+              <div className="text-sm text-red-700 space-y-1">
                 <p>
                   <strong>Admin:</strong> chiamakaj2@gmail.com
                 </p>

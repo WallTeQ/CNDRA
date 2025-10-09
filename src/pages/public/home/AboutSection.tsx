@@ -3,12 +3,12 @@ import { Button } from "../../../components/ui/Button";
 
 export const AboutSection: React.FC = () => {
   return (
-    <section className="py-16 bg-gradient-to-r from-blue-50 to-blue-100">
+    <section className="py-16 bg-gradient-to-r from-red-50 to-red-100">
       <div className="max-w-8xl mx-auto px-4 sm:px-12 lg:px-22">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           <div>
             <div className="mb-4">
-              <span className="inline-block bg-blue-600 text-white px-3 py-1 rounded-full text-sm font-medium">
+              <span className="inline-block bg-red-600 text-white px-3 py-1 rounded-full text-sm font-medium">
                 About Us
               </span>
             </div>
@@ -37,13 +37,13 @@ export const AboutSection: React.FC = () => {
               </p>
             </div>
             <div className="mt-8">
-              <Button className="bg-blue-600 hover:bg-blue-700">
+              <Button className="bg-red-600 hover:bg-red-700">
                 Learn More About Our Mission
               </Button>
             </div>
           </div>
           <div className="relative">
-            <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-blue-700 rounded-lg transform rotate-6"></div>
+            <div className="absolute inset-0 bg-gradient-to-r from-red-600 to-red-700 rounded-lg transform rotate-6"></div>
             <img
               src="https://images.unsplash.com/photo-1554415707-6e8cfc93fe23?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80"
               alt="Liberian National Archives interior showing historical documents and research facilities"

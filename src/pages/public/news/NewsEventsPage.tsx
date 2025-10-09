@@ -114,7 +114,7 @@
 //                     placeholder="Search news and events..."
 //                     value={searchQuery}
 //                     onChange={(e) => setSearchQuery(e.target.value)}
-//                     className="w-full pl-10 pr-4 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+//                     className="w-full pl-10 pr-4 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-red-500 focus:border-transparent text-sm"
 //                   />
 //                 </div>
 //               </div>
@@ -131,7 +131,7 @@
 //                       name="contentType"
 //                       checked={activeTab === 'news'}
 //                       onChange={() => setActiveTab('news')}
-//                       className="text-blue-600 focus:ring-blue-500"
+//                       className="text-red-600 focus:ring-red-500"
 //                     />
 //                     <span className="ml-2 text-sm text-slate-700">News Articles</span>
 //                   </label>
@@ -141,7 +141,7 @@
 //                       name="contentType"
 //                       checked={activeTab === 'events'}
 //                       onChange={() => setActiveTab('events')}
-//                       className="text-blue-600 focus:ring-blue-500"
+//                       className="text-red-600 focus:ring-red-500"
 //                     />
 //                     <span className="ml-2 text-sm text-slate-700">Events</span>
 //                   </label>
@@ -157,7 +157,7 @@
 //                   <select
 //                     value={newsFilter}
 //                     onChange={(e) => setNewsFilter(e.target.value)}
-//                     className="w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+//                     className="w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-red-500 focus:border-transparent text-sm"
 //                   >
 //                     <option value="all">All Categories</option>
 //                     <option value="news">News</option>
@@ -174,7 +174,7 @@
 //                   <select
 //                     value={eventFilter}
 //                     onChange={(e) => setEventFilter(e.target.value)}
-//                     className="w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+//                     className="w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-red-500 focus:border-transparent text-sm"
 //                   >
 //                     <option value="all">All Types</option>
 //                     <option value="exhibition">Exhibitions</option>
@@ -223,7 +223,7 @@
 //                           </div>
                           
 //                           <h3 className="text-xl font-semibold text-slate-900 mb-3">
-//                             <Link to={`/news/${article.id}`} className="hover:text-blue-600 transition-colors">
+//                             <Link to={`/news/${article.id}`} className="hover:text-red-600 transition-colors">
 //                               {article.title}
 //                             </Link>
 //                           </h3>
@@ -365,7 +365,6 @@
 
 
 import React, { useState, useMemo } from "react";
-import { Loader2 } from "lucide-react";
 import { Card } from "../../../components/ui/Card";
 import { Button } from "../../../components/ui/Button";
 import Pagination from "../../../components/Pagination";

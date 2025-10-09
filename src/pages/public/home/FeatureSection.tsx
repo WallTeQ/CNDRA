@@ -5,7 +5,7 @@ import { Card } from "../../../components/ui/Card";
 export const FeaturesSection: React.FC = () => {
   const features = [
     {
-      icon: <Search className="h-8 w-8 text-blue-600" />,
+      icon: <Search className="h-8 w-8 text-red-600" />,
       title: "Advanced Search",
       description:
         "Search through millions of documents using keywords, dates, authors, and advanced filters.",

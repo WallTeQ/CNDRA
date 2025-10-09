@@ -119,7 +119,7 @@ export const DashboardLayout: React.FC = () => {
 
           <Link to="/">
           <div className="flex-shrink-0 flex items-center px-4">
-            <Archive className="h-8 w-8 text-blue-600" />
+            <Archive className="h-8 w-8 text-red-600" />
             <span className="ml-2 text-xl font-bold text-slate-900">
               Archive
             </span>
@@ -136,7 +136,7 @@ export const DashboardLayout: React.FC = () => {
                     to={item.href}
                     className={`group flex items-center px-2 py-2 text-base font-medium rounded-md ${
                       isActive
-                        ? "bg-blue-100 text-blue-900"
+                        ? "bg-red-100 text-red-900"
                         : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
                     }`}
                     onClick={() => setSidebarOpen(false)}
@@ -144,7 +144,7 @@ export const DashboardLayout: React.FC = () => {
                     <item.icon
                       className={`mr-4 h-6 w-6 ${
                         isActive
-                          ? "text-blue-500"
+                          ? "text-red-500"
                           : "text-gray-400 group-hover:text-gray-500"
                       }`}
                     />
@@ -167,7 +167,7 @@ export const DashboardLayout: React.FC = () => {
           <div className="flex flex-col h-0 flex-1">
             <Link to="/" >
             <div className="flex items-center h-16 flex-shrink-0 px-4 bg-white border-r border-gray-200">
-              <Archive className="h-8 w-8 text-blue-600" />
+              <Archive className="h-8 w-8 text-red-600" />
               <span className="ml-2 text-xl font-bold text-slate-900">
                 Archive
               </span>
@@ -183,14 +183,14 @@ export const DashboardLayout: React.FC = () => {
                       to={item.href}
                       className={`group flex items-center px-2 py-2 text-sm font-medium rounded-md ${
                         isActive
-                          ? "bg-blue-100 text-blue-900"
+                          ? "bg-red-100 text-red-900"
                           : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
                       }`}
                     >
                       <item.icon
                         className={`mr-3 h-5 w-5 ${
                           isActive
-                            ? "text-blue-500"
+                            ? "text-red-500"
                             : "text-gray-400 group-hover:text-gray-500"
                         }`}
                       />
@@ -204,7 +204,7 @@ export const DashboardLayout: React.FC = () => {
               <div className="flex-shrink-0 border-t border-gray-200 p-4">
                 <div className="flex items-center">
                   <div className="flex-shrink-0">
-                    <div className="h-8 w-8 rounded-full bg-blue-500 flex items-center justify-center">
+                    <div className="h-8 w-8 rounded-full bg-red-500 flex items-center justify-center">
                       <span className="text-sm font-medium text-white">
                         {getUserInitials()}
                       </span>
@@ -238,7 +238,7 @@ export const DashboardLayout: React.FC = () => {
         {/* Top bar */}
         <div className="relative z-10 flex-shrink-0 flex h-16 bg-white shadow border-b border-gray-200">
           <button
-            className="px-4 border-r border-gray-200 text-gray-500 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-500 md:hidden"
+            className="px-4 border-r border-gray-200 text-gray-500 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-red-500 md:hidden"
             onClick={() => setSidebarOpen(true)}
           >
             <Menu className="h-6 w-6" />
@@ -264,7 +264,7 @@ export const DashboardLayout: React.FC = () => {
               </Button>
 
               <div className="flex items-center space-x-3">
-                <div className="h-8 w-8 rounded-full bg-blue-500 flex items-center justify-center">
+                <div className="h-8 w-8 rounded-full bg-red-500 flex items-center justify-center">
                   <span className="text-sm font-medium text-white">
                     {getUserInitials()}
                   </span>

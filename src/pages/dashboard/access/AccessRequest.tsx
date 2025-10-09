@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import {
   FileCheck,
   Clock,
@@ -14,63 +14,13 @@ import { AccessRequestsFilters } from "./AccessRequestFilter";
 import { AccessRequestsTable } from "./AccessRequestTable";
 import { RequestDetailModal } from "./RequestDetailModal";
 import { AccessRequest } from "../../../types/access";
-
-const mockRequests: AccessRequest[] = [
-  {
-    id: "REQ-2024-001",
-    requesterName: "John Smith",
-    requesterEmail: "john.smith@email.com",
-    organization: "City News",
-    requestType: "foi",
-    recordDescription:
-      "Budget documents for fiscal year 2023, including all departmental allocations and expenditures",
-    dateRange: "January 2023 - December 2023",
-    purpose: "Investigative journalism on municipal spending",
-    preferredFormat: "digital",
-    status: "under_review",
-    priority: "medium",
-    submittedDate: "2024-01-15",
-    dueDate: "2024-02-14",
-    assignedTo: "Sarah Johnson",
-    estimatedHours: 8,
-    notes: "Large request, may require redaction review",
-  },
-  {
-    id: "REQ-2024-002",
-    requesterName: "Maria Garcia",
-    requesterEmail: "maria.garcia@university.edu",
-    organization: "State University",
-    requestType: "research",
-    recordDescription:
-      "Historical meeting minutes from city council sessions 1990-2000",
-    dateRange: "1990-2000",
-    purpose: "Academic research on municipal governance",
-    preferredFormat: "digital",
-    status: "information_gathering",
-    priority: "low",
-    submittedDate: "2024-01-12",
-    dueDate: "2024-02-11",
-    assignedTo: "Mike Davis",
-    estimatedHours: 12,
-  },
-  {
-    id: "REQ-2024-003",
-    requesterName: "Robert Wilson",
-    requesterEmail: "robert.wilson@email.com",
-    requestType: "privacy",
-    recordDescription:
-      "Personal employment records and performance evaluations",
-    preferredFormat: "physical",
-    status: "pending",
-    priority: "high",
-    submittedDate: "2024-01-18",
-    dueDate: "2024-02-17",
-    estimatedHours: 2,
-  },
-];
+import {
+  useAccessRequests,
+  useUpdateRequestStatus,
+} from "../../../hooks/useAccess";
+import { useNavigate } from "react-router-dom";
 
 export default function AccessRequestsPage() {
-  const [requests, setRequests] = useState<AccessRequest[]>(mockRequests);
   const [selectedRequest, setSelectedRequest] = useState<AccessRequest | null>(
     null
   );
@@ -79,28 +29,47 @@ export default function AccessRequestsPage() {
   const [statusFilter, setStatusFilter] = useState("all");
   const [priorityFilter, setPriorityFilter] = useState("all");
   const [currentPage, setCurrentPage] = useState(1);
+  const navigate = useNavigate();
 
   const itemsPerPage = 10;
 
-  // Calculate statistics
-  const getDaysRemaining = (dueDate: string) => {
-    const due = new Date(dueDate);
-    const today = new Date();
-    const diffTime = due.getTime() - today.getTime();
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    return diffDays;
+  // Fetch access requests with filters
+  const filters = useMemo(() => {
+    const filterObj: any = {};
+    if (statusFilter !== "all") {
+      filterObj.status = statusFilter;
+    }
+    if (priorityFilter !== "all") {
+      filterObj.priority = priorityFilter;
+    }
+    return filterObj;
+  }, [statusFilter, priorityFilter]);
+
+  const {
+    data: requests = [],
+    isLoading,
+    error,
+    refetch,
+  } = useAccessRequests(filters);
+
+  // Fetch overdue requests for stats
+  // const { data: overdueRequestsData = [] } = useOverdueRequests();
+
+  // Update request status mutation
+  const updateStatusMutation = useUpdateRequestStatus();
+
+  const handleViewRequest = (request: AccessRequest) => {
+    navigate(`/dashboard/access-request/${request.id}`);
   };
 
+
   const pendingReview = requests.filter(
-    (r) => r.status === "pending" || r.status === "under_review"
-  ).length;
-  const overdueRequests = requests.filter(
-    (r) => getDaysRemaining(r.dueDate) < 0
-  ).length;
-  const completedRequests = requests.filter(
-    (r) => r.status === "completed"
+    (r) => r.status?.name === "PENDING" || r.status?.name === "UNDER_REVIEW"
   ).length;
 
+  const completedRequests = requests.filter(
+    (r) => r.status?.name === "COMPLETED"
+  ).length;
   // Stats configuration
   const requestStats = [
     {
@@ -109,7 +78,7 @@ export default function AccessRequestsPage() {
       change: "+12%",
       changeType: "increase" as const,
       icon: FileCheck,
-      color: "blue" as const,
+      color: "red" as const,
     },
     {
       name: "Pending Review",
@@ -119,14 +88,14 @@ export default function AccessRequestsPage() {
       icon: Clock,
       color: "yellow" as const,
     },
-    {
-      name: "Overdue",
-      value: overdueRequests.toString(),
-      change: "-3%",
-      changeType: "decrease" as const,
-      icon: AlertTriangle,
-      color: "red" as const,
-    },
+    // {
+    //   name: "Overdue",
+    //   value: overdueRequestsData.length.toString(),
+    //   change: "-3%",
+    //   changeType: "decrease" as const,
+    //   icon: AlertTriangle,
+    //   color: "red" as const,
+    // },
     {
       name: "Completed",
       value: completedRequests.toString(),
@@ -137,21 +106,22 @@ export default function AccessRequestsPage() {
     },
   ];
 
-  // Filter and pagination logic
-  const filteredRequests = requests.filter((request) => {
-    const matchesSearch =
-      request.requesterName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      request.recordDescription
-        .toLowerCase()
-        .includes(searchTerm.toLowerCase()) ||
-      request.id.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesStatus =
-      statusFilter === "all" || request.status === statusFilter;
-    const matchesPriority =
-      priorityFilter === "all" || request.priority === priorityFilter;
-    return matchesSearch && matchesStatus && matchesPriority;
-  });
+  // Filter by search term (client-side filtering)
+  const filteredRequests = useMemo(() => {
+    return requests.filter((request) => {
+      const matchesSearch =
+        request.requesterName
+          .toLowerCase()
+          .includes(searchTerm.toLowerCase()) ||
+        request.recordDescription
+          .toLowerCase()
+          .includes(searchTerm.toLowerCase()) ||
+        request.id.toLowerCase().includes(searchTerm.toLowerCase());
+      return matchesSearch;
+    });
+  }, [requests, searchTerm]);
 
+  // Pagination
   const totalPages = Math.ceil(filteredRequests.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const paginatedRequests = filteredRequests.slice(
@@ -160,26 +130,83 @@ export default function AccessRequestsPage() {
   );
 
   // Event handlers
-  const handleStatusUpdate = (
+  const handleStatusUpdate = async (
     requestId: string,
     newStatus: AccessRequest["status"]
   ) => {
-    setRequests(
-      requests.map((req) =>
-        req.id === requestId ? { ...req, status: newStatus } : req
-      )
-    );
+    try {
+      await updateStatusMutation.mutateAsync({
+        requestId,
+        data: { status: newStatus },
+      });
+      // Optionally show success message
+    } catch (error) {
+      console.error("Failed to update status:", error);
+      // Optionally show error message
+    }
   };
 
-  const handleViewRequest = (request: AccessRequest) => {
-    setSelectedRequest(request);
-    setIsDetailModalOpen(true);
+  const handleExportReport = () => {
+    // Implement export functionality
+    console.log("Exporting report...");
   };
+
+  // Reset to page 1 when filters change
+  const handleSearchChange = (value: string) => {
+    setSearchTerm(value);
+    setCurrentPage(1);
+  };
+
+  const handleStatusFilterChange = (value: string) => {
+    setStatusFilter(value);
+    setCurrentPage(1);
+  };
+
+  const handlePriorityFilterChange = (value: string) => {
+    setPriorityFilter(value);
+    setCurrentPage(1);
+  };
+
+  // Loading state
+  if (isLoading) {
+    return (
+      <div className="py-6">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8">
+          <div className="flex items-center justify-center h-64">
+            <div className="text-center">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+              <p className="text-muted-foreground">Loading requests...</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Error state
+  if (error) {
+    return (
+      <div className="py-6">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8">
+          <div className="flex items-center justify-center h-64">
+            <div className="text-center">
+              <AlertTriangle className="w-12 h-12 text-destructive mx-auto mb-4" />
+              <p className="text-muted-foreground mb-4">
+                Failed to load requests
+              </p>
+              <Button onClick={() => refetch()}>Try Again</Button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="py-6">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8">
-        <div className="flex items-center justify-between">
+        {/* Header */}
+        <div className="flex items-center justify-between mb-6">
           <div>
             <h1 className="text-3xl font-bold text-foreground">
               Access Requests
@@ -189,17 +216,19 @@ export default function AccessRequestsPage() {
             </p>
           </div>
           <div className="flex space-x-3">
-            <Button variant="outline"
+            <Button
+              variant="outline"
               size="sm"
               className="whitespace-nowrap"
               icon={<Download className="w-4 h-4" />}
+              onClick={handleExportReport}
             >
               Export Report
             </Button>
           </div>
         </div>
 
-        {/* Stats Cards - Using Reusable StatsGrid Component */}
+        {/* Stats Cards */}
         <StatsGrid
           stats={requestStats}
           className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4 mb-8"
@@ -208,11 +237,11 @@ export default function AccessRequestsPage() {
         {/* Filters */}
         <AccessRequestsFilters
           searchTerm={searchTerm}
-          setSearchTerm={setSearchTerm}
+          setSearchTerm={handleSearchChange}
           statusFilter={statusFilter}
-          setStatusFilter={setStatusFilter}
+          setStatusFilter={handleStatusFilterChange}
           priorityFilter={priorityFilter}
-          setPriorityFilter={setPriorityFilter}
+          setPriorityFilter={handlePriorityFilterChange}
         />
 
         {/* Requests Table */}
@@ -234,7 +263,6 @@ export default function AccessRequestsPage() {
           request={selectedRequest}
         />
       </div>
-      {/* Header */}
     </div>
   );
 }
