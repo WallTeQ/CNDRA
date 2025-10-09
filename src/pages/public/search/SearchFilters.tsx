@@ -27,14 +27,16 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
   // Extract unique values from records for filter options
   const documentTypes = [
     ...new Set(
-      records.map(
-        (record) => record.fileAssets[0]?.mimeType.split("/")[1] || "unknown"
-      )
+      records
+        ?.filter((record) => record?.fileAssets && record.fileAssets.length > 0)
+        .map(
+          (record) => record.fileAssets[0]?.mimeType?.split("/")[1] || "unknown"
+        )
     ),
   ];
 
   const collections = [
-    ...new Set(records.map((record) => record.collection.title)),
+    ...new Set(records.map((record) => record?.collection?.title)),
   ];
   const accessLevels = ["PUBLIC", "INTERNAL", "CONFIDENTIAL"];
 
@@ -51,7 +53,7 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
                 placeholder="Search by title, description, or tags..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-10 pr-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full pl-10 pr-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
                 onKeyPress={(e) => e.key === "Enter" && onSearch()}
               />
             </div>
@@ -98,7 +100,7 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
                           }));
                         }
                       }}
-                      className="rounded border-slate-300 text-blue-600 focus:ring-blue-500"
+                      className="rounded border-slate-300 text-red-600 focus:ring-red-500"
                     />
                     <span className="ml-2 text-sm text-slate-600 capitalize">
                       {type}
@@ -120,7 +122,7 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
                     collection: e.target.value,
                   }))
                 }
-                className="w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-red-500 focus:border-transparent"
               >
                 <option value="">All Collections</option>
                 {collections.map((collection) => (
@@ -146,7 +148,7 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
                       dateRange: { ...prev.dateRange, start: e.target.value },
                     }))
                   }
-                  className="w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-red-500 focus:border-transparent"
                 />
                 <input
                   type="date"
@@ -158,7 +160,7 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
                       dateRange: { ...prev.dateRange, end: e.target.value },
                     }))
                   }
-                  className="w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-red-500 focus:border-transparent"
                 />
               </div>
             </div>
@@ -188,7 +190,7 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
                           }));
                         }
                       }}
-                      className="rounded border-slate-300 text-blue-600 focus:ring-blue-500"
+                      className="rounded border-slate-300 text-red-600 focus:ring-red-500"
                     />
                     <span className="ml-2 text-sm text-slate-600 capitalize">
                       {level.toLowerCase()}

@@ -85,7 +85,7 @@ export default function CollectionsPage() {
             name="Total Collections"
             value={allCollections.length.toString()}
             icon={FolderOpen}
-            color="blue"
+            color="red"
           />
 
           <StatCard

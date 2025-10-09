@@ -8,9 +8,9 @@ import {
 import { Badge } from "../../../components/ui/Badge";
 import {
   formatFileSize,
-  formatDate,
   getAccessLevelInfo,
 } from "./recordUtils";
+import { formatDate } from "../../../utils/FormatDate";
 
 interface DocumentMetadataProps {
   record: any;

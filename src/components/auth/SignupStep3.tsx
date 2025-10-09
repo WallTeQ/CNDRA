@@ -172,7 +172,7 @@ export const SignupStep3: React.FC<SignupStep3Props> = ({
       "bg-red-500",
       "bg-orange-500",
       "bg-yellow-500",
-      "bg-blue-500",
+      "bg-red-500",
       "bg-green-500",
     ];
 
@@ -199,8 +199,8 @@ export const SignupStep3: React.FC<SignupStep3Props> = ({
   return (
     <Card className="w-full max-w-2xl mx-auto">
       <div className="text-center mb-6">
-        <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-          <User className="h-8 w-8 text-blue-600" />
+        <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+          <User className="h-8 w-8 text-red-600" />
         </div>
         <h2 className="text-2xl font-bold text-slate-900 mb-2">
           Complete Your Profile
@@ -218,15 +218,6 @@ export const SignupStep3: React.FC<SignupStep3Props> = ({
             {error || submitError || errors.root?.message}
           </div>
         )}
-
-        {/* Debug Info - Remove in production */}
-        <div className="bg-blue-50 border border-blue-200 text-blue-700 px-4 py-3 rounded-lg text-sm">
-          <p>Debug Info:</p>
-          <p>verifiedOtpCode: {verifiedOtpCode || "Not available"}</p>
-          <p>signupEmail: {signupEmail || "Not available"}</p>
-          <p>isLoading: {isLoading.toString()}</p>
-          <p>Form errors: {Object.keys(errors).length}</p>
-        </div>
 
         {/* Personal Information */}
         <div>
@@ -246,7 +237,7 @@ export const SignupStep3: React.FC<SignupStep3Props> = ({
                 type="text"
                 id="displayName"
                 disabled={isFormDisabled}
-                className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent ${
                   errors.displayName ? "border-red-300" : "border-slate-300"
                 } ${isFormDisabled ? "bg-gray-100 cursor-not-allowed" : ""}`}
                 placeholder="Enter your full name"
@@ -270,7 +261,7 @@ export const SignupStep3: React.FC<SignupStep3Props> = ({
                 type="tel"
                 id="phoneNumber"
                 disabled={isFormDisabled}
-                className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent ${
                   errors.phoneNumber ? "border-red-300" : "border-slate-300"
                 } ${isFormDisabled ? "bg-gray-100 cursor-not-allowed" : ""}`}
                 placeholder="+1 (555) 123-4567"
@@ -294,7 +285,7 @@ export const SignupStep3: React.FC<SignupStep3Props> = ({
                 type="date"
                 id="dateOfBirth"
                 disabled={isFormDisabled}
-                className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent ${
                   errors.dateOfBirth ? "border-red-300" : "border-slate-300"
                 } ${isFormDisabled ? "bg-gray-100 cursor-not-allowed" : ""}`}
               />
@@ -317,7 +308,7 @@ export const SignupStep3: React.FC<SignupStep3Props> = ({
                 type="text"
                 id="placeOfBirth"
                 disabled={isFormDisabled}
-                className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent ${
                   errors.placeOfBirth ? "border-red-300" : "border-slate-300"
                 } ${isFormDisabled ? "bg-gray-100 cursor-not-allowed" : ""}`}
                 placeholder="City, State, Country"
@@ -349,7 +340,7 @@ export const SignupStep3: React.FC<SignupStep3Props> = ({
                 type="text"
                 id="address"
                 disabled={isFormDisabled}
-                className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent ${
                   errors.address ? "border-red-300" : "border-slate-300"
                 } ${isFormDisabled ? "bg-gray-100 cursor-not-allowed" : ""}`}
                 placeholder="123 Main Street"
@@ -374,7 +365,7 @@ export const SignupStep3: React.FC<SignupStep3Props> = ({
                   type="text"
                   id="city"
                   disabled={isFormDisabled}
-                  className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                  className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent ${
                     errors.city ? "border-red-300" : "border-slate-300"
                   } ${isFormDisabled ? "bg-gray-100 cursor-not-allowed" : ""}`}
                   placeholder="New York"
@@ -398,7 +389,7 @@ export const SignupStep3: React.FC<SignupStep3Props> = ({
                   type="text"
                   id="state"
                   disabled={isFormDisabled}
-                  className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                  className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent ${
                     errors.state ? "border-red-300" : "border-slate-300"
                   } ${isFormDisabled ? "bg-gray-100 cursor-not-allowed" : ""}`}
                   placeholder="NY"
@@ -422,7 +413,7 @@ export const SignupStep3: React.FC<SignupStep3Props> = ({
                   type="text"
                   id="postalCode"
                   disabled={isFormDisabled}
-                  className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                  className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent ${
                     errors.postalCode ? "border-red-300" : "border-slate-300"
                   } ${isFormDisabled ? "bg-gray-100 cursor-not-allowed" : ""}`}
                   placeholder="10001"
@@ -447,7 +438,7 @@ export const SignupStep3: React.FC<SignupStep3Props> = ({
                 type="text"
                 id="country"
                 disabled={isFormDisabled}
-                className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent ${
                   errors.country ? "border-red-300" : "border-slate-300"
                 } ${isFormDisabled ? "bg-gray-100 cursor-not-allowed" : ""}`}
                 placeholder="United States"
@@ -480,7 +471,7 @@ export const SignupStep3: React.FC<SignupStep3Props> = ({
                   type={showPassword ? "text" : "password"}
                   id="password"
                   disabled={isFormDisabled}
-                  className={`w-full px-3 py-2 pr-10 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                  className={`w-full px-3 py-2 pr-10 border rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent ${
                     errors.password ? "border-red-300" : "border-slate-300"
                   } ${isFormDisabled ? "bg-gray-100 cursor-not-allowed" : ""}`}
                   placeholder="Create a strong password"
@@ -537,7 +528,7 @@ export const SignupStep3: React.FC<SignupStep3Props> = ({
                   type={showConfirmPassword ? "text" : "password"}
                   id="confirmPassword"
                   disabled={isFormDisabled}
-                  className={`w-full px-3 py-2 pr-10 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                  className={`w-full px-3 py-2 pr-10 border rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent ${
                     errors.confirmPassword
                       ? "border-red-300"
                       : "border-slate-300"

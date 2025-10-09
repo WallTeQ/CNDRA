@@ -168,11 +168,11 @@ export const DepartmentModals: React.FC<DepartmentModalsProps> = ({
                   Statistics
                 </h3>
                 <div className="space-y-3">
-                  <div className="flex items-center justify-between p-3 bg-blue-50 rounded-lg">
-                    <span className="text-sm font-medium text-blue-900">
+                  <div className="flex items-center justify-between p-3 bg-red-50 rounded-lg">
+                    <span className="text-sm font-medium text-red-900">
                       Collections
                     </span>
-                    <span className="text-lg font-bold text-blue-600">
+                    <span className="text-lg font-bold text-red-600">
                       {selectedDepartment.collections?.length || 0}
                     </span>
                   </div>

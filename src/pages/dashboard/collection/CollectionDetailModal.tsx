@@ -56,7 +56,7 @@ export default function CollectionDetailModal({
                   key={dept.id}
                   variant="default"
                   size="sm"
-                  className="bg-blue-100 text-blue-800"
+                  className="bg-red-100 text-red-800"
                 >
                   {dept.name}
                 </Badge>

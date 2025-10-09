@@ -94,7 +94,7 @@ const DocumentCard: React.FC<DocumentCardProps> = ({ record }) => {
                 }
               }}
             />
-            <div className="fallback-placeholder hidden absolute inset-0 bg-gradient-to-br from-blue-50 to-indigo-100">
+            <div className="fallback-placeholder hidden absolute inset-0 bg-gradient-to-br from-red-50 to-indigo-100">
               <div className="text-center">
                 <Archive className="h-12 w-12 text-indigo-300 mx-auto mb-2" />
                 <p className="text-sm text-indigo-600 font-medium">
@@ -105,7 +105,7 @@ const DocumentCard: React.FC<DocumentCardProps> = ({ record }) => {
             </div>
           </div>
         ) : (
-          <div className="w-full h-48 bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
+          <div className="w-full h-48 bg-gradient-to-br from-red-50 to-indigo-100 flex items-center justify-center">
             <div className="text-center">
               <Archive className="h-12 w-12 text-indigo-300 mx-auto mb-2" />
               <p className="text-sm text-indigo-600 font-medium">
@@ -160,26 +160,6 @@ const DocumentCard: React.FC<DocumentCardProps> = ({ record }) => {
             </div>
           )}
 
-          <div className="flex justify-between items-center">
-            <Button
-              variant="outline"
-              size="sm"
-              className="flex items-center space-x-1"
-              icon={<Eye className="h-4 w-4" />}
-            >
-              <span>View Details</span>
-            </Button>
-            {record.accessLevel === "PUBLIC" && (
-              <Button
-                variant="ghost"
-                size="sm"
-                className="flex items-center space-x-1"
-                icon={<Download className="h-4 w-4" />}
-              >
-                <span>Download</span>
-              </Button>
-            )}
-          </div>
         </div>
       </Card>
     </Link>

@@ -6,7 +6,7 @@ import {
   CardHeader,
   CardTitle,
 } from "../../../components/ui/Card";
-import { formatDate } from "./recordUtils";
+import { formatDate } from "../../../utils/FormatDate";
 
 interface RelatedDocumentsSectionProps {
   relatedRecords: any[];

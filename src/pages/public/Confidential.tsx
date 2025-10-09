@@ -15,6 +15,7 @@ import {
   useRestrictedRecords,
   useConfidentialRecords,
 } from "../../hooks/useRecords";
+import { useAuth } from "../../hooks/useAuth";
 
 export default function RestrictedRecordsPage() {
   const navigate = useNavigate();
@@ -22,6 +23,7 @@ export default function RestrictedRecordsPage() {
     useRestrictedRecords();
   const { data: confidentialRecords = [], isLoading: confidentialLoading } =
     useConfidentialRecords();
+    const { user } = useAuth();
 
   const [searchTerm, setSearchTerm] = useState("");
   const [accessTypeFilter, setAccessTypeFilter] = useState<
@@ -51,7 +53,10 @@ export default function RestrictedRecordsPage() {
   const loading = restrictedLoading || confidentialLoading;
 
   const handleRequestAccess = (record: any) => {
-    // Navigate to request access page with record data
+    // Navigate to request access page with record data if user is logged in else to login
+    if (!user) {
+      return navigate("/login", { state: { from: "/records/restricted" } });
+    }
     navigate(`/records/request-access/${record.id}`, {
       state: { record },
     });
@@ -69,63 +74,27 @@ export default function RestrictedRecordsPage() {
             Browse records with restricted access and submit requests for
             viewing permissions
           </p>
-        </div>
-
-        {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-muted-foreground">
-                    Total Records
-                  </p>
-                  <p className="text-2xl font-bold text-foreground">
-                    {allRecords.length}
-                  </p>
-                </div>
-                <div className="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center">
-                  <Lock className="w-4 h-4 text-primary" />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-muted-foreground">
-                    Restricted
-                  </p>
-                  <p className="text-2xl font-bold text-foreground">
-                    {restrictedRecords.length}
-                  </p>
-                </div>
-                <div className="w-8 h-8 bg-yellow-500/10 rounded-lg flex items-center justify-center">
-                  <ShieldAlert className="w-4 h-4 text-yellow-600" />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-muted-foreground">
-                    Confidential
-                  </p>
-                  <p className="text-2xl font-bold text-foreground">
-                    {confidentialRecords.length}
-                  </p>
-                </div>
-                <div className="w-8 h-8 bg-red-500/10 rounded-lg flex items-center justify-center">
-                  <Lock className="w-4 h-4 text-red-600" />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+          <div className="mt-4 text-sm text-muted-foreground leading-relaxed space-y-3">
+            <p>
+              These records are part of Liberia’s preserved national heritage
+              and contain sensitive information accessible only upon approval.
+            </p>
+            <p>
+              Some documents are <span className="font-medium">restricted</span>{" "}
+              due to privacy, security, or classification protocols, while
+              others are <span className="font-medium">confidential</span> and
+              may require special authorization to view.
+            </p>
+            <p>
+              To gain access, please submit a request outlining your purpose of
+              use. Each request will be reviewed in accordance with the National
+              Archives’ access policies.
+            </p>
+            <p>
+              We appreciate your understanding as we work to protect and
+              preserve Liberia’s historical and governmental integrity.
+            </p>
+          </div>
         </div>
 
         {/* Filters */}

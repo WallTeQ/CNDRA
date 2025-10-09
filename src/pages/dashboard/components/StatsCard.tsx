@@ -9,7 +9,7 @@ interface StatCardProps {
   change: string;
   changeType: "increase" | "decrease";
   icon: LucideIcon;
-  color: "blue" | "yellow" | "green" | "purple" | "red" | "gray";
+  color: "red" | "yellow" | "green" | "purple" | "red" | "gray";
 }
 
 export const StatCard: React.FC<StatCardProps> = ({
@@ -22,7 +22,7 @@ export const StatCard: React.FC<StatCardProps> = ({
 }) => {
   const getStatColor = (colorKey: string) => {
     const colors: { [key: string]: string } = {
-      blue: "text-blue-600 bg-blue-100",
+      red: "text-red-600 bg-red-100",
       yellow: "text-yellow-600 bg-yellow-100",
       green: "text-green-600 bg-green-100",
       purple: "text-purple-600 bg-purple-100",

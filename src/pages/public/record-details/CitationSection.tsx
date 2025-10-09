@@ -5,7 +5,8 @@ import {
   CardTitle,
 } from "../../../components/ui/Card";
 import { Button } from "../../../components/ui/Button";
-import { formatDate, copyToClipboard } from "./recordUtils";
+import { copyToClipboard } from "./recordUtils";
+import { formatDate } from "../../../utils/FormatDate";
 
 interface CitationSectionProps {
   record: any;

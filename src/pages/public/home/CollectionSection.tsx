@@ -70,7 +70,7 @@ export const CollectionsSection: React.FC<CollectionsSectionProps> = ({
                     {record.title}
                   </h3>
                   <p className="text-slate-600 mb-3">{record.description}</p>
-                  <p className="text-sm text-blue-600 font-medium">
+                  <p className="text-sm text-red-600 font-medium">
                     {record.fileAssets?.length || 0} items
                   </p>
                 </div>

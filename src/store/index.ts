@@ -4,12 +4,10 @@ import storage from "redux-persist/lib/storage";
 import { useDispatch, useSelector, TypedUseSelectorHook } from "react-redux";
 
 import authReducer from "./slices/auth/authSlice";
-import uiReducer from "./slices/ui/uiSlice";
 import recordReducer from "./slices/records/recordsSlice";
 
 const appReducer = combineReducers({
   auth: authReducer,
-  ui: uiReducer,
   records: recordReducer,
 
 });

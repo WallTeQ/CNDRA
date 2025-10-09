@@ -6,16 +6,8 @@ export const formatFileSize = (sizeInBytes: string) => {
   return Math.round((bytes / Math.pow(1024, i)) * 100) / 100 + " " + sizes[i];
 };
 
-export const formatDate = (dateString: string) => {
-  return new Date(dateString).toLocaleDateString("en-US", {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  });
-};
-
 export const getAccessLevelInfo = (level: string) => {
-  switch (level.toLowerCase()) {
+  switch (level?.toLowerCase()) {
     case "public":
       return {
         color: "success",
@@ -37,7 +29,7 @@ export const getAccessLevelInfo = (level: string) => {
 };
 
 export const copyToClipboard = (text: string) => {
-  navigator.clipboard.writeText(text);
+  navigator?.clipboard?.writeText(text);
   // You could add a toast notification here
 };
 

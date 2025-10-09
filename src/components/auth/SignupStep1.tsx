@@ -51,8 +51,8 @@ export const SignupStep1: React.FC<SignupStep1Props> = ({ onNext }) => {
   return (
     <Card className="w-full max-w-md mx-auto">
       <div className="text-center mb-6">
-        <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-          <Mail className="h-8 w-8 text-blue-600" />
+        <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+          <Mail className="h-8 w-8 text-red-600" />
         </div>
         <h2 className="text-2xl font-bold text-slate-900 mb-2">
           Create Your Account
@@ -81,7 +81,7 @@ export const SignupStep1: React.FC<SignupStep1Props> = ({ onNext }) => {
             {...register("email")}
             type="email"
             id="email"
-            className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors ${
+            className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent transition-colors ${
               errors.email ? "border-red-300" : "border-slate-300"
             }`}
             placeholder="Enter your email address"
@@ -112,7 +112,7 @@ export const SignupStep1: React.FC<SignupStep1Props> = ({ onNext }) => {
           Already have an account?{" "}
           <a
             href="/login"
-            className="text-blue-600 hover:text-blue-700 font-medium"
+            className="text-red-600 hover:text-red-700 font-medium"
           >
             Sign in
           </a>

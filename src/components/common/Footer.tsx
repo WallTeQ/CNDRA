@@ -1,91 +1,69 @@
-import React from 'react';
-import { Archive, Mail, Phone, MapPin } from 'lucide-react';
+import React from "react";
+import { Archive, Mail, Phone } from "lucide-react";
+import { Link } from "react-router-dom";
 
 export const Footer: React.FC = () => {
   const currentYear = new Date().getFullYear();
+
   return (
-    <footer className="bg-gradient-to-r from-blue-700 to-blue-800 text-white">
-      <div className="max-w-8xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-          {/* Logo and Description */}
-          <div className="col-span-1 md:col-span-2">
-            <div className="flex items-center space-x-2 mb-4">
-              <Archive className="h-8 w-8 text-blue-400" />
-              <span className="text-xl font-bold">National Archive</span>
-            </div>
-            <p className="text-slate-300 mb-4 max-w-md">
-              Preserving our nation's historical documents and making them
-              accessible to researchers, government agencies, and the public for
-              generations to come.
-            </p>
+    <footer className="bg-gradient-to-r from-red-700 to-red-800 text-white">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <div className="text-center space-y-4">
+          {/* Logo and Brand */}
+          <div className="flex justify-center items-center space-x-3">
+            <h3 className="text-xl font-bold text-white">Liberia National Archive</h3>
           </div>
 
           {/* Quick Links */}
-          <div>
-            <h3 className="text-lg font-semibold mb-4">Quick Links</h3>
-            <ul className="space-y-2">
-              <li>
-                <a
-                  href="/search"
-                  className="text-slate-300 hover:text-white transition-colors"
-                >
-                  Search Archives
-                </a>
-              </li>
-              <li>
-                <a
-                  href="/about"
-                  className="text-slate-300 hover:text-white transition-colors"
-                >
-                  About Us
-                </a>
-              </li>
-              <li>
-                <a
-                  href="/contact"
-                  className="text-slate-300 hover:text-white transition-colors"
-                >
-                  Contact
-                </a>
-              </li>
-              <li>
-                <a
-                  href="/privacy"
-                  className="text-slate-300 hover:text-white transition-colors"
-                >
-                  Privacy Policy
-                </a>
-              </li>
-            </ul>
+          <div className="flex flex-wrap justify-center items-center gap-6 text-sm">
+            <Link
+              to="/search"
+              className=" hover:text-white transition-colors"
+            >
+              Search Archives
+            </Link>
+            <span className="text-slate-600">•</span>
+            <Link
+              to="/about"
+              className=" hover:text-white transition-colors"
+            >
+              About Us
+            </Link>
+            <span className="text-slate-600">•</span>
+            <Link
+              to="/contact"
+              className=" hover:text-white transition-colors"
+            >
+              Contact
+            </Link>
+            <span className="">•</span>
+            <Link
+              to="/privacy"
+              className=" hover:text-white transition-colors"
+            >
+              Privacy Policy
+            </Link>
           </div>
 
           {/* Contact Info */}
-          <div>
-            <h3 className="text-lg font-semibold mb-4">Contact</h3>
-            <div className="space-y-3">
-              <div className="flex items-center space-x-2">
-                <MapPin className="h-4 w-4 text-slate-400" />
-                <span className="text-slate-300 text-sm">
-                  700 Pennsylvania Ave, Washington, DC
-                </span>
-              </div>
-              <div className="flex items-center space-x-2">
-                <Phone className="h-4 w-4 text-slate-400" />
-                <span className="text-slate-300 text-sm">(202) 357-5000</span>
-              </div>
-              <div className="flex items-center space-x-2">
-                <Mail className="h-4 w-4 text-slate-400" />
-                <span className="text-slate-300 text-sm">info@archive.gov</span>
-              </div>
+          <div className="flex flex-wrap justify-center items-center gap-6 text-sm ">
+            <div className="flex items-center space-x-2">
+              <Phone className="h-4 w-4" />
+              <span>(202) 357-5000</span>
+            </div>
+            <span className="text-slate-600">•</span>
+            <div className="flex items-center space-x-2">
+              <Mail className="h-4 w-4" />
+              <span>info@archive.gov</span>
             </div>
           </div>
-        </div>
 
-        <div className="border-t border-slate-700 mt-8 pt-8 text-center">
-          <p className="text-slate-400 text-sm">
-            {/* //use javaScript to get current year */}
-            © {currentYear} National Archive. All rights reserved.
-          </p>
+          {/* Copyright */}
+          <div className="border-t  pt-6">
+            <p className="text-sm">
+              © {currentYear} National Archive. All rights reserved.
+            </p>
+          </div>
         </div>
       </div>
     </footer>

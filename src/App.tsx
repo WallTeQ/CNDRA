@@ -12,9 +12,13 @@ import { ProtectedRoute } from "./components/common/protectedRoute";
 import { LandingPage } from "./pages/public/home/LandingPage";
 import { SearchPage } from "./pages/public/search/SearchPage";
 import { RecordDetailsPage } from "./pages/public/record-details/RecordDetails";
-import { NewsEventsPage } from "./pages/public/NewsEventsPage";
-import { NewsArticlePage } from "./pages/public/NewsArticlePage";
+import { NewsEventsPage } from "./pages/public/news/NewsEventsPage";
+import { NewsArticlePage } from "./pages/public/news-details.tsx/NewsArticlePage";
 import PublicDepartmentsPage from "./pages/public/department/Departments";
+import RestrictedRecordsPage from "./pages/public/Confidential";
+import RequestAccessPage from "./pages/public/RequestAccess";
+import { EventDetailPage } from "./pages/public/event-details.tsx/EventDetails";
+import UserProfilePage from "./pages/public/profile/profile-page";
 
 // Auth Pages
 import { LoginPage } from "./pages/auth/LoginPage";
@@ -24,15 +28,18 @@ import { SignupPage } from "./pages/auth/SignupPage";
 import { DashboardHome } from "./pages/dashboard/overview/DashboardHome";
 import UploadDocumentPage from "./pages/dashboard/UploadDocument";
 import RecordsPage from "./pages/dashboard/record/Records";
-import Users from "./pages/dashboard/Users";
-import Settings from "./pages/dashboard/Settings";
+import Users from "./pages/dashboard/users/Users";
+import SettingsPage from "./pages/dashboard/Settings";
 import Reviews from "./pages/dashboard/Reviews";
 import CollectionsPage from "./pages/dashboard/collection/Collections";
 import DepartmentsPage from "./pages/dashboard/department/Department";
-import RestrictedRecordsPage from "./pages/public/Confidential";
-import RequestAccessPage from "./pages/public/RequestAccess";
+import AccessRequestsPage from "./pages/dashboard/access/AccessRequest";
+import { GovernanceDashboard } from "./pages/dashboard/governance/Governance";
+import { LoadingSpinner } from "./components/ui/LoadingSpinner";
+import RequestDetailPage from "./pages/dashboard/access/RequestDetails";
 // Other Pages
 import { NotFound } from "./pages/NotFound";
+import RolesPage from "./pages/dashboard/Roles";
 
 // App Content Component (needs to be inside Provider)
 const AppContent: React.FC = () => {
@@ -45,12 +52,7 @@ const AppContent: React.FC = () => {
   // Show loading only during initial app initialization (not during login)
   if (!isInitialized) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Loading...</p>
-        </div>
-      </div>
+      <LoadingSpinner message="Initializing..." />
     );
   }
 
@@ -64,12 +66,15 @@ const AppContent: React.FC = () => {
           <Route path="departments" element={<PublicDepartmentsPage />} />
           <Route path="records/:id" element={<RecordDetailsPage />} />
           <Route path="confidential" element={<RestrictedRecordsPage />} />
+          <Route path="events/:id" element={<EventDetailPage />} />
           <Route
             path="records/request-access/:id"
             element={<RequestAccessPage />}
           />
           <Route path="news-events" element={<NewsEventsPage />} />
           <Route path="news/:id" element={<NewsArticlePage />} />
+          <Route path="profile" element={<UserProfilePage />} />
+          <Route path="profile/requests/:id" element={<RequestDetailPage />} />
         </Route>
 
         {/* Auth Routes (standalone - no layout) */}
@@ -91,7 +96,11 @@ const AppContent: React.FC = () => {
           <Route path="records" element={<RecordsPage />} />
           <Route path="departments" element={<DepartmentsPage />} />
           <Route path="collections" element={<CollectionsPage />} />
+          <Route path="access-requests" element={<AccessRequestsPage />} />
+          <Route path="access-request/:id" element={<RequestDetailPage />} />
+          <Route path="governance" element={<GovernanceDashboard />} />
           <Route path="review" element={<Reviews />} />
+          <Route path="roles" element={<RolesPage />} />
           <Route
             path="users"
             element={
@@ -100,7 +109,7 @@ const AppContent: React.FC = () => {
               </ProtectedRoute>
             }
           />
-          <Route path="settings" element={<Settings />} />
+          <Route path="settings" element={<SettingsPage />} />
         </Route>
 
         {/* 404 Route */}

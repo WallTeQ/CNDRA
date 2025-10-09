@@ -82,7 +82,7 @@ Dr. Hartwell spent over 40 years collecting these materials, and his meticulous 
       "labor history",
       "manufacturing",
     ],
-    featured: false,
+    featured: true,
   },
   {
     id: "3",

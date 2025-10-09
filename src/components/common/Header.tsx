@@ -50,19 +50,23 @@ export const Header: React.FC<HeaderProps> = () => {
   }
 
   return (
-    <header className="bg-gradient-to-r from-blue-600 via-blue-500 to-blue-700 sticky top-0 z-50">
+    <header className="bg-gradient-to-r from-red-600 via-red-500 to-red-700 sticky top-0 z-50">
       {/* Top Section with Logo and Search */}
-      <div className="bg-gradient-to-r from-blue-500 to-blue-600">
+      <div className="bg-white">
         <div className="max-w-8xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between py-4">
             {/* Logo Section */}
             <Link to="/" className="flex items-center space-x-4">
               <div className="flex items-center space-x-3">
-                <div className="bg-white p-2 rounded">
-                  <Archive className="h-8 w-8 text-blue-600" />
+                <div className=" p-2 rounded">
+                  <img
+                    src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS4LK9o6xiOCIMn5FAVs9kOsNrSmhkDfbkr-Qcttby_OwBB4HpiZEexSpzLRTBsHvEf1-w&usqp=CAU"
+                    alt="National Archive Logo"
+                    className="object-cover h-12 w-12"
+                  />
                 </div>
-                <div className="text-white">
-                  <div className="text-2xl font-bold">National Archive</div>
+                <div className="">
+                  <div className="text-2xl font-bold">Liberia National Archive</div>
                   <div className="text-sm opacity-90">Digital Library</div>
                 </div>
               </div>
@@ -77,7 +81,7 @@ export const Header: React.FC<HeaderProps> = () => {
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     placeholder="Search for:"
-                    className="flex-1 px-4 py-2 text-gray-900 bg-white border-0 rounded-l-md focus:outline-none focus:ring-2 focus:ring-blue-300"
+                    className="flex-1 px-4 py-2 text-gray-900 bg-white border-2 rounded-l-md focus:outline-none focus:ring-2 focus:ring-red-300"
                   />
                   <button
                     type="submit"
@@ -91,10 +95,7 @@ export const Header: React.FC<HeaderProps> = () => {
 
             {/* Right Side Icons */}
             <div className="flex items-center space-x-3">
-              <button className="text-white hover:text-blue-200 transition-colors p-2">
-                <Search className="h-5 w-5" />
-              </button>
-              <button className="text-white hover:text-blue-200 transition-colors p-2">
+              <button className="hover:text-red-200 transition-colors p-2">
                 <HelpCircle className="h-5 w-5" />
               </button>
             </div>
@@ -103,7 +104,7 @@ export const Header: React.FC<HeaderProps> = () => {
       </div>
 
       {/* Navigation Section */}
-      <div className="bg-gradient-to-r from-blue-700 to-blue-800">
+      <div className="bg-gradient-to-r from-red-700 to-red-800">
         <div className="max-w-8xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-12">
             {/* Desktop Navigation */}
@@ -112,7 +113,7 @@ export const Header: React.FC<HeaderProps> = () => {
                 <Link
                   key={item.name}
                   to={item.path}
-                  className="px-3 py-2 text-white hover:bg-blue-600 hover:bg-opacity-50 rounded transition-colors text-sm"
+                  className="px-3 py-2 text-white hover:bg-red-600 hover:bg-opacity-50 rounded transition-colors text-sm"
                 >
                   {item.name}
                 </Link>
@@ -121,19 +122,29 @@ export const Header: React.FC<HeaderProps> = () => {
 
             <div className="flex items-center space-x-4">
               <div className="hidden md:flex items-center space-x-2">
-                {(isAdmin() || isSuperAdmin()) && (
+                {(isAdmin() || isSuperAdmin()) ?   (
                   <Link
                     to="/dashboard"
-                    className="px-3 py-2 text-white hover:bg-blue-600 hover:bg-opacity-50 rounded transition-colors text-sm"
+                    className="px-3 py-2 text-white rounded transition-colors text-sm"
                   >
-                    <Button 
+                    <Button
                       icon={<LayoutDashboard className="h-4 w-4" />}
-                      className="bg-transparent hover:bg-blue-600 hover:bg-opacity-50 text-white border border-blue-300 border-opacity-50"
+                      className="bg-transparent hover:bg-red-600 hover:bg-opacity-50 text-white border border-red-300 border-opacity-50"
                     >
                       Dashboard
                     </Button>
                   </Link>
-                )}
+                ) : <Link
+                  to="/profile"
+                  className="px-3 py-2 text-white rounded transition-colors text-sm"
+                >
+                  <Button
+                    icon={<User className="h-4 w-4" />}
+                    className="bg-transparent hover:bg-red-600 hover:bg-opacity-50 text-white border border-red-300 border-opacity-50"
+                  >
+                    Profile
+                  </Button>
+                </Link>}
               </div>
               <div className="hidden md:flex items-center">
                 {/* display Login Button or logout if there is a user */}
@@ -142,7 +153,7 @@ export const Header: React.FC<HeaderProps> = () => {
                     <Button
                       onClick={handleLogout}
                       icon={<User className="h-4 w-4" />}
-                      className="bg-transparent hover:bg-blue-600 hover:bg-opacity-50 text-white border border-blue-300 border-opacity-50"
+                      className="bg-transparent hover:bg-red-600 hover:bg-opacity-50 text-white border border-red-300 border-opacity-50"
                     >
                       Logout
                     </Button>
@@ -153,7 +164,7 @@ export const Header: React.FC<HeaderProps> = () => {
                         setIsMenuOpen(false);
                       }}
                       icon={<User className="h-4 w-4" />}
-                      className="bg-transparent hover:bg-blue-600 hover:bg-opacity-50 text-white border border-blue-300 border-opacity-50"
+                      className="bg-transparent hover:bg-red-600 hover:bg-opacity-50 text-white border border-red-300 border-opacity-50"
                     >
                       Login
                     </Button>
@@ -167,7 +178,7 @@ export const Header: React.FC<HeaderProps> = () => {
                   variant="ghost"
                   size="sm"
                   onClick={() => setIsMenuOpen(!isMenuOpen)}
-                  className="text-white hover:bg-blue-600 hover:bg-opacity-50"
+                  className="text-white hover:bg-red-600 hover:bg-opacity-50"
                 >
                   {isMenuOpen ? (
                     <X className="h-5 w-5" />
@@ -182,7 +193,7 @@ export const Header: React.FC<HeaderProps> = () => {
       </div>
 
       {/* Mobile Search Bar */}
-      <div className="md:hidden bg-gradient-to-r from-blue-500 to-blue-600 px-4 pb-4">
+      <div className="md:hidden bg-gradient-to-r from-red-500 to-red-600 px-4 pb-4">
         <form onSubmit={handleSearch} className="relative">
           <div className="flex">
             <input
@@ -190,7 +201,7 @@ export const Header: React.FC<HeaderProps> = () => {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search for:"
-              className="flex-1 px-4 py-2 text-gray-900 bg-white border-0 rounded-l-md focus:outline-none focus:ring-2 focus:ring-blue-300"
+              className="flex-1 px-4 py-2 text-gray-900 bg-white border-0 rounded-l-md focus:outline-none focus:ring-2 focus:ring-red-300"
             />
             <button
               type="submit"
@@ -204,14 +215,14 @@ export const Header: React.FC<HeaderProps> = () => {
 
       {/* Mobile Navigation */}
       {isMenuOpen && (
-        <div className="md:hidden bg-blue-800 border-t border-blue-600">
+        <div className="md:hidden bg-red-800 border-t border-red-600">
           <div className="px-4 py-4">
             <div className="flex flex-col space-y-2">
               {publicNavItems.map((item) => (
                 <Link
                   key={item.name}
                   to={item.path}
-                  className="px-3 py-2 text-white hover:bg-blue-600 hover:bg-opacity-50 rounded-md transition-colors"
+                  className="px-3 py-2 text-white hover:bg-red-600 hover:bg-opacity-50 rounded-md transition-colors"
                   onClick={() => setIsMenuOpen(false)}
                 >
                   {item.name}
@@ -221,11 +232,11 @@ export const Header: React.FC<HeaderProps> = () => {
                 {(isAdmin() || isSuperAdmin()) && (
                   <Link
                     to="/dashboard"
-                    className="px-3 py-2 text-white hover:bg-blue-600 hover:bg-opacity-50 rounded transition-colors text-sm"
+                    className="px-3 py-2 text-white hover:bg-red-600 hover:bg-opacity-50 rounded transition-colors text-sm"
                   >
-                    <Button 
+                    <Button
                       icon={<LayoutDashboard className="h-4 w-4" />}
-                      className="bg-transparent hover:bg-blue-600 hover:bg-opacity-50 text-white border border-blue-300 border-opacity-50"
+                      className="bg-transparent hover:bg-red-600 hover:bg-opacity-50 text-white border border-red-300 border-opacity-50"
                     >
                       Dashboard
                     </Button>
@@ -240,7 +251,7 @@ export const Header: React.FC<HeaderProps> = () => {
                       setIsMenuOpen(false);
                     }}
                     icon={<User className="h-4 w-4" />}
-                    className="w-full bg-transparent hover:bg-blue-600 hover:bg-opacity-50 text-white border border-blue-300 border-opacity-50"
+                    className="w-full bg-transparent hover:bg-red-600 hover:bg-opacity-50 text-white border border-red-300 border-opacity-50"
                   >
                     Logout
                   </Button>
@@ -253,7 +264,7 @@ export const Header: React.FC<HeaderProps> = () => {
                       setIsMenuOpen(false);
                     }}
                     icon={<User className="h-4 w-4" />}
-                    className="w-full bg-transparent hover:bg-blue-600 hover:bg-opacity-50 text-white border border-blue-300 border-opacity-50"
+                    className="w-full bg-transparent hover:bg-red-600 hover:bg-opacity-50 text-white border border-red-300 border-opacity-50"
                   >
                     Login
                   </Button>
