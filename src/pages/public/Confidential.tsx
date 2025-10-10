@@ -1,4 +1,4 @@
-// pages/records/RestrictedRecordsPage.tsx
+
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
@@ -55,7 +55,7 @@ export default function RestrictedRecordsPage() {
   const handleRequestAccess = (record: any) => {
     // Navigate to request access page with record data if user is logged in else to login
     if (!user) {
-      return navigate("/login", { state: { from: "/records/restricted" } });
+       navigate("/login");
     }
     navigate(`/records/request-access/${record.id}`, {
       state: { record },

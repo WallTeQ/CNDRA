@@ -122,7 +122,7 @@ export const Header: React.FC<HeaderProps> = () => {
 
             <div className="flex items-center space-x-4">
               <div className="hidden md:flex items-center space-x-2">
-                {(isAdmin() || isSuperAdmin()) ?   (
+                {(isAdmin() || isSuperAdmin()) && (
                   <Link
                     to="/dashboard"
                     className="px-3 py-2 text-white rounded transition-colors text-sm"
@@ -134,7 +134,8 @@ export const Header: React.FC<HeaderProps> = () => {
                       Dashboard
                     </Button>
                   </Link>
-                ) : <Link
+                )}
+                {user && (<Link
                   to="/profile"
                   className="px-3 py-2 text-white rounded transition-colors text-sm"
                 >
@@ -144,7 +145,7 @@ export const Header: React.FC<HeaderProps> = () => {
                   >
                     Profile
                   </Button>
-                </Link>}
+                </Link>)}
               </div>
               <div className="hidden md:flex items-center">
                 {/* display Login Button or logout if there is a user */}

@@ -91,7 +91,7 @@ export default function RequestAccessPage() {
     setIsSubmitting(true);
 
     try {
-      // TODO: Implement API call to submit access request
+      
       await submitAccessRequest.mutateAsync(requestForm);
       console.log("Submitting access request:", requestForm);
 
@@ -100,7 +100,7 @@ export default function RequestAccessPage() {
 
       // Show success message and navigate back
       alert("Access request submitted successfully!");
-      navigate("/");
+      navigate("/profile");
     } catch (error) {
       console.error("Failed to submit access request:", error);
       alert("Failed to submit access request. Please try again.");
@@ -110,7 +110,7 @@ export default function RequestAccessPage() {
   };
 
   const handleBack = () => {
-    navigate("/records/restricted");
+    navigate(-1);
   };
 
   if (isLoading) {
