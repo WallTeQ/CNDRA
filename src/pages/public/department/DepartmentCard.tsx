@@ -85,9 +85,9 @@ export function DepartmentCard({ department }: DepartmentCardProps) {
             className="p-0 h-auto text-primary hover:text-primary/80"
             asChild
           >
-            <a href={`/public/departments/${department.id}`}>
+            {/* <a href={`/public/departments/${department.id}`}>
               Browse Department →
-            </a>
+            </a> */}
           </Button>
           <span className="text-xs text-muted-foreground">
             Created {new Date(department.createdAt).toLocaleDateString()}

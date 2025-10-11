@@ -45,7 +45,7 @@ export const ArticleMetadata: React.FC<ArticleMetadataProps> = ({
         </div>
         <div>
           <span className="text-slate-600">Author:</span>
-          <span className="ml-2 text-slate-900 font-medium">{author}</span>
+          <span className="ml-2 text-slate-900 font-medium">{author.displayName}</span>
         </div>
       </div>
     </Card>

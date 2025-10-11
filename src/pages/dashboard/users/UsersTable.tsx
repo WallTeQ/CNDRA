@@ -13,6 +13,7 @@ import {
 } from "../../../components/ui/Table";
 import Pagination from "../../../components/Pagination";
 import { User, UserStatus } from "../../../types/user";
+import { formatDate } from "../../../utils/FormatDate";
 
 interface UsersTableProps {
   users: User[];
@@ -78,8 +79,7 @@ export const UsersTable: React.FC<UsersTableProps> = ({
               <TableHead>User</TableHead>
               <TableHead>Role</TableHead>
               <TableHead>Department</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead>Last Login</TableHead>
+              {/* <TableHead>Status</TableHead> */}
               <TableHead>Created</TableHead>
               <TableHead>Actions</TableHead>
             </TableRow>
@@ -91,11 +91,11 @@ export const UsersTable: React.FC<UsersTableProps> = ({
                   <div className="flex items-center space-x-3">
                     <div className="w-8 h-8 bg-muted rounded-full flex items-center justify-center">
                       <span className="text-sm font-medium">
-                        {user.name.charAt(0).toUpperCase()}
+                        {user.displayName.charAt(0).toUpperCase()}
                       </span>
                     </div>
                     <div>
-                      <p className="font-medium">{user.name}</p>
+                      <p className="font-medium">{user.displayName}</p>
                       <p className="text-sm text-muted-foreground">
                         {user.email}
                       </p>
@@ -104,40 +104,23 @@ export const UsersTable: React.FC<UsersTableProps> = ({
                 </TableCell>
                 <TableCell>
                   <Badge
-                    variant={getRoleVariant(user.role)}
+                    variant={getRoleVariant(user.roles[0]?.name)}
                     className="capitalize"
                   >
-                    {user.role.replace("_", " ")}
+                    {user.roles[0]?.name. replace("-", " ")}
                   </Badge>
                 </TableCell>
-                <TableCell>{user.department}</TableCell>
-                <TableCell>
+                <TableCell>{user.department || "NA"}</TableCell>
+                {/* <TableCell>
                   <Badge
                     variant={getStatusVariant(user.status)}
                     className="capitalize"
                   >
                     {user.status}
                   </Badge>
-                </TableCell>
-                <TableCell>
-                  <div>
-                    {user.lastLogin ? (
-                      <>
-                        <p className="text-sm">
-                          {user.lastLogin.split(" ")[0]}
-                        </p>
-                        <p className="text-xs text-muted-foreground">
-                          {user.lastLogin.split(" ")[1]}
-                        </p>
-                      </>
-                    ) : (
-                      <span className="text-sm text-muted-foreground">
-                        Never
-                      </span>
-                    )}
-                  </div>
-                </TableCell>
-                <TableCell>{user.createdDate}</TableCell>
+                </TableCell> */}
+
+                <TableCell>{formatDate(user.createdAt)}</TableCell>
                 <TableCell>
                   <div className="flex space-x-2">
                     <Button

@@ -14,6 +14,7 @@ import { Lock, ShieldAlert, Search } from "lucide-react";
 import {
   useRestrictedRecords,
   useConfidentialRecords,
+  useRecords
 } from "../../hooks/useRecords";
 import { useAuth } from "../../hooks/useAuth";
 import Pagination from "../../components/Pagination";
@@ -22,10 +23,12 @@ const ITEMS_PER_PAGE = 8;
 
 export default function RestrictedRecordsPage() {
   const navigate = useNavigate();
-  const { data: restrictedRecords = [], isLoading: restrictedLoading } =
-    useRestrictedRecords();
-  const { data: confidentialRecords = [], isLoading: confidentialLoading } =
-    useConfidentialRecords();
+  // const { data: restrictedRecords = [], isLoading: restrictedLoading } =
+  //   useRestrictedRecords();
+  // const { data: confidentialRecords = [], isLoading: confidentialLoading } =
+  //   useConfidentialRecords();
+
+    const { data: allRecordss = [], isLoading: allLoading } = useRecords();
   const { user } = useAuth();
 
   const [searchTerm, setSearchTerm] = useState("");
@@ -34,17 +37,22 @@ export default function RestrictedRecordsPage() {
   >("all");
   const [currentPage, setCurrentPage] = useState(1);
 
-  // Combine all records
-  const allRecords = [
-    ...restrictedRecords.map((r: any) => ({ ...r, accessLevel: "restricted" })),
-    ...confidentialRecords.map((r: any) => ({
-      ...r,
-      accessLevel: "confidential",
-    })),
-  ];
+  //display only restricted and confidential records from allRecordss
+  const displayedRecords = allRecordss.filter((record) =>
+    ["RESTRICTED", "CONFIDENTIAL"].includes(record.accessLevel)
+  );
+
+  // on
+  // const allRecords = [
+  //   ...restrictedRecords.map((r: any) => ({ ...r, accessLevel: "restricted" })),
+  //   ...confidentialRecords.map((r: any) => ({
+  //     ...r,
+  //     accessLevel: "confidential",
+  //   })),
+  // ];
 
   // Filter records
-  const filteredRecords = allRecords.filter((record) => {
+  const filteredRecords = displayedRecords.filter((record) => {
     const matchesSearch =
       record.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
       (record.description &&
@@ -60,7 +68,7 @@ export default function RestrictedRecordsPage() {
   const endIndex = startIndex + ITEMS_PER_PAGE;
   const paginatedRecords = filteredRecords.slice(startIndex, endIndex);
 
-  const loading = restrictedLoading || confidentialLoading;
+  const loading = allLoading; ;
 
   const handleRequestAccess = (record: any) => {
     // Navigate to request access page with record data if user is logged in else to login

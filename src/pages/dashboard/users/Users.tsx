@@ -19,6 +19,8 @@ import {
   UserStatus,
   UserRole,
 } from "../../../types/user";
+import { useUsers } from "../../../hooks/useUser";
+import { useDepartments } from "../../../hooks/useDepartments";
 
 const mockUsers: User[] = [
   {
@@ -71,19 +73,12 @@ const mockUsers: User[] = [
   },
 ];
 
-const departments = [
-  "IT",
-  "Records Management",
-  "Archives",
-  "Legal",
-  "Finance",
-  "Human Resources",
-];
+
+
 const roles: UserRole[] = ["super_admin", "admin", "staff", "public"];
 const permissions = ["read", "write", "delete", "admin", "user_management"];
 
 export default function UsersPage() {
-  const [users, setUsers] = useState<User[]>(mockUsers);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
   const [isNewUserModalOpen, setIsNewUserModalOpen] = useState(false);
@@ -99,6 +94,9 @@ export default function UsersPage() {
     department: "",
     permissions: ["read"],
   });
+  const { data: users = [], isLoading: usersLoading } = useUsers();
+  const { data: departments = [], isLoading: loading } = useDepartments();
+  console.log("Fetched Users:", users);
 
   const itemsPerPage = 10;
 
@@ -150,8 +148,8 @@ export default function UsersPage() {
   // Filter and pagination logic
   const filteredUsers = users.filter((user) => {
     const matchesSearch =
-      user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      user.displayName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      user.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       user.department?.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesRole = roleFilter === "all" || user.role === roleFilter;
     const matchesStatus =
@@ -186,7 +184,7 @@ export default function UsersPage() {
     };
     setUsers([...users, user]);
     setNewUser({
-      name: "",
+      displayName: "",
       email: "",
       role: "staff",
       department: "",

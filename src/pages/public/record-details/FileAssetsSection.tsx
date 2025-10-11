@@ -73,7 +73,7 @@ export function FileAssetsSection({ fileAssets }: FileAssetsSectionProps) {
                               {file.filename}
                             </p>
                             <p className="text-sm text-slate-600">
-                              {file.mimeType} • {formatFileSize(file.size)}
+                              {file.mimeType} • {formatFileSize(file.size) || "Unknown"}
                             </p>
                           </div>
                         </div>

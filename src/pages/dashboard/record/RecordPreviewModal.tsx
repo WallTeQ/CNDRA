@@ -156,7 +156,7 @@ export const RecordPreviewModal: React.FC<RecordPreviewModalProps> = ({
                   File Assets
                 </label>
                 <div className="mt-2 space-y-2">
-                  {record.fileAssets.map((fileAsset, index) => (
+                  {record?.fileAssets?.map((fileAsset, index) => (
                     <div
                       key={index}
                       className="flex items-center justify-between p-3 bg-muted/30 rounded-lg"
@@ -168,7 +168,7 @@ export const RecordPreviewModal: React.FC<RecordPreviewModalProps> = ({
                             {fileAsset.filename || `File ${index + 1}`}
                           </p>
                           <p className="text-xs text-muted-foreground">
-                            {formatFileSize(fileAsset.size)}
+                            {fileAsset.size}
                           </p>
                         </div>
                       </div>

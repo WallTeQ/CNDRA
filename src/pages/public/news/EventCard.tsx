@@ -103,9 +103,9 @@ export const EventCard: React.FC<EventCardProps> = ({
             </Button>
           ) : (
             <Link to={`/events/${event.id}`} className="ml-2">
-              <Button variant="outline" size="sm">
+              {/* <Button variant="outline" size="sm">
                 Learn More
-              </Button>
+              </Button> */}
             </Link>
           )}
         </div>

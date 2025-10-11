@@ -26,8 +26,8 @@ export const Header: React.FC<HeaderProps> = () => {
 
   const publicNavItems = [
     { name: "Home", path: "/" },
-    { name: "About", path: "/" },
-    { name: "Services", path: "/" },
+    // { name: "About", path: "/" },
+    // { name: "Services", path: "/" },
     { name: "Collections", path: "/search" },
     { name: "Departments", path: "/departments" },
     // { name: "Request Access", path: "/request-access" },

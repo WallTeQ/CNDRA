@@ -28,7 +28,7 @@ export function TagsKeywordsSection({ subjectTags }: TagsKeywordsSectionProps) {
               className="inline-flex items-center space-x-1 px-3 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-full text-sm transition-colors"
             >
               <Tag className="h-3 w-3" />
-              <span>{tag}</span>
+              <span>{tag.term}</span>
             </Link>
           ))}
         </div>

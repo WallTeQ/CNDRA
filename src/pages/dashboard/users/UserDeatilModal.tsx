@@ -87,10 +87,10 @@ export const UserDetailModal: React.FC<UserDetailModalProps> = ({
               <div className="flex items-center space-x-2">
                 <span className="text-sm font-medium">Role:</span>
                 <Badge
-                  variant={getRoleVariant(user.role)}
+                  variant={getRoleVariant(user.roles[0]?.name)}
                   className="capitalize"
                 >
-                  {user.role.replace("_", " ")}
+                  {user.roles[0]?.name.replace("-", " ")}
                 </Badge>
               </div>
               <div className="flex items-center space-x-2">
@@ -109,9 +109,9 @@ export const UserDetailModal: React.FC<UserDetailModalProps> = ({
         <div>
           <h3 className="font-semibold text-foreground mb-3">Permissions</h3>
           <div className="flex flex-wrap gap-2">
-            {user.permissions.map((permission) => (
+            {user?.roles?.permissions?.map((permission) => (
               <Badge key={permission} variant="outline" className="capitalize">
-                {permission.replace("_", " ")}
+                {permission.description.replace(".", " ")}
               </Badge>
             ))}
           </div>

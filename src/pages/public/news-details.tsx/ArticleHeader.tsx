@@ -44,7 +44,7 @@ export const ArticleHeader: React.FC<ArticleHeaderProps> = ({
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center space-x-2 text-slate-600">
             <User className="h-5 w-5" />
-            <span className="font-medium">{author}</span>
+            <span className="font-medium">{author.displayName}</span>
           </div>
 
           <div className="flex items-center space-x-2">
