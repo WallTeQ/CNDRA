@@ -6,7 +6,7 @@ import { Badge } from "./ui/Badge";
 import { formatDate } from "../utils/FormatDate";
 import { usePublishedNews, usePublishedEvents } from "../hooks/useGovernance";
 
-const FeaturedNewsSection: React.FC = () => {
+const FeatublueNewsSection: React.FC = () => {
   const {
     data: newsData,
     isLoading: newsLoading,
@@ -45,7 +45,7 @@ const FeaturedNewsSection: React.FC = () => {
         <div className="grid grid-cols-1 gap-2">
           {newsData?.slice(0, 4).map((article) => (
             <Link key={article.id} to={`/news/${article.id}`}>
-              <div className="overflow-hidden p-4 border bg-white rounded-lg hover:shadow-lg transition-all duration-300 hover:border-red-300 space-y-12">
+              <div className="overflow-hidden p-4 border bg-white rounded-lg hover:shadow-lg transition-all duration-300 hover:border-blue-300 space-y-12">
                 <div className="flex items-start gap-4 ">
                   {/* Image on the left */}
                   <div className="w-32 h-24 flex-shrink-0 bg-slate-200 rounded-lg overflow-hidden">
@@ -88,7 +88,7 @@ const FeaturedNewsSection: React.FC = () => {
                         {formatDate(article.createdAt)}
                       </span>
                     </div>
-                    <h4 className="text-base font-semibold text-slate-900 mb-2 line-clamp-2 hover:text-red-600 transition-colors">
+                    <h4 className="text-base font-semibold text-slate-900 mb-2 line-clamp-2 hover:text-blue-600 transition-colors">
                       {article.title}
                     </h4>
                     <p className="text-sm text-slate-700 mb-4 line-clamp-3">
@@ -97,7 +97,7 @@ const FeaturedNewsSection: React.FC = () => {
                     {article?.author && (
                       <div className="flex items-center gap-2 text-sm text-slate-600">
                         <User className="h-3.5 w-3.5" />
-                        <span>{article.author}</span>
+                        <span>{article.author.displayName}</span>
                       </div>
                     )}
                   </div>
@@ -113,9 +113,9 @@ const FeaturedNewsSection: React.FC = () => {
         
         <div className="space-y-6">
           {/* Upcoming Events */}
-          <div className="bg-gradient-to-br from-red-50 to-indigo-50 rounded-xl p-6 border border-red-200">
+          <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-6 border border-blue-200">
             <div className="flex items-center gap-2 mb-4">
-              <div className="w-10 h-10 bg-red-600 rounded-lg flex items-center justify-center">
+              <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center">
                 <Calendar className="w-5 h-5 text-white" />
               </div>
               <h3 className="font-semibold text-slate-900 text-lg">
@@ -128,7 +128,7 @@ const FeaturedNewsSection: React.FC = () => {
                 {upcomingEvents.map((event) => (
                   <div
                     key={event.id}
-                    className="bg-white rounded-lg p-4 border border-slate-200 hover:shadow-md transition-shadow"
+                    className="bg-white rounded-lg p-4 border border-blue-200 hover:shadow-md transition-shadow"
                   >
                     <h4 className="font-semibold text-slate-900 text-sm mb-2 line-clamp-2">
                       {event.title}
@@ -178,4 +178,4 @@ const FeaturedNewsSection: React.FC = () => {
   );
 };
 
-export default FeaturedNewsSection;
+export default FeatublueNewsSection;

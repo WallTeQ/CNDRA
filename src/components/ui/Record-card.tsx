@@ -182,7 +182,7 @@ function Badge({
     "inline-flex items-center px-2 py-1 rounded-md text-xs font-medium";
   const variantClasses =
     variant === "destructive"
-      ? "bg-red-100 text-red-700"
+      ? "bg-blue-100 text-blue-700"
       : "bg-slate-100 text-slate-700";
 
   return (

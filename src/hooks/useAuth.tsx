@@ -51,7 +51,7 @@ export const useAuth = () => {
     const result = await dispatch(loginAction(data));
     const success = result.type === "auth/login/fulfilled";
 
-    // ✅ Return user from login response, no getProfile call needed
+    // ✅ Return user from login response, 
     const userData = success ? (result.payload as { user: typeof user })?.user : null;
     return { success, user: userData };
   };

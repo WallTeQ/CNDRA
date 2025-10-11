@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   User,
@@ -26,11 +26,29 @@ import { useAuth } from "../../../hooks/useAuth";
 import { useAccessRequests } from "../../../hooks/useAccess";
 import { AccessRequest } from "../../../types/access";
 import { formatDate } from "../../../utils/FormatDate";
+import { getProfile } from "../../../store/slices/auth/authThunk";
+import { useAppDispatch, useAppSelector } from "../../../store";
 
 export default function UserProfilePage() {
-  const { user } = useAuth();
+   const dispatch = useAppDispatch();
+    const {
+      user,
+    } = useAppSelector((state) => state.auth);
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<"profile" | "requests">("profile");
+
+  useEffect(() => {
+    if (!user && !isLoading) {
+      // If not authenticated, redirect to login
+      navigate("/login");
+    } else if (!user && isLoading) {
+      // If loading and no user, try fetching profile
+      dispatch(getProfile());
+    }
+  }, [user, dispatch]);
+
+ 
+  console.log("user profile", user);
 
   // Fetch user's access requests
   const { data: accessRequests = [], isLoading } = useAccessRequests({});

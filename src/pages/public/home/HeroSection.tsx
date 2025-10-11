@@ -23,7 +23,7 @@ export const HeroSection: React.FC = () => {
           {/* Left Column - Text Content */}
           <div className="max-w-2xl lg:max-w-none">
             <div className="mb-6">
-              <span className="inline-block bg-red-600 text-white px-4 py-2 rounded-full text-sm font-medium mb-4">
+              <span className="inline-block bg-blue-600 text-white px-4 py-2 rounded-full text-sm font-medium mb-4">
                 Republic of Liberia National Archives
               </span>
             </div>
@@ -44,7 +44,7 @@ export const HeroSection: React.FC = () => {
               <Link to="/search" className="w-full sm:w-auto">
                 <Button
                   size="lg"
-                  className="w-full sm:w-auto bg-red-600 hover:bg-red-700 text-white px-8 py-4 text-lg font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center gap-3"
+                  className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 text-lg font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center gap-3"
                 >
                   Search Archives
                   
@@ -56,19 +56,19 @@ export const HeroSection: React.FC = () => {
             {/* <div className="mt-12 pt-8 border-t border-slate-600">
               <div className="grid grid-cols-3 gap-4 text-center sm:text-left">
                 <div>
-                  <div className="text-2xl sm:text-3xl font-bold text-red-400 mb-1">
+                  <div className="text-2xl sm:text-3xl font-bold text-blue-400 mb-1">
                     50+
                   </div>
                   <div className="text-sm text-slate-300">Years of History</div>
                 </div>
                 <div>
-                  <div className="text-2xl sm:text-3xl font-bold text-red-400 mb-1">
+                  <div className="text-2xl sm:text-3xl font-bold text-blue-400 mb-1">
                     50K+
                   </div>
                   <div className="text-sm text-slate-300">Digital Records</div>
                 </div>
                 <div>
-                  <div className="text-2xl sm:text-3xl font-bold text-red-400 mb-1">
+                  <div className="text-2xl sm:text-3xl font-bold text-blue-400 mb-1">
                     1000+
                   </div>
                   <div className="text-sm text-slate-300">Collections</div>
@@ -81,12 +81,12 @@ export const HeroSection: React.FC = () => {
           <div className="hidden lg:flex justify-center items-center">
             <div className="relative">
               {/* Decorative background */}
-              <div className="absolute inset-0 bg-gradient-to-br from-red-600 to-red-800 rounded-2xl transform rotate-6 opacity-20"></div>
+              <div className="absolute inset-0 bg-gradient-to-br from-blue-600 to-blue-800 rounded-2xl transform rotate-6 opacity-20"></div>
 
               {/* Main content card */}
               <div className="relative bg-white bg-opacity-10 backdrop-blur-sm rounded-2xl p-8 border border-white border-opacity-20 shadow-2xl">
                 <div className="text-center">
-                  <div className="w-16 h-16 bg-red-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <div className="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
                     <Search className="h-8 w-8 text-white" />
                   </div>
                   
@@ -96,19 +96,19 @@ export const HeroSection: React.FC = () => {
                   </p>
                   <div className="space-y-3 text-left">
                     <div className="flex items-center gap-3">
-                      <div className="w-2 h-2 bg-red-400 rounded-full"></div>
+                      <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
                       <span className="text-sm">Historical Documents</span>
                     </div>
                     <div className="flex items-center gap-3">
-                      <div className="w-2 h-2 bg-red-400 rounded-full"></div>
+                      <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
                       <span className="text-sm">Government Records</span>
                     </div>
                     <div className="flex items-center gap-3">
-                      <div className="w-2 h-2 bg-red-400 rounded-full"></div>
+                      <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
                       <span className="text-sm">Cultural Heritage</span>
                     </div>
                     <div className="flex items-center gap-3">
-                      <div className="w-2 h-2 bg-red-400 rounded-full"></div>
+                      <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
                       <span className="text-sm">Maps & Photographs</span>
                     </div>
                   </div>

@@ -137,8 +137,9 @@ export const SignupStep3: React.FC<SignupStep3Props> = ({
         console.log("Registration successful, calling onComplete");
         onComplete();
       } else {
-        const errorMessage = "Registration failed. Please try again.";
-        console.error(errorMessage);
+        const errorMessage = error || "Registration failed. Please try again.";
+        alert(errorMessage);
+        console.error("Registration failed:", errorMessage);
         setSubmitError(errorMessage);
         setError("root", {
           type: "manual",
@@ -155,8 +156,7 @@ export const SignupStep3: React.FC<SignupStep3Props> = ({
         message: errorMessage,
       });
     }
-  };
-
+  } 
   const getPasswordStrength = (password: string) => {
     if (!password) return { strength: 0, label: "", color: "" };
 
@@ -197,7 +197,7 @@ export const SignupStep3: React.FC<SignupStep3Props> = ({
   );
 
   return (
-    <Card className="w-full max-w-2xl mx-auto">
+    <Card className="w-full max-w-5xl mx-auto">
       <div className="text-center mb-6">
         <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
           <User className="h-8 w-8 text-red-600" />
@@ -563,15 +563,16 @@ export const SignupStep3: React.FC<SignupStep3Props> = ({
             variant="outline"
             onClick={onBack}
             disabled={isFormDisabled}
+            icon={<ArrowLeft className="h-4 w-4" />}
             className="flex-1 flex items-center justify-center space-x-2"
           >
-            <ArrowLeft className="h-4 w-4" />
             <span>Back</span>
           </Button>
 
           <Button
             type="submit"
             disabled={isFormDisabled}
+            icon={<CheckCircle className="h-4 w-4" />}
             className="flex-1 flex items-center justify-center space-x-2"
           >
             {isFormDisabled ? (
@@ -579,7 +580,7 @@ export const SignupStep3: React.FC<SignupStep3Props> = ({
             ) : (
               <>
                 <span>Complete Registration</span>
-                <CheckCircle className="h-4 w-4" />
+                
               </>
             )}
           </Button>

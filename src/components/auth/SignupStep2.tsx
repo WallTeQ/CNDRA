@@ -167,6 +167,7 @@ export const SignupStep2: React.FC<SignupStep2Props> = ({ onNext, onBack }) => {
 
           <Button
             type="submit"
+            icon={<ArrowRight className="h-4 w-4" />}
             className="flex-1 flex items-center justify-center space-x-2"
             disabled={isLoading || !code || code.length !== 6}
           >
@@ -175,7 +176,7 @@ export const SignupStep2: React.FC<SignupStep2Props> = ({ onNext, onBack }) => {
             ) : (
               <>
                 <span>Verify</span>
-                <ArrowRight className="h-4 w-4" />
+                
               </>
             )}
           </Button>

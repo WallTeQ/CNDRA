@@ -16,6 +16,9 @@ import {
   useConfidentialRecords,
 } from "../../hooks/useRecords";
 import { useAuth } from "../../hooks/useAuth";
+import Pagination from "../../components/Pagination";
+
+const ITEMS_PER_PAGE = 8;
 
 export default function RestrictedRecordsPage() {
   const navigate = useNavigate();
@@ -23,12 +26,13 @@ export default function RestrictedRecordsPage() {
     useRestrictedRecords();
   const { data: confidentialRecords = [], isLoading: confidentialLoading } =
     useConfidentialRecords();
-    const { user } = useAuth();
+  const { user } = useAuth();
 
   const [searchTerm, setSearchTerm] = useState("");
   const [accessTypeFilter, setAccessTypeFilter] = useState<
     "all" | "restricted" | "confidential"
   >("all");
+  const [currentPage, setCurrentPage] = useState(1);
 
   // Combine all records
   const allRecords = [
@@ -50,16 +54,33 @@ export default function RestrictedRecordsPage() {
     return matchesSearch && matchesAccessType;
   });
 
+  // Calculate pagination
+  const totalPages = Math.ceil(filteredRecords.length / ITEMS_PER_PAGE);
+  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+  const endIndex = startIndex + ITEMS_PER_PAGE;
+  const paginatedRecords = filteredRecords.slice(startIndex, endIndex);
+
   const loading = restrictedLoading || confidentialLoading;
 
   const handleRequestAccess = (record: any) => {
     // Navigate to request access page with record data if user is logged in else to login
     if (!user) {
-      return navigate("/login", { state: { from: "/records/restricted" } });
+      return navigate("/login");
     }
     navigate(`/records/request-access/${record.id}`, {
       state: { record },
     });
+  };
+
+  // Reset to page 1 when filters change
+  const handleSearchChange = (value: string) => {
+    setSearchTerm(value);
+    setCurrentPage(1);
+  };
+
+  const handleAccessTypeChange = (value: any) => {
+    setAccessTypeFilter(value);
+    setCurrentPage(1);
   };
 
   return (
@@ -76,7 +97,7 @@ export default function RestrictedRecordsPage() {
           </p>
           <div className="mt-4 text-sm text-muted-foreground leading-relaxed space-y-3">
             <p>
-              These records are part of Liberia’s preserved national heritage
+              These records are part of Liberia's preserved national heritage
               and contain sensitive information accessible only upon approval.
             </p>
             <p>
@@ -88,11 +109,11 @@ export default function RestrictedRecordsPage() {
             <p>
               To gain access, please submit a request outlining your purpose of
               use. Each request will be reviewed in accordance with the National
-              Archives’ access policies.
+              Archives' access policies.
             </p>
             <p>
               We appreciate your understanding as we work to protect and
-              preserve Liberia’s historical and governmental integrity.
+              preserve Liberia's historical and governmental integrity.
             </p>
           </div>
         </div>
@@ -106,14 +127,14 @@ export default function RestrictedRecordsPage() {
                 <Input
                   placeholder="Search records..."
                   value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
+                  onChange={(e) => handleSearchChange(e.target.value)}
                   className="pl-10"
                 />
               </div>
               <select
                 className="flex h-10 w-full rounded-lg border border-border bg-input px-3 py-2 text-sm"
                 value={accessTypeFilter}
-                onChange={(e) => setAccessTypeFilter(e.target.value as any)}
+                onChange={(e) => handleAccessTypeChange(e.target.value as any)}
               >
                 <option value="all">All Access Levels</option>
                 <option value="restricted">Restricted Only</option>
@@ -149,47 +170,53 @@ export default function RestrictedRecordsPage() {
             </CardContent>
           </Card>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {filteredRecords.map((record) => (
-              <Card
-                key={record.id}
-                className="hover:shadow-md transition-shadow"
-              >
-                <CardHeader>
-                  <div className="flex items-start justify-between">
-                    <CardTitle className="text-lg">{record.title}</CardTitle>
-                    <Badge
-                      variant={
-                        record.accessLevel === "confidential"
-                          ? "destructive"
-                          : "secondary"
-                      }
-                      className="capitalize"
-                    >
-                      {record.accessLevel}
-                    </Badge>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-sm text-muted-foreground mb-4 line-clamp-3">
-                    {record.description || "No description available"}
-                  </p>
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center text-sm text-muted-foreground">
-                      <Lock className="w-4 h-4 mr-2" />
-                      Access Restricted
+          <>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+              {paginatedRecords.map((record) => (
+                <Card
+                  key={record.id}
+                  className="hover:shadow-md transition-shadow"
+                >
+                  <CardHeader>
+                    <div className="flex items-start justify-between">
+                      <CardTitle className="text-lg">{record.title}</CardTitle>
+                      <Badge
+                       
+                      >
+                        {record.accessLevel}
+                      </Badge>
                     </div>
-                    <Button
-                      size="sm"
-                      onClick={() => handleRequestAccess(record)}
-                    >
-                      Request Access
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-sm text-muted-foreground mb-4 line-clamp-3">
+                      {record.description || "No description available"}
+                    </p>
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center text-sm text-muted-foreground">
+                        <Lock className="w-4 h-4 mr-2" />
+                        Access Restricted
+                      </div>
+                      <Button
+                        size="sm"
+                        onClick={() => handleRequestAccess(record)}
+                      >
+                        Request Access
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+
+            {/* Pagination */}
+            {totalPages > 1 && (
+              <Pagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPageChange={setCurrentPage}
+              />
+            )}
+          </>
         )}
       </div>
     </div>

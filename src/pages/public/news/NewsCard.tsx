@@ -31,18 +31,37 @@ export const NewsCard: React.FC<NewsCardProps> = ({
 }) => {
   return (
     <Card className="overflow-hidden" hover>
-      <div className="md:flex">
-        {article.imageUrl && (
-          <Link to={`/news/${article.id}`}>
-            <div className="md:flex-shrink-0">
-              <img
-                src={article.imageUrl}
-                alt={article.title}
-                className="h-48 w-full object-cover md:h-full md:w-48"
-              />
+      <div className="md:flex space-x-6">
+        <div className="w-32 h-24 flex-shrink-0 bg-slate-200 rounded-lg overflow-hidden">
+          {article.fileAssets?.[0]?.storagePath ? (
+            <Link to={`/news/${article.id}`}>
+            <img
+              src={article.fileAssets[0].storagePath}
+              alt={article.title}
+              className="w-full h-full object-cover"
+            />
+            </Link>
+          ) : (
+            <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-slate-100 to-slate-200">
+              <Link to={`/news/${article.id}`}>
+              <svg
+                className="w-8 h-8 text-slate-400"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"
+                />
+              </svg>
+              </Link>
             </div>
-          </Link>
-        )}
+            
+          )}
+        </div>
         <div className=" flex-1">
           <div className="flex items-center space-x-2 mb-3">
             <Badge
@@ -80,10 +99,13 @@ export const NewsCard: React.FC<NewsCardProps> = ({
           )}
 
           <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-2 text-sm text-slate-500">
-              <User className="h-4 w-4" />
-              <span>{article.author}</span>
-            </div>
+            {article.author && (
+              <div className="flex items-center space-x-2 text-sm text-slate-500">
+                <User className="h-4 w-4" />
+                <span>{article.author.displayName}</span>
+              </div>
+              )}
+            
             <div className="flex items-center space-x-2">
               <Button variant="ghost" size="sm">
                 <Bookmark className="h-4 w-4" />

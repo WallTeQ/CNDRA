@@ -29,9 +29,8 @@ const navigation = [
     href: "/dashboard/access-requests",
     icon: ClipboardCheck,
   },
-  { name: "Governance", href: "/dashboard/governance", icon: Building },
+  { name: "Publications", href: "/dashboard/governance", icon: Building },
   { name: "Users", href: "/dashboard/users", icon: Users },
-  { name: "Roles", href: "/dashboard/roles", icon: Users },
   { name: "Settings", href: "/dashboard/settings", icon: Settings },
 ];
 

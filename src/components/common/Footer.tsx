@@ -6,7 +6,7 @@ export const Footer: React.FC = () => {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="bg-gradient-to-r from-red-700 to-red-800 text-white">
+    <footer className="bg-gradient-to-r from-blue-700 to-blue-800 text-white">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
         <div className="text-center space-y-4">
           {/* Logo and Brand */}

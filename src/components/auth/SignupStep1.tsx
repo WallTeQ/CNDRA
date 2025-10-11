@@ -95,13 +95,14 @@ export const SignupStep1: React.FC<SignupStep1Props> = ({ onNext }) => {
           type="submit"
           className="w-full flex items-center justify-center space-x-2"
           disabled={isLoading}
+          icon={<ArrowRight className="h-4 w-4" />}
         >
           {isLoading ? (
             <span>Sending verification code...</span>
           ) : (
             <>
               <span>Send Verification Code</span>
-              <ArrowRight className="h-4 w-4" />
+              
             </>
           )}
         </Button>

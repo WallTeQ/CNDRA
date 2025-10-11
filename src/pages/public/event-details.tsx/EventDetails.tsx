@@ -11,6 +11,7 @@ import { EventContactInfo } from "./EventContact";
 import { RelatedEvents } from "./RelatedEvent";
 import { LoadingSpinner } from "../../../components/ui/LoadingSpinner";
 import { formatDate } from "../../../utils/FormatDate";
+
 export const EventDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const { data: event, isLoading, error } = useEvent(id || "", !!id);
