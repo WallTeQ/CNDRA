@@ -185,7 +185,7 @@ export const LoginPage: React.FC = React.memo(() => {
               </p>
             </div>
 
-            <div className="bg-red-50 p-4 rounded-lg">
+            {/* <div className="bg-red-50 p-4 rounded-lg">
               <h3 className="text-sm font-medium text-red-900 mb-2">
                 Demo Credentials
               </h3>
@@ -197,7 +197,7 @@ export const LoginPage: React.FC = React.memo(() => {
                   <strong>Password:</strong> TestPass123!
                 </p>
               </div>
-            </div>
+            </div> */}
           </div>
         </Card>
 
