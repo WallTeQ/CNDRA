@@ -18,7 +18,7 @@ export function DocumentDescription({ description }: DocumentDescriptionProps) {
       <CardContent>
         <div className="prose prose-slate max-w-none">
           <p className="text-slate-700 leading-relaxed text-lg">
-            {description}
+            <span dangerouslySetInnerHTML={{ __html: description }} />
           </p>
         </div>
       </CardContent>

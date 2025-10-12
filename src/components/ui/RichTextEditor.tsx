@@ -28,7 +28,7 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
         [{ direction: "rtl" }],
         [{ color: [] }, { background: [] }],
         [{ align: [] }],
-        ["link", "image", "video"],
+        ["link"],
         ["clean"],
       ],
     }),

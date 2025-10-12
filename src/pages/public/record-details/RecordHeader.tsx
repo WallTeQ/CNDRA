@@ -75,7 +75,7 @@ export function RecordHeader({
                 onClick={() => handleDownloadFile(primaryFile)}
                 icon={<Download className="h-4 w-4" />}
               >
-                Download ({fileSize})
+                Download ({fileType})
               </Button>
             )}
 

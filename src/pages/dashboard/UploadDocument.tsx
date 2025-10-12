@@ -13,6 +13,7 @@ import { Modal } from "../../components/ui/Modal";
 import { useDepartments } from "../../hooks/useDepartments";
 import { useCollections } from "../../hooks/useCollection";
 import { useCreateRecord, useUpdateRecord } from "../../hooks/useRecords";
+import { RichTextEditor } from "../../components/ui/RichTextEditor";
 
 export default function UploadDocumentPage({
   isOpen = true,
@@ -414,17 +415,12 @@ export default function UploadDocumentPage({
               </div>
             </div>
 
+           
             <div>
-              <label className="text-sm font-medium text-foreground">
-                Description
-              </label>
-              <textarea
-                className="mt-2 flex min-h-[80px] w-full rounded-lg border border-border bg-input px-3 py-2 text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                placeholder="Enter a detailed description of the document"
+              <label htmlFor="">Description</label>
+              <RichTextEditor
                 value={formData.description}
-                onChange={(e) =>
-                  handleInputChange("description", e.target.value)
-                }
+                onChange={(value) => handleInputChange("description", value)}
               />
             </div>
 

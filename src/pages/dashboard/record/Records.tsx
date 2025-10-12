@@ -135,6 +135,7 @@ export default function RecordsPage() {
   const handleDeleteRecord = async (id: string) => {
     try {
       await deleteRecordMutation.mutateAsync(id);
+      refetchRecords();
     } catch (error) {
       console.error("Failed to delete record:", error);
     }
@@ -191,7 +192,7 @@ export default function RecordsPage() {
           />
         )}
 
-        {/* Stats Cards - Using Reusable StatsGrid Component */}
+        {/* Stats Cards  */}
         <StatsGrid stats={recordStats} />
 
         {/* Filters */}
@@ -248,7 +249,7 @@ export default function RecordsPage() {
             setSelectedRecordForEdit(null);
           }}
           onSuccess={() => {
-            // React Query will automatically refetch
+            refetchRecords();
           }}
           isEdit={isEditMode}
           record={selectedRecordForEdit}

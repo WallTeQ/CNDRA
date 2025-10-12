@@ -124,7 +124,7 @@ export const Header: React.FC<HeaderProps> = () => {
                 rel="noopener noreferrer"
                 className="px-3 py-2 text-white hover:bg-blue-600 hover:bg-opacity-50 rounded transition-colors text-sm"
               >
-                Geo Trust
+                CNDRA
               </a>
             </nav>
 
@@ -236,6 +236,14 @@ export const Header: React.FC<HeaderProps> = () => {
                   {item.name}
                 </Link>
               ))}
+              <a
+                href="https://geo-trust-chain.lovable.app"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="px-3 py-2 text-white hover:bg-blue-600 hover:bg-opacity-50 rounded transition-colors text-sm"
+              >
+                CNDRA
+              </a>
               <div className="">
                 {(isAdmin() || isSuperAdmin()) && (
                   <Link

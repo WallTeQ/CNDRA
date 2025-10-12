@@ -116,14 +116,29 @@ export const DashboardLayout: React.FC = () => {
             </button>
           </div>
 
-          <Link to="/">
+          {/* <Link to="/">
           <div className="flex-shrink-0 flex items-center px-4">
             <Archive className="h-8 w-8 text-red-600" />
             <span className="ml-2 text-xl font-bold text-slate-900">
               Archive
             </span>
           </div>
-          </Link>
+          </Link> */}
+           <Link to="/" className="flex items-center space-x-4">
+                        <div className="flex items-center space-x-3">
+                          <div className=" p-2 rounded">
+                            <img
+                              src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS4LK9o6xiOCIMn5FAVs9kOsNrSmhkDfbkr-Qcttby_OwBB4HpiZEexSpzLRTBsHvEf1-w&usqp=CAU"
+                              alt="National Archive Logo"
+                              className="object-cover h-10 w-10"
+                            />
+                          </div>
+                          <div className="">
+                            <div className="text-lg font-bold">National Archive</div>
+                            <div className="text-xs opacity-90">Digital Library</div>
+                          </div>
+                        </div>
+                      </Link>
 
           <div className="mt-5 flex-1 h-0 overflow-y-auto">
             <nav className="px-2 space-y-1">
@@ -164,14 +179,21 @@ export const DashboardLayout: React.FC = () => {
       <div className="hidden md:flex md:flex-shrink-0">
         <div className="flex flex-col w-64">
           <div className="flex flex-col h-0 flex-1">
-            <Link to="/" >
-            <div className="flex items-center h-16 flex-shrink-0 px-4 bg-white border-r border-gray-200">
-              <Archive className="h-8 w-8 text-red-600" />
-              <span className="ml-2 text-xl font-bold text-slate-900">
-                Archive
-              </span>
-            </div>
-            </Link>
+             <Link to="/" className="flex items-center space-x-4">
+                          <div className="flex items-center space-x-3">
+                            <div className=" p-2 rounded">
+                              <img
+                                src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS4LK9o6xiOCIMn5FAVs9kOsNrSmhkDfbkr-Qcttby_OwBB4HpiZEexSpzLRTBsHvEf1-w&usqp=CAU"
+                                alt="National Archive Logo"
+                                className="object-cover h-10 w-10"
+                              />
+                            </div>
+                            <div className="">
+                              <div className="text-lg font-bold">National Archive</div>
+                              <div className="text-xs opacity-90">Digital Library</div>
+                            </div>
+                          </div>
+                        </Link>
             <div className="flex-1 flex flex-col overflow-y-auto bg-white border-r border-gray-200">
               <nav className="flex-1 px-2 py-4 space-y-1">
                 {filteredNavigation.map((item) => {

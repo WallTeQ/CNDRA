@@ -86,8 +86,8 @@ export const CreateUserModal: React.FC<CreateUserModalProps> = ({
             >
               <option value="">Select Department</option>
               {departments.map((dept) => (
-                <option key={dept} value={dept}>
-                  {dept}
+                <option key={dept.id} value={dept}>
+                  {dept.name}
                 </option>
               ))}
             </select>

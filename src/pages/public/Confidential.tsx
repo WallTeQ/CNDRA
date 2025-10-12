@@ -197,7 +197,7 @@ export default function RestrictedRecordsPage() {
                   </CardHeader>
                   <CardContent>
                     <p className="text-sm text-muted-foreground mb-4 line-clamp-3">
-                      {record.description || "No description available"}
+                      <span dangerouslySetInnerHTML={{ __html: record.description || "No description available" }} />
                     </p>
                     <div className="flex items-center justify-between">
                       <div className="flex items-center text-sm text-muted-foreground">
