@@ -338,7 +338,7 @@ export function RecordCard({
               </h3>
             </div>
 
-            <p className="text-sm text-slate-600 line-clamp-2">{description}</p>
+            <p className="text-sm text-slate-600 line-clamp-2" dangerouslySetInnerHTML={{ __html: description }} />
 
             <div className="flex flex-wrap gap-1.5">
               {subjectTags.slice(0, 3).map((tag) => (

@@ -22,56 +22,7 @@ import {
 import { useUsers } from "../../../hooks/useUser";
 import { useDepartments } from "../../../hooks/useDepartments";
 
-const mockUsers: User[] = [
-  {
-    id: "1",
-    email: "admin@cndra.gov",
-    name: "System Administrator",
-    role: "super_admin",
-    department: "IT",
-    permissions: ["read", "write", "delete", "admin", "user_management"],
-    avatar: "/diverse-user-avatars.png",
-    lastLogin: "2024-01-20 09:15:00",
-    createdDate: "2023-01-15",
-    status: "active",
-  },
-  {
-    id: "2",
-    email: "sarah.johnson@cndra.gov",
-    name: "Sarah Johnson",
-    role: "admin",
-    department: "Records Management",
-    permissions: ["read", "write", "delete", "admin"],
-    avatar: "/diverse-user-avatars.png",
-    lastLogin: "2024-01-20 08:45:00",
-    createdDate: "2023-03-10",
-    status: "active",
-  },
-  {
-    id: "3",
-    email: "mike.davis@cndra.gov",
-    name: "Mike Davis",
-    role: "staff",
-    department: "Archives",
-    permissions: ["read", "write"],
-    avatar: "/diverse-user-avatars.png",
-    lastLogin: "2024-01-19 16:30:00",
-    createdDate: "2023-06-20",
-    status: "active",
-  },
-  {
-    id: "4",
-    email: "jane.smith@cndra.gov",
-    name: "Jane Smith",
-    role: "staff",
-    department: "Legal",
-    permissions: ["read", "write"],
-    avatar: "/diverse-user-avatars.png",
-    lastLogin: "2024-01-18 14:20:00",
-    createdDate: "2023-08-05",
-    status: "inactive",
-  },
-];
+
 
 
 
@@ -101,13 +52,12 @@ export default function UsersPage() {
   const itemsPerPage = 10;
 
   // Calculate statistics
-  const activeUsers = users.filter((u) => u.status === "active").length;
+  const activeUsers = users.filter((u) => u.isActive === true).length;
   const administrators = users.filter(
-    (u) => u.role === "admin" || u.role === "super_admin"
+    (u) => u.roles[0].name === "admin" || u.roles[0].name === "super-admin"
   ).length;
   const inactiveUsers = users.filter(
-    (u) => u.status === "inactive" || u.status === "suspended"
-  ).length;
+    (u) => u.isActive === false).length;
 
   // Stats configuration for reusable StatCard components
   const userStats = [
@@ -225,7 +175,7 @@ export default function UsersPage() {
             className="whitespace-nowrap"
             icon={<Plus className="w-4 h-4" />}
           >
-            Advanced Filters
+            Add User
           </Button>
         </div>
       </div>

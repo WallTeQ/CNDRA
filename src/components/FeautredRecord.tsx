@@ -7,7 +7,8 @@ import { usePublicRecords } from "../hooks/useRecords";
 export default function FeaturedRecords() {
   const { data: records = [], isLoading: recordsLoading } = usePublicRecords();
 
-  const featuredRecords = records.slice(0, 6);
+  //TODO: records should returned from the backend already sorted by most recent or most accessed
+  const featuredRecords = records.slice(-6).reverse();
 
   return (
     <>

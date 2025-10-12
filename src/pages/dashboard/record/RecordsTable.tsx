@@ -85,8 +85,8 @@ export const RecordsTable: React.FC<RecordsTableProps> = ({
                       <div className="text-sm font-medium text-foreground">
                         {record.title || "Untitled"}
                       </div>
-                      <div className="text-xs text-muted-foreground truncate max-w-xs">
-                        {record.description || "No description"}
+                      <div className="text-xs text-muted-foreground truncate max-w-xs line-clamp-2">
+                        <div dangerouslySetInnerHTML={{ __html: record.description|| "No description" }} />
                       </div>
                       <div className="text-xs text-muted-foreground mt-1">
                         {formatDateTime(record.createdAt)}

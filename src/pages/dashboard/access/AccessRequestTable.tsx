@@ -92,10 +92,10 @@ export const AccessRequestsTable: React.FC<AccessRequestsTableProps> = ({
               <TableRow>
                 <TableHead>Request ID</TableHead>
                 <TableHead>Requester</TableHead>
-                <TableHead>Type</TableHead>
+                {/* <TableHead>Type</TableHead> */}
                 <TableHead>Status</TableHead>
-                <TableHead>Priority</TableHead>
-                <TableHead>Assigned To</TableHead>
+                {/* <TableHead>Priority</TableHead> */}
+                {/* <TableHead>Assigned To</TableHead> */}
                 <TableHead>Actions</TableHead>
               </TableRow>
             </TableHeader>
@@ -113,18 +113,18 @@ export const AccessRequestsTable: React.FC<AccessRequestsTableProps> = ({
                         <p className="text-sm text-muted-foreground">
                           {request.requesterEmail}
                         </p>
-                        {request.organization && (
+                        {/* {request.organization && (
                           <p className="text-xs text-muted-foreground">
                             {request.organization}
                           </p>
-                        )}
+                        )} */}
                       </div>
                     </TableCell>
-                    <TableCell>
+                    {/* <TableCell>
                       <Badge variant="outline" className="capitalize">
                         {request.requestType}
                       </Badge>
-                    </TableCell>
+                    </TableCell> */}
                     <TableCell>
                       <Badge
                         variant={getStatusVariant(request.status)}
@@ -133,15 +133,15 @@ export const AccessRequestsTable: React.FC<AccessRequestsTableProps> = ({
                         {request.status.name}
                       </Badge>
                     </TableCell>
-                    <TableCell>
+                    {/* <TableCell>
                       <Badge
                         variant={getPriorityVariant(request.priority)}
                         className="capitalize"
                       >
                         {request.priority}
                       </Badge>
-                    </TableCell>
-                    <TableCell>{request.assignedTo || "Unassigned"}</TableCell>
+                    </TableCell> */}
+                    {/* <TableCell>{request.assignedTo || "Unassigned"}</TableCell> */}
                     <TableCell>
                       <div className="flex space-x-2">
                         <Button

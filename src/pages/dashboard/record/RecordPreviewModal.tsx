@@ -112,7 +112,7 @@ export const RecordPreviewModal: React.FC<RecordPreviewModalProps> = ({
                   Description
                 </label>
                 <p className="text-foreground">
-                  {record.description || "No description"}
+                  <div dangerouslySetInnerHTML={{ __html: record.description || "No description" }} />
                 </p>
               </div>
               <div>
