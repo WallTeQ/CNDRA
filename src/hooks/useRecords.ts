@@ -57,7 +57,7 @@ export const useConfidentialRecords = () => {
 };
 
 // Helper function to create FormData for record creation/update
-const createRecordFormData = (recordData: any): FormData => {
+const createRecordFormData = (recordData: Record): FormData => {
   const formData = new FormData();
 
   // Append non-file fields
@@ -90,7 +90,7 @@ export const useCreateRecord = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (data: any) => {
+    mutationFn: (data: Record) => {
       // Create FormData for file uploads
       const formData = createRecordFormData(data);
 

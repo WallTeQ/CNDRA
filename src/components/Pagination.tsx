@@ -37,7 +37,7 @@ const Pagination: React.FC<PaginationProps> = ({
         return (
           <Button
             key={pageNumber}
-            variant={currentPage === pageNumber ? "default" : "outline"}
+            variant={currentPage === pageNumber ? "primary" : "outline"}
             onClick={() => onPageChange(pageNumber)}
             size="sm"
           >

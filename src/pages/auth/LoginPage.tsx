@@ -7,6 +7,7 @@ import { Archive, Eye, EyeOff } from "lucide-react";
 import { Card } from "../../components/ui/Card";
 import { Button } from "../../components/ui/Button";
 import { useAuth } from "../../hooks/useAuth";
+import { UserRole } from "../../types/user";
 
 const schema = yup.object({
   email: yup
@@ -49,7 +50,7 @@ export const LoginPage: React.FC = React.memo(() => {
       if (success && loggedInUser) {
         // ✅ Check roles from the login response user object
         const roleNames =
-          loggedInUser.roles?.map((role: any) => role?.name) || [];
+          loggedInUser.roles?.map((role: UserRole) => role?.name) || [];
         const isAdmin = roleNames.some((role: string) =>
           ["admin", "super-admin"].includes(role)
         );

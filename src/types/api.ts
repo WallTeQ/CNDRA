@@ -41,10 +41,19 @@ export interface LoginData {
   password: string;
 }
 
+export interface RolePermission {
+  id: string;
+  action: string;
+  description: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface UserRole {
   id: string;
   name: string;
   description: string;
+  permissions: RolePermission[];
 }
 
 export interface AuthUser {

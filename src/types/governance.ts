@@ -2,7 +2,8 @@ export interface News {
   id: string;
   title: string;
   content: string;
-  files?: FileAsset[];
+  author: Author;
+  fileAssets?: FileAsset[];
   status: "draft" | "published";
   publishedAt?: string;
   createdAt: string;
@@ -29,6 +30,8 @@ export interface Event {
   startsAt: string;
   endsAt: string;
   location: string;
+  requiresRegistration?: number;
+  registrationUrl?: string;
   status: "draft" | "published";
   publishedAt?: string;
   createdAt: string;
@@ -36,10 +39,17 @@ export interface Event {
   createdBy: string;
 }
 
+export interface Author {
+  id: string;
+  displayName: string;
+  email: string;
+}
+
 export interface FileAsset {
   id: string;
   filename: string;
   fileType: string;
+  storagePath: string;
   fileSize: number;
   url: string;
   previewUrl?: string;
@@ -93,4 +103,23 @@ export interface UpdateEventRequest {
 export interface PublishRequest {
   noticeId?: string;
   eventId?: string;
+}
+
+export interface NewsFilters {
+  status?: "draft" | "published";
+  authorId?: string;
+  page?: number;
+  pageSize?: number;
+}
+
+export interface NoticeFilters {
+  status?: "draft" | "published";
+  page?: number;
+  pageSize?: number;
+}
+
+export interface EventFilters {
+  status?: "draft" | "published";
+  page?: number;
+  pageSize?: number;
 }

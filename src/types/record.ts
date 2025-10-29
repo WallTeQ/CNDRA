@@ -1,9 +1,14 @@
-// types/record.types.ts
 export interface FileAsset {
   filename: string;
   storagePath: string;
   size: string;
   contentType?: string;
+  id: string;
+  mimeType: string;
+  type: string;
+  isPublic: boolean;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface Collection {
@@ -15,10 +20,13 @@ export interface Record {
   id: string;
   title: string;
   description?: string;
-  accessLevel: "PUBLIC" | "RESTRICTED" | "CONFIDENTIAL" | "SECRET";
+  accessLevel: "PUBLIC" | "RESTRICTED" | "CONFIDENTIAL" ;
   collection?: Collection;
   fileAssets: FileAsset[];
-  subjectTags: string[];
+  subjectTags: Array<{
+    id: string;
+    term: string;
+  }>;
   createdAt: string;
   updatedAt: string;
 }
@@ -26,5 +34,11 @@ export interface Record {
 export interface Department {
   id: string;
   name: string;
-  collections?: Collection[];
+  collection: {
+    id: string;
+    title: string;
+    description: string;
+    createdAt: string;
+    updatedAt: string;
+  };
 }

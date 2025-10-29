@@ -1,4 +1,4 @@
-// types/activity.types.ts
+
 import { LucideIcon } from "lucide-react";
 
 export interface Activity {

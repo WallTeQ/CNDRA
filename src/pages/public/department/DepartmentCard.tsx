@@ -36,10 +36,10 @@ export function DepartmentCard({ department }: DepartmentCardProps) {
             {department.name}
           </h3>
           <div className="flex flex-col gap-1">
-            <Badge variant="secondary" className="text-xs whitespace-nowrap">
+            <Badge variant="default" className="text-xs whitespace-nowrap">
               {collectionsCount} collection{collectionsCount !== 1 ? "s" : ""}
             </Badge>
-            <Badge variant="outline" className="text-xs whitespace-nowrap">
+            <Badge variant="success" className="text-xs whitespace-nowrap">
               {recordsCount} record{recordsCount !== 1 ? "s" : ""}
             </Badge>
           </div>
@@ -64,7 +64,7 @@ export function DepartmentCard({ department }: DepartmentCardProps) {
                   <span className="text-muted-foreground truncate">
                     {collection.title}
                   </span>
-                  <Badge variant="outline" className="text-xs ml-2">
+                  <Badge variant="success" className="text-xs ml-2">
                     {collection.records?.length || 0}
                   </Badge>
                 </div>
@@ -83,11 +83,8 @@ export function DepartmentCard({ department }: DepartmentCardProps) {
             variant="ghost"
             size="sm"
             className="p-0 h-auto text-primary hover:text-primary/80"
-            asChild
           >
-            {/* <a href={`/public/departments/${department.id}`}>
-              Browse Department →
-            </a> */}
+            Browse Department →
           </Button>
           <span className="text-xs text-muted-foreground">
             Created {new Date(department.createdAt).toLocaleDateString()}

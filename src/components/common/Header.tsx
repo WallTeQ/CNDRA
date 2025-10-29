@@ -4,10 +4,7 @@ import {
   Search,
   Menu,
   X,
-  Archive,
   HelpCircle,
-  // Globe,
-  // Eye,
   User,
   LayoutDashboard,
 } from "lucide-react";

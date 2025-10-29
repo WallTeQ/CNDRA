@@ -40,7 +40,7 @@ export const SignupStep1: React.FC<SignupStep1Props> = ({ onNext }) => {
       if (success) {
         onNext();
       }
-    } catch (err: any) {
+    } catch (err : any) {
       setError("email", {
         type: "manual",
         message: err.message || "Failed to send verification code",

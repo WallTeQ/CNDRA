@@ -28,7 +28,7 @@ export const LoadingSpinner = ({
       <div className={`flex flex-col items-center ${className}`}>
         <div
           aria-hidden="true"
-          className={`animate-spin rounded-full border-2 border-gray-300 border-t-red-600 ${sizeClasses[size]}`}
+          className={`animate-spin rounded-full border-2 border-gray-300 border-t-blue-600 ${sizeClasses[size]}`}
         />
         {message && <p className="mt-2 text-gray-600">{message}</p>}
       </div>

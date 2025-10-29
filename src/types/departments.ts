@@ -17,6 +17,12 @@ export interface Department {
   updatedAt: string;
 }
 
+export interface DepartmentFilters {
+  name?: string;
+  page?: number;
+  pageSize?: number;
+}
+
 export interface DepartmentFormData {
   name: string;
   description: string;

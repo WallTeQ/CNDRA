@@ -1,9 +1,7 @@
 import React, { useState } from "react";
 import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
 import {
-  Archive,
   LayoutDashboard,
-  // Upload,
   FileText,
   Users,
   Settings,
@@ -14,6 +12,7 @@ import {
   Search,
   ClipboardCheck,
   Building,
+  Scan,
 } from "lucide-react";
 import { Button } from "../components/ui/Button";
 import { useAuth } from "../hooks/useAuth";
@@ -22,6 +21,7 @@ const navigation = [
   { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
   // { name: "Upload Document", href: "/dashboard/upload", icon: Upload },
   { name: "Records", href: "/dashboard/records", icon: FileText },
+  { name: "Scan Document", href: "/dashboard/scanning", icon: Scan },
   { name: "Departments", href: "/dashboard/departments", icon: Users },
   { name: "Collections", href: "/dashboard/collections", icon: ClipboardCheck },
   {

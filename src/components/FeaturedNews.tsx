@@ -2,11 +2,11 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { User, Calendar, MapPin } from "lucide-react";
 import { Button } from "./ui/Button";
-import { Badge } from "./ui/Badge";
 import { formatDate } from "../utils/FormatDate";
 import { usePublishedNews, usePublishedEvents } from "../hooks/useGovernance";
+import { LoadingSpinner } from "./ui/LoadingSpinner";
 
-const FeatublueNewsSection: React.FC = () => {
+const FeaturedNewsSection: React.FC = () => {
   const {
     data: newsData,
     isLoading: newsLoading,
@@ -25,17 +25,22 @@ const FeatublueNewsSection: React.FC = () => {
     )
     .slice(0, 3);
 
-  const getCategoryColor = (category: string) => {
-    const colors: {
-      [key: string]: "default" | "success" | "warning" | "danger" | "info";
-    } = {
-      news: "info",
-      announcement: "success",
-      research: "warning",
-      acquisition: "default",
-    };
-    return colors[category] || "default";
-  };
+  if (newsLoading || eventsLoading) {
+    return (
+      <div>
+        <LoadingSpinner
+          size="md"
+          message="Loading ..."
+          fullScreen={false}
+          className="flex items-center justify-center"
+        />
+      </div>
+    );
+  }
+
+  if (newsError || eventsError) {
+    return <div>Error loading data.</div>;
+  }
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -77,13 +82,6 @@ const FeatublueNewsSection: React.FC = () => {
                   {/* Content on the right */}
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-2">
-                      <Badge
-                        variant={getCategoryColor(article.category)}
-                        size="xs"
-                        className="capitalize"
-                      >
-                        {article.category}
-                      </Badge>
                       <span className="text-xs text-slate-500">
                         {formatDate(article.createdAt)}
                       </span>
@@ -178,4 +176,4 @@ const FeatublueNewsSection: React.FC = () => {
   );
 };
 
-export default FeatublueNewsSection;
+export default FeaturedNewsSection;

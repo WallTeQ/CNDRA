@@ -95,6 +95,7 @@ export interface NewCollectionForm {
 export interface Record {
   id: string;
   title: string;
+  collectionId?: string;
   description: string;
   subjectTags: string[];
   accessLevel: string;

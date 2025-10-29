@@ -11,7 +11,9 @@ import {
   UpdateNoticeRequest,
   CreateEventRequest,
   UpdateEventRequest,
-  PublishRequest,
+  NewsFilters,
+  NoticeFilters,
+  EventFilters,
 } from "../types/governance";
 
 // Query keys
@@ -20,32 +22,32 @@ export const governanceKeys = {
 
   // News keys
   news: () => [...governanceKeys.all, "news"] as const,
-  newsList: (filters: Record<string, any>) =>
+  newsList: (filters?: NewsFilters) =>
     [...governanceKeys.news(), "list", { filters }] as const,
-  newsPublished: (filters: Record<string, any>) =>
+  newsPublished: (filters?: NewsFilters) =>
     [...governanceKeys.news(), "published", { filters }] as const,
-  newsAdmin: (filters: Record<string, any>) =>
+  newsAdmin: (filters?: NewsFilters) =>
     [...governanceKeys.news(), "admin", { filters }] as const,
   newsDetail: (id: string) => [...governanceKeys.news(), "detail", id] as const,
 
   // Notice keys
   notices: () => [...governanceKeys.all, "notices"] as const,
-  noticesList: (filters: Record<string, any>) =>
+  noticesList: (filters?: NoticeFilters) =>
     [...governanceKeys.notices(), "list", { filters }] as const,
-  noticesPublished: (filters: Record<string, any>) =>
+  noticesPublished: (filters?: NoticeFilters) =>
     [...governanceKeys.notices(), "published", { filters }] as const,
-  noticesAdmin: (filters: Record<string, any>) =>
+  noticesAdmin: (filters?: NoticeFilters) =>
     [...governanceKeys.notices(), "admin", { filters }] as const,
   noticesDetail: (id: string) =>
     [...governanceKeys.notices(), "detail", id] as const,
 
   // Event keys
   events: () => [...governanceKeys.all, "events"] as const,
-  eventsList: (filters: Record<string, any>) =>
+  eventsList: (filters?: EventFilters) =>
     [...governanceKeys.events(), "list", { filters }] as const,
-  eventsPublished: (filters: Record<string, any>) =>
+  eventsPublished: (filters?: EventFilters) =>
     [...governanceKeys.events(), "published", { filters }] as const,
-  eventsAdmin: (filters: Record<string, any>) =>
+  eventsAdmin: (filters?: EventFilters) =>
     [...governanceKeys.events(), "admin", { filters }] as const,
   eventsDetail: (id: string) =>
     [...governanceKeys.events(), "detail", id] as const,
@@ -56,7 +58,7 @@ export const governanceKeys = {
 // ============================================================================
 
 export const usePublishedNews = (
-  filters?: Record<string, any>
+  filters?: NewsFilters
 ): UseQueryResult<News[], Error> => {
   return useQuery({
     queryKey: governanceKeys.newsPublished(filters || {}),
@@ -66,7 +68,7 @@ export const usePublishedNews = (
 };
 
 export const useAllNews = (
-  filters?: Record<string, any>
+  filters?: NewsFilters
 ): UseQueryResult<News[], Error> => {
   return useQuery({
     queryKey: governanceKeys.newsAdmin(filters || {}),
@@ -201,7 +203,7 @@ export const useDeleteNews = (): UseMutationResult<void, Error, string> => {
 // ============================================================================
 
 export const usePublishedNotices = (
-  filters?: Record<string, any>
+  filters?: NoticeFilters
 ): UseQueryResult<Notice[], Error> => {
   return useQuery({
     queryKey: governanceKeys.noticesPublished(filters || {}),
@@ -211,7 +213,7 @@ export const usePublishedNotices = (
 };
 
 export const useAllNotices = (
-  filters?: Record<string, any>
+  filters?: NoticeFilters
 ): UseQueryResult<Notice[], Error> => {
   return useQuery({
     queryKey: governanceKeys.noticesAdmin(filters || {}),
@@ -341,7 +343,7 @@ export const usePublishedEvents = (
 };
 
 export const useAllEvents = (
-  filters?: Record<string, any>
+  filters?: EventFilters
 ): UseQueryResult<Event[], Error> => {
   return useQuery({
     queryKey: governanceKeys.eventsAdmin(filters || {}),
