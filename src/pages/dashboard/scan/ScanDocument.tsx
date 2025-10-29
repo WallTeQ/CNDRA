@@ -111,18 +111,36 @@ const ScanningQCDashboard = () => {
 
   const openCamera = async () => {
     setScanMethod("camera");
+    setCameraActive(true);
+
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: "environment" },
-      });
+      const constraints = {
+        video: {
+          facingMode: { ideal: "environment" },
+          width: { ideal: 1280 },
+          height: { ideal: 720 },
+        },
+      };
+
+      const stream = await navigator.mediaDevices.getUserMedia(constraints);
       streamRef.current = stream;
+
       if (videoRef.current) {
         videoRef.current.srcObject = stream;
+
+        videoRef.current.onloadedmetadata = () => {
+          videoRef.current.play().catch((err) => {
+            console.error("Error playing video:", err);
+            alert("Error starting camera preview. Please try again.");
+          });
+        };
       }
-      setCameraActive(true);
     } catch (err) {
-      alert("Unable to access camera. Please check permissions.");
+      setCameraActive(false);
       console.error("Camera error:", err);
+      alert(
+        `Unable to access camera: ${err.message}. Please check permissions and try again.`
+      );
     }
   };
 
@@ -912,6 +930,4 @@ const ScanningQCDashboard = () => {
     </div>
   );
 }
-
-
 export default ScanningQCDashboard;
