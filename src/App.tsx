@@ -38,6 +38,8 @@ import { GovernanceDashboard } from "./pages/dashboard/governance/Governance";
 import { LoadingSpinner } from "./components/ui/LoadingSpinner";
 import RequestDetailPage from "./pages/dashboard/access/RequestDetails";
 import ScanningQCDashboard from "./pages/dashboard/scan/ScanDocument";
+import SecureDocumentSharing from "./pages/dashboard/share-document/ShareDocument";
+import Onboarding from "./pages/dashboard/onboard/Onboard";
 // Other Pages
 import { NotFound } from "./pages/NotFound";
 import RolesPage from "./pages/dashboard/Roles";
@@ -94,8 +96,10 @@ const AppContent: React.FC = () => {
           <Route index element={<DashboardHome />} />
           <Route path="upload" element={<UploadDocumentPage />} />
           <Route path="scanning" element={<ScanningQCDashboard />} />
+          <Route path="onboarding" element={<Onboarding />} />
           <Route path="documents" element={<RecordsPage />} />
           <Route path="records" element={<RecordsPage />} />
+          <Route path="sharing" element={<SecureDocumentSharing />} />
           <Route path="departments" element={<DepartmentsPage />} />
           <Route path="collections" element={<CollectionsPage />} />
           <Route path="access-requests" element={<AccessRequestsPage />} />

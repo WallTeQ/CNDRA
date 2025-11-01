@@ -15,6 +15,61 @@ import {
   XCircle,
 } from "lucide-react";
 
+const useCamera = () => {
+  const [isCameraReady, setIsCameraReady] = useState(false);
+  const videoRef = useRef(null);
+  const streamRef = useRef(null);
+
+  const stopCamera = () => {
+    if (streamRef.current) {
+      streamRef.current.getTracks().forEach((track) => track.stop());
+      streamRef.current = null;
+    }
+    if (videoRef.current) {
+      videoRef.current.srcObject = null;
+    }
+    setIsCameraReady(false);
+  };
+
+  const startCamera = async () => {
+    try {
+      const constraints = {
+        video: {
+          facingMode: "environment",
+          width: { ideal: 1280 },
+          height: { ideal: 720 },
+        },
+      };
+
+      const stream = await navigator.mediaDevices.getUserMedia(constraints);
+      streamRef.current = stream;
+
+      if (videoRef.current) {
+        videoRef.current.srcObject = stream;
+
+        // Set ready immediately after stream is assigned
+        setIsCameraReady(true);
+
+        // Try to play the video
+        try {
+          await videoRef.current.play();
+        } catch (playErr) {
+          console.log("Autoplay prevented, but camera is ready:", playErr);
+        }
+      }
+    } catch (err) {
+      console.error("Camera error:", err);
+      setIsCameraReady(false);
+      throw err instanceof Error ? err : new Error("Failed to access camera");
+    }
+  };
+
+  useEffect(() => {
+    return () => stopCamera();
+  }, []);
+
+  return { videoRef, isCameraReady, startCamera, stopCamera, streamRef };
+};
 const ScanningQCDashboard = () => {
   const [activeTab, setActiveTab] = useState("scanning");
   const [batches, setBatches] = useState([
@@ -80,22 +135,12 @@ const ScanningQCDashboard = () => {
   const [scanningActive, setScanningActive] = useState(false);
   const [currentScan, setCurrentScan] = useState(null);
   const [cameraActive, setCameraActive] = useState(false);
-  const [capturedImage, setCapturedImage] = useState(null);
   const [isProcessing, setIsProcessing] = useState(false);
-  const [scanMethod, setScanMethod] = useState(null);
+  const [error, setError] = useState(null);
 
-  const videoRef = useRef(null);
+  const { videoRef, isCameraReady, startCamera, stopCamera } = useCamera();
   const canvasRef = useRef(null);
-  const streamRef = useRef(null);
   const fileInputRef = useRef(null);
-
-  useEffect(() => {
-    return () => {
-      if (streamRef.current) {
-        streamRef.current.getTracks().forEach((track) => track.stop());
-      }
-    };
-  }, []);
 
   const startScanning = () => {
     setScanningActive(true);
@@ -106,83 +151,72 @@ const ScanningQCDashboard = () => {
       lastBarcode: null,
       status: "scanning",
     });
-    setScanMethod(null);
   };
 
   const openCamera = async () => {
-    setScanMethod("camera");
-    setCameraActive(true);
-
     try {
-      const constraints = {
-        video: {
-          facingMode: { ideal: "environment" },
-          width: { ideal: 1280 },
-          height: { ideal: 720 },
-        },
-      };
-
-      const stream = await navigator.mediaDevices.getUserMedia(constraints);
-      streamRef.current = stream;
-
-      if (videoRef.current) {
-        videoRef.current.srcObject = stream;
-
-        videoRef.current.onloadedmetadata = () => {
-          videoRef.current.play().catch((err) => {
-            console.error("Error playing video:", err);
-            alert("Error starting camera preview. Please try again.");
-          });
-        };
-      }
+      setError(null);
+      setCameraActive(true);
+      await startCamera();
     } catch (err) {
       setCameraActive(false);
-      console.error("Camera error:", err);
-      alert(
-        `Unable to access camera: ${err.message}. Please check permissions and try again.`
+      setError(
+        err.message || "Failed to access camera. Please check permissions."
       );
+      console.error("Camera error:", err);
     }
   };
 
-  const capturePhoto = () => {
-    const video = videoRef.current;
-    const canvas = canvasRef.current;
+  const capturePhoto = async () => {
+    if (!videoRef.current || !isCameraReady) {
+      setError("Camera not ready. Please try again.");
+      return;
+    }
 
-    if (video && canvas) {
-      canvas.width = video.videoWidth;
-      canvas.height = video.videoHeight;
+    try {
+      const canvas = canvasRef.current;
+      if (!canvas) return;
+
+      canvas.width = videoRef.current.videoWidth;
+      canvas.height = videoRef.current.videoHeight;
       const ctx = canvas.getContext("2d");
-      ctx.drawImage(video, 0, 0);
-      const imageData = canvas.toDataURL("image/jpeg");
-      setCapturedImage(imageData);
+
+      if (!ctx) {
+        throw new Error("Failed to get canvas context");
+      }
+
+      ctx.drawImage(videoRef.current, 0, 0);
+      const imageData = canvas.toDataURL("image/jpeg", 0.95);
+
       closeCamera();
       processDocument(imageData, "camera");
+    } catch (err) {
+      setError("Failed to capture image. Please try again.");
+      console.error("Capture error:", err);
     }
   };
 
   const closeCamera = () => {
-    if (streamRef.current) {
-      streamRef.current.getTracks().forEach((track) => track.stop());
-      streamRef.current = null;
-    }
+    stopCamera();
     setCameraActive(false);
   };
 
   const handleFileUpload = (e) => {
-    setScanMethod("upload");
     const file = e.target.files[0];
     if (file && file.type.startsWith("image/")) {
       const reader = new FileReader();
       reader.onload = (event) => {
-        setCapturedImage(event.target.result);
         processDocument(event.target.result, "upload");
       };
       reader.readAsDataURL(file);
+    } else {
+      setError("Please select a valid image file.");
     }
   };
 
   const processDocument = (imageData, method) => {
     setIsProcessing(true);
+    setError(null);
 
     setTimeout(() => {
       const barcodes = [
@@ -221,8 +255,6 @@ const ScanningQCDashboard = () => {
       });
 
       setIsProcessing(false);
-      setCapturedImage(null);
-      setScanMethod(null);
     }, 2000);
   };
 
@@ -236,7 +268,9 @@ const ScanningQCDashboard = () => {
 
   const completeBatch = () => {
     if (!currentScan || currentScan.docsScanned === 0) {
-      alert("Please scan at least one document before completing the batch.");
+      setError(
+        "Please scan at least one document before completing the batch."
+      );
       return;
     }
 
@@ -273,6 +307,7 @@ const ScanningQCDashboard = () => {
 
     setScanningActive(false);
     setCurrentScan(null);
+    setError(null);
   };
 
   const startEditing = (doc) => {
@@ -388,6 +423,22 @@ const ScanningQCDashboard = () => {
       </div>
 
       <div className="max-w-7xl mx-auto px-6 py-6">
+        {error && (
+          <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg flex items-start gap-3">
+            <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
+            <div>
+              <p className="text-sm font-medium text-red-900">Error</p>
+              <p className="text-sm text-red-700 mt-1">{error}</p>
+            </div>
+            <button
+              onClick={() => setError(null)}
+              className="ml-auto text-red-600 hover:text-red-800"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          </div>
+        )}
+
         {activeTab === "scanning" && (
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <div className="lg:col-span-1">
@@ -423,7 +474,7 @@ const ScanningQCDashboard = () => {
                       )}
                     </div>
 
-                    {!cameraActive && !scanMethod && (
+                    {!cameraActive && !isProcessing && (
                       <div className="space-y-2">
                         <button
                           onClick={openCamera}
@@ -502,36 +553,49 @@ const ScanningQCDashboard = () => {
               {cameraActive ? (
                 <div className="bg-black rounded-lg shadow-sm overflow-hidden">
                   <div className="relative">
-                    <video
-                      ref={videoRef}
-                      autoPlay
-                      playsInline
-                      className="w-full h-96 object-cover"
-                    />
+                    <div className="w-full aspect-video bg-gray-900 flex items-center justify-center">
+                      <video
+                        ref={videoRef}
+                        autoPlay
+                        playsInline
+                        muted
+                        className="w-full h-full object-contain"
+                      />
+                    </div>
                     <canvas ref={canvasRef} className="hidden" />
 
-                    <div className="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black/70 to-transparent">
+                    <div className="absolute top-4 left-4 right-4">
+                      <div className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium text-center shadow-lg">
+                        📄 Position document with barcode visible
+                      </div>
+                    </div>
+
+                    {!isCameraReady && (
+                      <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50">
+                        <div className="text-white text-center">
+                          <Scan className="w-12 h-12 mx-auto mb-2 animate-pulse" />
+                          <p className="text-sm">Initializing camera...</p>
+                        </div>
+                      </div>
+                    )}
+
+                    <div className="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black/80 to-transparent">
                       <div className="flex items-center justify-center gap-4">
                         <button
                           onClick={closeCamera}
-                          className="px-6 py-3 bg-red-600 text-white rounded-lg font-medium hover:bg-red-700 flex items-center gap-2"
+                          className="px-6 py-3 bg-red-600 text-white rounded-lg font-medium hover:bg-red-700 flex items-center gap-2 shadow-lg"
                         >
                           <XCircle className="w-5 h-5" />
                           Cancel
                         </button>
                         <button
                           onClick={capturePhoto}
-                          className="px-8 py-3 bg-white text-gray-900 rounded-lg font-medium hover:bg-gray-100 flex items-center gap-2"
+                          disabled={!isCameraReady}
+                          className="px-8 py-3 bg-white text-gray-900 rounded-lg font-medium hover:bg-gray-100 flex items-center gap-2 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                           <Camera className="w-5 h-5" />
                           Capture Document
                         </button>
-                      </div>
-                    </div>
-
-                    <div className="absolute top-4 left-4 right-4">
-                      <div className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium">
-                        Position document with barcode visible
                       </div>
                     </div>
                   </div>
@@ -547,7 +611,7 @@ const ScanningQCDashboard = () => {
                   </div>
 
                   {scanningActive && currentScan?.documents.length > 0 ? (
-                    <div className="divide-y divide-gray-200">
+                    <div className="divide-y divide-gray-200 max-h-[600px] overflow-y-auto">
                       {currentScan.documents.map((doc) => (
                         <div key={doc.id} className="p-6 hover:bg-gray-50">
                           <div className="flex items-start justify-between">
@@ -656,12 +720,10 @@ const ScanningQCDashboard = () => {
                   <h2 className="text-lg font-semibold text-gray-900">
                     QC Review Queue
                   </h2>
-                  <div className="flex gap-2">
-                    <button className="px-3 py-1.5 bg-white border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 flex items-center gap-2">
-                      <Filter className="w-4 h-4" />
-                      Filter
-                    </button>
-                  </div>
+                  <button className="px-3 py-1.5 bg-white border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 flex items-center gap-2">
+                    <Filter className="w-4 h-4" />
+                    Filter
+                  </button>
                 </div>
                 <div className="divide-y divide-gray-200">
                   {qcDocuments.map((doc) => (
@@ -887,7 +949,6 @@ const ScanningQCDashboard = () => {
                           <button
                             onClick={() => {
                               setEditingMetadata(null);
-                              setSelectedDoc(null);
                             }}
                             className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg font-medium hover:bg-gray-300"
                           >

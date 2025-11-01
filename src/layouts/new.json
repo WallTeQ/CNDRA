@@ -1,0 +1,279 @@
+{
+  "template_version": "1.0",
+  "iso_standard": "ISO 16175-3:2010",
+  "ministry": {
+    "name": "Ministry of Health",
+    "code": "MOH",
+    "description": "Responsible for national health policy and healthcare services",
+    "established_date": "2025-01-15"
+  },
+  "departments": [
+    {
+      "id": "dept_001",
+      "name": "Public Health Services",
+      "code": "PHS",
+      "parent_ministry": "MOH",
+      "description": "Manages public health programs and disease prevention",
+      "head_officer": {
+        "role": "Director of Public Health",
+        "email": "dph@health.gov"
+      }
+    },
+    {
+      "id": "dept_002",
+      "name": "Medical Records Administration",
+      "code": "MRA",
+      "parent_ministry": "MOH",
+      "description": "Oversees patient records and health information management",
+      "head_officer": {
+        "role": "Chief Medical Records Officer",
+        "email": "cmro@health.gov"
+      }
+    }
+  ],
+  "roles": [
+    {
+      "id": "role_admin",
+      "name": "System Administrator",
+      "description": "Full system access and configuration",
+      "permissions": [
+        "create_ministry",
+        "create_department",
+        "manage_users",
+        "manage_roles",
+        "configure_workflows",
+        "view_audit_logs",
+        "manage_metadata_schemas"
+      ],
+      "departments": ["*"]
+    },
+    {
+      "id": "role_records_officer",
+      "name": "Records Officer",
+      "description": "Manages records and metadata for assigned department",
+      "permissions": [
+        "create_records",
+        "edit_records",
+        "classify_records",
+        "manage_metadata_schema",
+        "view_records",
+        "export_records",
+        "initiate_retention"
+      ],
+      "departments": ["dept_001", "dept_002"]
+    },
+    {
+      "id": "role_compliance_officer",
+      "name": "Compliance Officer",
+      "description": "Ensures ISO 16175 compliance and audit trails",
+      "permissions": [
+        "view_records",
+        "view_audit_logs",
+        "generate_compliance_reports",
+        "validate_metadata",
+        "review_retention_schedules"
+      ],
+      "departments": ["*"]
+    }
+  ],
+  "workflows": [
+    {
+      "id": "workflow_001",
+      "name": "Document Approval Workflow",
+      "description": "Standard document review and approval process",
+      "trigger": "document_submission",
+      "departments": ["dept_001", "dept_002"],
+      "steps": [
+        {
+          "step_id": 1,
+          "name": "Initial Review",
+          "assigned_role": "role_records_officer",
+          "actions": ["review", "reject", "approve"],
+          "sla_hours": 48
+        },
+        {
+          "step_id": 2,
+          "name": "Compliance Check",
+          "assigned_role": "role_compliance_officer",
+          "actions": ["validate", "request_changes", "approve"],
+          "sla_hours": 24
+        },
+        {
+          "step_id": 3,
+          "name": "Final Approval",
+          "assigned_role": "role_admin",
+          "actions": ["approve", "reject"],
+          "sla_hours": 24
+        }
+      ]
+    },
+    {
+      "id": "workflow_002",
+      "name": "Records Retention Workflow",
+      "description": "Automated retention and disposal process per ISO 16175",
+      "trigger": "retention_period_expiry",
+      "departments": ["*"],
+      "steps": [
+        {
+          "step_id": 1,
+          "name": "Retention Review",
+          "assigned_role": "role_records_officer",
+          "actions": ["extend_retention", "approve_disposal"],
+          "sla_hours": 168
+        },
+        {
+          "step_id": 2,
+          "name": "Legal Hold Check",
+          "assigned_role": "role_compliance_officer",
+          "actions": ["clear_disposal", "place_hold"],
+          "sla_hours": 48
+        }
+      ]
+    }
+  ],
+  "metadata_schemas": [
+    {
+      "schema_id": "schema_public_health",
+      "name": "Public Health Records Schema",
+      "description": "Metadata for public health program documents",
+      "version": "1.0",
+      "departments": ["dept_001"],
+      "iso_compliance": {
+        "standard": "ISO 16175-2:2011",
+        "profile": "public_health_records"
+      },
+      "fields": [
+        {
+          "field_id": "title",
+          "name": "Document Title",
+          "type": "text",
+          "required": true,
+          "searchable": true,
+          "max_length": 255
+        },
+        {
+          "field_id": "program_id",
+          "name": "Program ID",
+          "type": "text",
+          "required": true,
+          "searchable": true,
+          "pattern": "^PH[0-9]{5}$"
+        },
+        {
+          "field_id": "classification",
+          "name": "Classification Level",
+          "type": "dropdown",
+          "required": true,
+          "searchable": true,
+          "options": ["Public", "Internal", "Confidential"]
+        },
+        {
+          "field_id": "date_created",
+          "name": "Date Created",
+          "type": "date",
+          "required": true,
+          "searchable": true
+        },
+        {
+          "field_id": "retention_period",
+          "name": "Retention Period",
+          "type": "number",
+          "required": true,
+          "searchable": false,
+          "unit": "years",
+          "default": 10
+        }
+      ],
+      "retention_rules": {
+        "default_period": 10,
+        "disposal_method": "secure_destruction",
+        "legal_hold_enabled": true
+      }
+    },
+    {
+      "schema_id": "schema_medical",
+      "name": "Medical Records Schema",
+      "description": "Metadata for patient medical records",
+      "version": "1.0",
+      "departments": ["dept_002"],
+      "iso_compliance": {
+        "standard": "ISO 16175-2:2011",
+        "profile": "healthcare_records"
+      },
+      "fields": [
+        {
+          "field_id": "title",
+          "name": "Record Title",
+          "type": "text",
+          "required": true,
+          "searchable": true,
+          "max_length": 255
+        },
+        {
+          "field_id": "patient_id",
+          "name": "Patient ID",
+          "type": "text",
+          "required": true,
+          "searchable": true,
+          "pattern": "^PAT[0-9]{8}$"
+        },
+        {
+          "field_id": "record_type",
+          "name": "Record Type",
+          "type": "dropdown",
+          "required": true,
+          "searchable": true,
+          "options": [
+            "Consultation Notes",
+            "Lab Results",
+            "Prescription",
+            "Discharge Summary"
+          ]
+        },
+        {
+          "field_id": "date_of_service",
+          "name": "Date of Service",
+          "type": "date",
+          "required": true,
+          "searchable": true
+        },
+        {
+          "field_id": "classification",
+          "name": "Classification Level",
+          "type": "dropdown",
+          "required": true,
+          "searchable": false,
+          "options": ["Confidential", "Restricted"]
+        },
+        {
+          "field_id": "retention_period",
+          "name": "Retention Period",
+          "type": "number",
+          "required": true,
+          "searchable": false,
+          "unit": "years",
+          "default": 25
+        }
+      ],
+      "retention_rules": {
+        "default_period": 25,
+        "disposal_method": "secure_destruction",
+        "legal_hold_enabled": true,
+        "privacy_regulations": ["HIPAA", "GDPR"]
+      }
+    }
+  ],
+  "validation_rules": {
+    "require_retention_period": true,
+    "require_classification": true,
+    "require_disposal_method": true,
+    "iso_16175_compliance_check": true,
+    "metadata_completeness_threshold": 0.95
+  },
+  "audit_settings": {
+    "log_all_access": true,
+    "log_modifications": true,
+    "log_deletions": true,
+    "retention_log_period": 10
+  }
+}

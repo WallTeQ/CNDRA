@@ -13,15 +13,18 @@ import {
   ClipboardCheck,
   Building,
   Scan,
+  Share2,
 } from "lucide-react";
 import { Button } from "../components/ui/Button";
 import { useAuth } from "../hooks/useAuth";
 
 const navigation = [
   { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
+  { name: "Onboarding", href: "/dashboard/onboarding", icon: Users },
   // { name: "Upload Document", href: "/dashboard/upload", icon: Upload },
   { name: "Records", href: "/dashboard/records", icon: FileText },
   { name: "Scan Document", href: "/dashboard/scanning", icon: Scan },
+  { name: "Share Document", href: "/dashboard/sharing", icon: Share2 },
   { name: "Departments", href: "/dashboard/departments", icon: Users },
   { name: "Collections", href: "/dashboard/collections", icon: ClipboardCheck },
   {
