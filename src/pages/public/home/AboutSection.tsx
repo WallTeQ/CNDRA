@@ -8,7 +8,7 @@ export const AboutSection: React.FC = () => {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           <div>
             <div className="mb-4">
-              <span className="inline-block bg-blue-600 text-white px-3 py-1 rounded-full text-sm font-medium">
+              <span className="inline-block bg-slate-800 text-white px-3 py-1 rounded-full text-sm font-medium">
                 About Us
               </span>
             </div>
@@ -36,14 +36,14 @@ export const AboutSection: React.FC = () => {
                 resources to support your journey of discovery.
               </p>
             </div>
-            <div className="mt-8">
+            {/* <div className="mt-8">
               <Button className="bg-blue-600 hover:bg-blue-700">
                 Learn More About Our Mission
               </Button>
-            </div>
+            </div> */}
           </div>
           <div className="relative">
-            <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-blue-700 rounded-lg transform rotate-6"></div>
+            <div className="absolute inset-0 bg-slate-800 rounded-lg transform rotate-6"></div>
             <img
               src="https://images.unsplash.com/photo-1554415707-6e8cfc93fe23?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80"
               alt="Liberian National Archives interior showing historical documents and research facilities"

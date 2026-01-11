@@ -6,7 +6,7 @@ import { Badge } from "./ui/Badge";
 import { formatDate } from "../utils/FormatDate";
 import { usePublishedNews, usePublishedEvents } from "../hooks/useGovernance";
 
-const FeatublueNewsSection: React.FC = () => {
+const FeaturedNewsSection: React.FC = () => {
   const {
     data: newsData,
     isLoading: newsLoading,
@@ -17,13 +17,29 @@ const FeatublueNewsSection: React.FC = () => {
     isLoading: eventsLoading,
     error: eventsError,
   } = usePublishedEvents();
+ 
+
+  // Make the filtering more defensive
+  console.log("eventsData:", eventsData);
+  console.log("Current date:", new Date());
 
   const upcomingEvents = eventsData
-    ?.filter((event) => new Date(event.startsAt) > new Date())
+    ?.filter((event) => {
+      const eventDate = new Date(event.startsAt);
+      const now = new Date();
+      console.log(
+        `Event: ${event.title}, Date: ${eventDate}, Is future: ${
+          eventDate > now
+        }`
+      );
+      return eventDate > now;
+    })
     .sort(
       (a, b) => new Date(a.startsAt).getTime() - new Date(b.startsAt).getTime()
     )
     .slice(0, 3);
+
+  console.log("Upcoming Events:", upcomingEvents);
 
   const getCategoryColor = (category: string) => {
     const colors: {
@@ -41,14 +57,13 @@ const FeatublueNewsSection: React.FC = () => {
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
       {/* News Section */}
       <div className="lg:col-span-2">
-        <h2 className="text-2xl font-bold text-slate-900 mb-6">Latest News</h2>
-        <div className="grid grid-cols-1 gap-2">
+        <div className="grid grid-cols-1 gap-6">
           {newsData?.slice(0, 4).map((article) => (
             <Link key={article.id} to={`/news/${article.id}`}>
-              <div className="overflow-hidden p-4 border bg-white rounded-lg hover:shadow-lg transition-all duration-300 hover:border-blue-300 space-y-12">
-                <div className="flex items-start gap-4 ">
+              <div className="border rounded-lg transition-shadow duration-300 bg-white overflow-hidden ">
+                <div className="flex flex-row gap-8 p-8">
                   {/* Image on the left */}
-                  <div className="w-32 h-24 flex-shrink-0 bg-slate-200 rounded-lg overflow-hidden">
+                  <div className="relative w-80 h-56 flex-shrink-0 overflow-hidden  bg-slate-100">
                     {article.fileAssets?.[0]?.storagePath ? (
                       <img
                         src={article.fileAssets[0].storagePath}
@@ -75,31 +90,33 @@ const FeatublueNewsSection: React.FC = () => {
                   </div>
 
                   {/* Content on the right */}
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 mb-2">
-                      <Badge
-                        variant={getCategoryColor(article.category)}
-                        size="xs"
-                        className="capitalize"
-                      >
-                        {article.category}
-                      </Badge>
-                      <span className="text-xs text-slate-500">
-                        {formatDate(article.createdAt)}
-                      </span>
+                  <div className="flex-1 min-w-0 flex flex-col justify-center">
+                    <div>
+                      <div className="flex items-center gap-2 mb-3">
+                        <Badge
+                          variant={getCategoryColor(article.category)}
+                          size="xs"
+                          className="capitalize"
+                        >
+                          {article.category}
+                        </Badge>
+                        <span className="text-xs text-slate-500">
+                          {formatDate(article.createdAt)}
+                        </span>
+                      </div>
+                      <h4 className="text-2xl font-mono font-semibold text-slate-900 mb-3  hover:underline transition-colors">
+                        {article.title}
+                      </h4>
+                      <p className="text-base text-slate-600 mb-4 line-clamp-4 leading-relaxed">
+                        {article.content.replace(/<[^>]*>/g, "")}
+                      </p>
                     </div>
-                    <h4 className="text-base font-semibold text-slate-900 mb-2 line-clamp-2 hover:text-blue-600 transition-colors">
-                      {article.title}
-                    </h4>
-                    <p className="text-sm text-slate-700 mb-4 line-clamp-3">
-                      {article.content.replace(/<[^>]*>/g, "")}
-                    </p>
-                    {article?.author && (
+                    {/* {article?.author && (
                       <div className="flex items-center gap-2 text-sm text-slate-600">
-                        <User className="h-3.5 w-3.5" />
+                        <User className="h-4 w-4" />
                         <span>{article.author.displayName}</span>
                       </div>
-                    )}
+                    )} */}
                   </div>
                 </div>
               </div>
@@ -110,7 +127,6 @@ const FeatublueNewsSection: React.FC = () => {
 
       {/* Quick Actions Section */}
       <div>
-        
         <div className="space-y-6">
           {/* Upcoming Events */}
           <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-6 border border-blue-200">
@@ -171,11 +187,10 @@ const FeatublueNewsSection: React.FC = () => {
               </div>
             )}
           </div>
-
         </div>
       </div>
     </div>
   );
 };
 
-export default FeatublueNewsSection;
+export default FeaturedNewsSection;

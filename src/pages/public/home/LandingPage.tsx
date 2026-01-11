@@ -8,23 +8,19 @@ import { FeaturesSection } from "./FeatureSection";
 // import { CollectionsSection } from "./CollectionSection";
 import { NewsEventsSection } from "./NewsEventSection";
 import { AboutSection } from "./AboutSection";
+import LiberiaMapHero from "../../../components/map";
+import ExploreHero from "./Hero2";
 
 export const LandingPage: React.FC = () => {
-  // const dispatch = useAppDispatch();
-  // const { records} = useAppSelector(
-  //   (state) => state.records
-  // );
-
-  // useEffect(() => {
-  //   dispatch(fetchRecords());
-  // }, [dispatch]);
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <HeroSection />
+      <LiberiaMapHero />
+      {/* <HeroSection /> */}
+      <ExploreHero />
       <FeaturesSection />
       <FeaturedRecords />
-      <FeaturedDepartments />
+      {/* <FeaturedDepartments /> */}
       {/* <CollectionsSection records={records} /> */}
       <NewsEventsSection />
       <AboutSection />
