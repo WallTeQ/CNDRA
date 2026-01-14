@@ -81,7 +81,7 @@ export const AccessRequestsTable: React.FC<AccessRequestsTableProps> = ({
   const endIndex = Math.min(startIndex + itemsPerPage, totalItems);
 
   return (
-    <Card>
+    <div>
       <CardHeader>
         <CardTitle>Requests ({totalItems})</CardTitle>
       </CardHeader>
@@ -189,6 +189,6 @@ export const AccessRequestsTable: React.FC<AccessRequestsTableProps> = ({
           </div>
         )}
       </CardContent>
-    </Card>
+    </div>
   );
 };

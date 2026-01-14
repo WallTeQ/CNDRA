@@ -65,7 +65,7 @@ export const NewsArticlePage: React.FC = () => {
 
   // Get first image from fileAssets
   
-  const imageUrl =article.fileAssets[0].storagePath 
+  const imageUrl = article.fileAssets[0].storagePath 
   const excerpt = stripHtml(article.content).substring(0, 200) + "...";
 
   // Related articles - get 3 most recent articles excluding current one
@@ -82,7 +82,7 @@ export const NewsArticlePage: React.FC = () => {
             className="inline-flex items-center space-x-2 text-red-600 hover:text-red-700 transition-colors"
           >
             <ArrowLeft className="h-4 w-4" />
-            <span>Back to News & Events</span>
+            <span>Back </span>
           </Link>
         </div>
 

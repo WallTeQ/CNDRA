@@ -22,18 +22,14 @@ import {
 } from "../../../components/ui/Card";
 import { Button } from "../../../components/ui/Button";
 import { Badge } from "../../../components/ui/Badge";
-import { useAuth } from "../../../hooks/useAuth";
+import { useAuth } from "../../../context/AuthContext";
 import { useAccessRequests } from "../../../hooks/useAccess";
 import { AccessRequest } from "../../../types/access";
 import { formatDate } from "../../../utils/FormatDate";
-import { getProfile } from "../../../store/slices/auth/authThunk";
-import { useAppDispatch, useAppSelector } from "../../../store";
+
 
 export default function UserProfilePage() {
-   const dispatch = useAppDispatch();
-    const {
-      user,
-    } = useAppSelector((state) => state.auth);
+    const { user } = useAuth();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<"profile" | "requests">("profile");
 
@@ -41,11 +37,8 @@ export default function UserProfilePage() {
     if (!user && !isLoading) {
       // If not authenticated, redirect to login
       navigate("/login");
-    } else if (!user && isLoading) {
-      // If loading and no user, try fetching profile
-      dispatch(getProfile());
-    }
-  }, [user, dispatch]);
+    } 
+  }, [user]);
 
  
   console.log("user profile", user);

@@ -1,9 +1,5 @@
-import React from "react";
-import { useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import { Provider } from "react-redux";
-import { store } from "./store";
-import { useAuth } from "./hooks/useAuth";
+import { useAuth } from "./context/AuthContext";
 import { DashboardLayout } from "./layouts/DashboardLayout";
 import { PublicLayout } from "./layouts/PublicLayout";
 import { ProtectedRoute } from "./components/common/protectedRoute";
@@ -42,17 +38,16 @@ import { NotFound } from "./pages/NotFound";
 import RolesPage from "./pages/dashboard/Roles";
 
 // App Content Component (needs to be inside Provider)
-const AppContent: React.FC = () => {
-  const { initializeAuth, isInitialized } = useAuth();
+function App() {
+  const { isLoading} = useAuth();
 
-  useEffect(() => {
-    initializeAuth();
-  }, [initializeAuth]);
 
-  // Show loading only during initial app initialization (not during login)
-  if (!isInitialized) {
+
+  if (isLoading) {
     return (
-      <LoadingSpinner message="Initializing..." />
+      <div className="flex items-center justify-center min-h-screen">
+        <LoadingSpinner />
+      </div>
     );
   }
 
@@ -119,12 +114,5 @@ const AppContent: React.FC = () => {
   );
 };
 
-function App() {
-  return (
-    <Provider store={store}>
-      <AppContent />
-    </Provider>
-  );
-}
 
 export default App;

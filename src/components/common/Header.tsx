@@ -4,7 +4,6 @@ import {
   Search,
   Menu,
   X,
-  Archive,
   HelpCircle,
   // Globe,
   // Eye,
@@ -12,7 +11,7 @@ import {
   LayoutDashboard,
 } from "lucide-react";
 import { Button } from "../ui/Button";
-import { useAuth } from "../../hooks/useAuth";
+import { useAuth } from "../../context/AuthContext";
 
 interface HeaderProps {
   isPublic?: boolean;

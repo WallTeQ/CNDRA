@@ -35,14 +35,14 @@ export const ArticleMetadata: React.FC<ArticleMetadataProps> = ({
             {formatDate(updatedAt)}
           </span>
         </div>
-        <div>
+        {/* <div>
           <span className="text-slate-600">Status:</span>
           <span className="ml-2">
             <Badge variant="success" size="sm">
               {status}
             </Badge>
           </span>
-        </div>
+        </div> */}
         <div>
           <span className="text-slate-600">Author:</span>
           <span className="ml-2 text-slate-900 font-medium">{author.displayName}</span>

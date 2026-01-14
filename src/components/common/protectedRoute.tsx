@@ -1,86 +1,73 @@
 import React from "react";
 import { Navigate, useLocation } from "react-router-dom";
-import { useAuth } from "../../hooks/useAuth";
+import { useAuth } from "../../context/AuthContext";
 import { LoadingSpinner } from "../ui/LoadingSpinner";
+
 interface ProtectedRouteProps {
   children: React.ReactNode;
-  requiredRoles?: string[];
   requireAdmin?: boolean;
-  fallbackPath?: string;
+  requiredRoles?: string[];
 }
 
 export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   children,
-  requiredRoles = [],
   requireAdmin = false,
-  fallbackPath = "/login",
+  requiredRoles = [],
 }) => {
-  const { user, isAuthenticated, isLoading, isInitialized } = useAuth();
+  const { isAuthenticated, isLoading, user,  hasAnyRole, isAdmin } =
+    useAuth();
   const location = useLocation();
- console.log("🛡️ ProtectedRoute check:", {
-   isInitialized,
-   isLoading,
-   isAuthenticated,
-   hasUser: !!user,
-   path: location.pathname,
- });
 
-  // ✅ Show loading only while initializing
-  if (!isInitialized || isLoading) {
-    return <LoadingSpinner size="md" message="Loading..." />;
+  // Show loading spinner while checking auth
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <LoadingSpinner message="Checking permissions..." />
+      </div>
+    );
   }
 
-  // ✅ Redirect to login if not authenticated or no user
+  // Redirect to login if not authenticated
   if (!isAuthenticated || !user) {
-    return <Navigate to={fallbackPath} state={{ from: location }} replace />;
+    return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
-  // Check if admin access is required
-  if (requireAdmin) {
-    const userRoles = user?.roles || [];
-    const roleNames = userRoles.map((role) => role?.name).filter(Boolean);
-    const isAdmin = roleNames.some((roleName) =>
-      ["admin", "super-admin"].includes(roleName)
+  // Check admin requirement
+  if (requireAdmin && !isAdmin()) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-slate-50">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold text-slate-900 mb-2">
+            Access Denied
+          </h1>
+          <p className="text-slate-600 mb-4">
+            You don't have permission to access this area.
+          </p>
+          <a href="/" className="text-red-600 hover:text-red-700 font-medium">
+            Return to Home
+          </a>
+        </div>
+      </div>
     );
-
-    if (!isAdmin) {
-      return (
-        <Navigate
-          to="/"
-          state={{
-            from: location,
-            message:
-              "You don't have permission to access this area. Admin or Super Admin role required.",
-          }}
-          replace
-        />
-      );
-    }
   }
 
-  // Check specific roles if provided
-  if (requiredRoles.length > 0) {
-    const userRoles = user?.roles || [];
-    const roleNames = userRoles.map((role) => role?.name).filter(Boolean);
-    const hasRequiredRole = roleNames.some((roleName) =>
-      requiredRoles.includes(roleName)
+  // Check specific role requirements
+  if (requiredRoles.length > 0 && !hasAnyRole(requiredRoles)) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-slate-50">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold text-slate-900 mb-2">
+            Access Denied
+          </h1>
+          <p className="text-slate-600 mb-4">
+            You don't have the required role to access this page.
+          </p>
+          <a href="/" className="text-red-600 hover:text-red-700 font-medium">
+            Return to Home
+          </a>
+        </div>
+      </div>
     );
-
-    if (!hasRequiredRole) {
-      console.log("Access denied - missing required role");
-      return (
-        <Navigate
-          to="/"
-          state={{
-            from: location,
-            message: `You don't have permission to access this area. Required roles: ${requiredRoles.join(
-              ", "
-            )}`,
-          }}
-          replace
-        />
-      );
-    }
   }
 
   return <>{children}</>;

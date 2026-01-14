@@ -1,49 +1,38 @@
-import React from "react";
+
+import React, { useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Archive, CheckCircle } from "lucide-react";
 import { SignupStep1 } from "../../components/auth/SignupStep1";
 import { SignupStep2 } from "../../components/auth/SignupStep2";
 import { SignupStep3 } from "../../components/auth/SignupStep3";
-import { useAuth } from "../../hooks/useAuth";
+import { useAuth } from "../../context/AuthContext";
 
 export const SignupPage: React.FC = () => {
   const navigate = useNavigate();
-  const { signupStep, setCurrentSignupStep, resetSignupFlow } = useAuth();
+  const { signupStep, isAuthenticated } = useAuth();
 
-  const handleStepNext = () => {
-    if (signupStep < 3) {
-      setCurrentSignupStep((signupStep + 1) as 1 | 2 | 3);
+  // Redirect if already authenticated
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate("/");
     }
-  };
-
-  const handleStepBack = () => {
-    if (signupStep > 1) {
-      setCurrentSignupStep((signupStep - 1) as 1 | 2 | 3);
-    }
-  };
-
-  const handleComplete = () => {
-    resetSignupFlow();
-    navigate("/login");
-  };
+  }, [isAuthenticated, navigate]);
 
   const renderStep = () => {
     switch (signupStep) {
       case 1:
-        return <SignupStep1 onNext={handleStepNext} />;
+        return <SignupStep1 />;
       case 2:
-        return <SignupStep2 onNext={handleStepNext} onBack={handleStepBack} />;
+        return <SignupStep2 />;
       case 3:
-        return (
-          <SignupStep3 onBack={handleStepBack} onComplete={handleComplete} />
-        );
+        return <SignupStep3 />;
       default:
-        return <SignupStep1 onNext={handleStepNext} />;
+        return <SignupStep1 />;
     }
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-100 to-slate-200 flex items-center justify-center px-4">
+    <div className="min-h-screen bg-gradient-to-br from-slate-100 to-slate-200 flex items-center justify-center px-4 py-8">
       <div className="max-w-4xl w-full">
         {/* Header */}
         <div className="text-center mb-8">
@@ -59,7 +48,7 @@ export const SignupPage: React.FC = () => {
             {[1, 2, 3].map((step) => (
               <div key={step} className="flex items-center">
                 <div
-                  className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
+                  className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-medium transition-colors ${
                     step < signupStep
                       ? "bg-green-500 text-white"
                       : step === signupStep
@@ -68,14 +57,14 @@ export const SignupPage: React.FC = () => {
                   }`}
                 >
                   {step < signupStep ? (
-                    <CheckCircle className="h-4 w-4" />
+                    <CheckCircle className="h-5 w-5" />
                   ) : (
                     step
                   )}
                 </div>
                 {step < 3 && (
                   <div
-                    className={`w-12 h-0.5 mx-2 ${
+                    className={`w-16 h-1 mx-2 transition-colors ${
                       step < signupStep ? "bg-green-500" : "bg-slate-300"
                     }`}
                   />
@@ -84,13 +73,13 @@ export const SignupPage: React.FC = () => {
             ))}
           </div>
 
-          <div className="text-sm text-slate-600">
+          <div className="text-sm font-medium text-slate-600">
             Step {signupStep} of 3:{" "}
             {signupStep === 1
-              ? "Email Verification"
+              ? "Email"
               : signupStep === 2
-              ? "Verify Code"
-              : "Complete Profile"}
+              ? "Verification"
+              : "Profile"}
           </div>
         </div>
 

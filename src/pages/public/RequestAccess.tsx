@@ -12,7 +12,7 @@ import { Input } from "../../components/ui/Input";
 import { Badge } from "../../components/ui/Badge";
 import { ArrowLeft, Lock, ShieldAlert, AlertCircle } from "lucide-react";
 import { useRecord } from "../../hooks/useRecords";
-import { useAuth } from "../../hooks/useAuth";
+import { useAuth } from "../../context/AuthContext";
 import { useSubmitAccessRequest } from "../../hooks/useAccess";
 import { AccessRequest } from "../../types/access";
 interface AccessRequestForm {

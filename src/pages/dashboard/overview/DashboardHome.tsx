@@ -1,6 +1,6 @@
 import React from "react";
 import { FileText, Clock, Users, Upload, Eye, Download } from "lucide-react";
-import { useAuth } from "../../../hooks/useAuth";
+import { useAuth } from "../../../context/AuthContext";
 import { mockDocuments } from "../../../data/mockData";
 import { DashboardHeader } from "./Header";
 import { StatsGrid } from "./StatGrid";

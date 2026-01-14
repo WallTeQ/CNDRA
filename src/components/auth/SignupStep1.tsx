@@ -5,7 +5,7 @@ import * as yup from "yup";
 import { Mail, ArrowRight } from "lucide-react";
 import { Button } from "../ui/Button";
 import { Card } from "../ui/Card";
-import { useAuth } from "../../hooks/useAuth";
+import { useAuth } from "../../context/AuthContext";
 
 const schema = yup.object({
   email: yup
@@ -16,36 +16,21 @@ const schema = yup.object({
 
 type FormData = yup.InferType<typeof schema>;
 
-interface SignupStep1Props {
-  onNext: () => void;
-}
-
-export const SignupStep1: React.FC<SignupStep1Props> = ({ onNext }) => {
-  const { signupRequestOtp, isLoading, error, clearAuthError } = useAuth();
+export const SignupStep1: React.FC = () => {
+  const { signupRequestOtp, isLoading, error, clearError } = useAuth();
 
   const {
     register,
     handleSubmit,
     formState: { errors },
-    setError,
   } = useForm<FormData>({
     resolver: yupResolver(schema),
   });
 
   const onSubmit = async (data: FormData) => {
-    clearAuthError();
-
-    try {
-      const success = await signupRequestOtp(data);
-      if (success) {
-        onNext();
-      }
-    } catch (err: any) {
-      setError("email", {
-        type: "manual",
-        message: err.message || "Failed to send verification code",
-      });
-    }
+    clearError();
+    await signupRequestOtp(data);
+    // Step automatically advances in context
   };
 
   return (
@@ -81,10 +66,11 @@ export const SignupStep1: React.FC<SignupStep1Props> = ({ onNext }) => {
             {...register("email")}
             type="email"
             id="email"
-            className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent transition-colors ${
+            className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-red-500 ${
               errors.email ? "border-red-300" : "border-slate-300"
             }`}
             placeholder="Enter your email address"
+            autoFocus
           />
           {errors.email && (
             <p className="mt-1 text-sm text-red-600">{errors.email.message}</p>
@@ -93,18 +79,11 @@ export const SignupStep1: React.FC<SignupStep1Props> = ({ onNext }) => {
 
         <Button
           type="submit"
-          className="w-full flex items-center justify-center space-x-2"
+          className="w-full"
           disabled={isLoading}
           icon={<ArrowRight className="h-4 w-4" />}
         >
-          {isLoading ? (
-            <span>Sending verification code...</span>
-          ) : (
-            <>
-              <span>Send Verification Code</span>
-              
-            </>
-          )}
+          {isLoading ? "Sending code..." : "Send Verification Code"}
         </Button>
       </form>
 

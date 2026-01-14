@@ -26,7 +26,7 @@ export const ArticleHeader: React.FC<ArticleHeaderProps> = ({
   getCategoryColor,
 }) => {
   return (
-    <Card className="mb-8">
+    <div className="mb-8">
       <div className="mb-6">
         <div className="flex items-center space-x-2 mb-4">
           <Badge variant={getCategoryColor("news")} className="capitalize">
@@ -37,7 +37,7 @@ export const ArticleHeader: React.FC<ArticleHeaderProps> = ({
           </span>
         </div>
 
-        <h1 className="text-3xl lg:text-4xl font-bold text-slate-900 mb-4 leading-tight">
+        <h1 className="text-3xl lg:text-4xl font-bold font-mono text-slate-900 mb-4 leading-tight">
           {title}
         </h1>
 
@@ -48,15 +48,13 @@ export const ArticleHeader: React.FC<ArticleHeaderProps> = ({
           </div>
 
           <div className="flex items-center space-x-2">
-            <Button variant="ghost" size="sm">
-              <Bookmark className="h-4 w-4" />
-            </Button>
+            
             <Button variant="ghost" size="sm">
               <Share2 className="h-4 w-4" />
             </Button>
-            <Button variant="ghost" size="sm">
+            {/* <Button variant="ghost" size="sm">
               <Print className="h-4 w-4" />
-            </Button>
+            </Button> */}
           </div>
         </div>
 
@@ -70,12 +68,12 @@ export const ArticleHeader: React.FC<ArticleHeaderProps> = ({
         )}
 
         {/* Excerpt */}
-        <div className="bg-slate-50 p-6 rounded-lg mb-6">
+        {/* <div className="bg-slate-50 p-6 rounded-lg mb-6">
           <p className="text-lg text-slate-700 leading-relaxed font-medium">
             {excerpt}
           </p>
-        </div>
+        </div> */}
       </div>
-    </Card>
+    </div>
   );
 };

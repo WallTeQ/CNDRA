@@ -1,4 +1,4 @@
-export { tokenManager, forceUserLogout } from "./api-config/tokenManager";
+export { tokenManager } from "./api-config/tokenManager";
 export { authApi } from "./api-config/auth.api";
 export { recordsApi } from "./api-config/record.api";
 export { usersApi } from "./api-config/user.api";

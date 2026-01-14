@@ -14,13 +14,13 @@ export const LoadingSpinner = ({
   fullScreen = true,
 }: LoadingSpinnerProps) => {
   const sizeClasses: Record<LoadingSpinnerProps["size"], string> = {
-    sm: "h-4 w-4",
-    md: "h-8 w-8",
+    sm: "h-6 w-6",
+    md: "h-10 w-10",
     lg: "h-12 w-12",
   };
 
   const containerClasses = fullScreen
-    ? "min-h-screen flex items-center justify-center bg-gray-50"
+    ? "min-h-screen flex items-center justify-center "
     : "inline-flex items-center";
 
   return (
@@ -28,7 +28,7 @@ export const LoadingSpinner = ({
       <div className={`flex flex-col items-center ${className}`}>
         <div
           aria-hidden="true"
-          className={`animate-spin rounded-full border-2 border-gray-300 border-t-red-600 ${sizeClasses[size]}`}
+          className={`animate-spin rounded-full border-2 border-gray-300 border-t-slate-900 ${sizeClasses[size]}`}
         />
         {message && <p className="mt-2 text-gray-600">{message}</p>}
       </div>

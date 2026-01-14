@@ -47,10 +47,10 @@ export const ArticleContent: React.FC<ArticleContentProps> = ({ content }) => {
   };
 
   return (
-    <Card className="mb-8">
+    <div className="mb-8">
       <div className="prose prose-slate prose-lg max-w-none">
         {renderContent()}
       </div>
-    </Card>
+    </div>
   );
 };

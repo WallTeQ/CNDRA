@@ -1,9 +1,7 @@
 import React, { useState } from "react";
 import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
 import {
-  Archive,
   LayoutDashboard,
-  // Upload,
   FileText,
   Users,
   Settings,
@@ -16,7 +14,7 @@ import {
   Building,
 } from "lucide-react";
 import { Button } from "../components/ui/Button";
-import { useAuth } from "../hooks/useAuth";
+import { useAuth } from "../context/AuthContext";
 
 const navigation = [
   { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
@@ -41,10 +39,9 @@ export const DashboardLayout: React.FC = () => {
   const { user, logout, hasRole, hasAnyRole } = useAuth();
   console.log("current user:", user);
 
-  const handleLogout = () => {
-    logout().then(() => {
-      navigate("/");
-    });
+  const handleLogout = async () => {
+    await logout();
+    navigate("/");
   };
 
   // Get user's primary role for display

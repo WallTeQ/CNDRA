@@ -1,34 +1,30 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { Shield, ArrowRight, ArrowLeft, RefreshCw } from "lucide-react";
 import { Button } from "../ui/Button";
 import { Card } from "../ui/Card";
-import { useAuth } from "../../hooks/useAuth";
+import { useAuth } from "../../context/AuthContext";
 
 const schema = yup.object({
   code: yup
     .string()
-    .matches(/^\d{6}$/, "Verification code must be 6 digits")
+    .matches(/^\d{6}$/, "Code must be 6 digits")
     .required("Verification code is required"),
 });
 
 type FormData = yup.InferType<typeof schema>;
 
-interface SignupStep2Props {
-  onNext: () => void;
-  onBack: () => void;
-}
-
-export const SignupStep2: React.FC<SignupStep2Props> = ({ onNext, onBack }) => {
+export const SignupStep2: React.FC = () => {
   const {
     signupVerifyOtp,
     signupRequestOtp,
     signupEmail,
+    setSignupStep,
     isLoading,
     error,
-    clearAuthError,
+    clearError,
   } = useAuth();
   const [timeLeft, setTimeLeft] = useState(600); // 10 minutes
   const [canResend, setCanResend] = useState(false);
@@ -37,13 +33,20 @@ export const SignupStep2: React.FC<SignupStep2Props> = ({ onNext, onBack }) => {
     register,
     handleSubmit,
     formState: { errors },
-    setError,
     watch,
   } = useForm<FormData>({
     resolver: yupResolver(schema),
   });
 
   const code = watch("code");
+
+  const onSubmit = useCallback(
+    async (data: FormData) => {
+      clearError();
+      await signupVerifyOtp({ email: signupEmail, code: data.code });
+    },
+    [clearError, signupVerifyOtp, signupEmail]
+  );
 
   // Countdown timer
   useEffect(() => {
@@ -55,44 +58,19 @@ export const SignupStep2: React.FC<SignupStep2Props> = ({ onNext, onBack }) => {
     }
   }, [timeLeft]);
 
-  // Auto-submit when 6 digits are entered
+  // Auto-submit when 6 digits entered
   useEffect(() => {
-    if (code && code.length === 6 && /^\d{6}$/.test(code)) {
+    if (code?.length === 6 && /^\d{6}$/.test(code)) {
       handleSubmit(onSubmit)();
     }
-  }, [code]);
+  }, [code, handleSubmit, onSubmit]);
 
-  const onSubmit = async (data: FormData) => {
-    clearAuthError();
-
-    try {
-      const success = await signupVerifyOtp({
-        email: signupEmail,
-        code: data.code,
-      });
-      if (success) {
-        onNext();
-      }
-    } catch (err: any) {
-      setError("code", {
-        type: "manual",
-        message: err.message || "Invalid verification code",
-      });
-    }
-  };
-
-  const handleResendCode = async () => {
+  const handleResend = async () => {
     if (!canResend) return;
-
-    clearAuthError();
+    clearError();
     setCanResend(false);
     setTimeLeft(600);
-
-    try {
-      await signupRequestOtp({ email: signupEmail });
-    } catch (err) {
-      setCanResend(true);
-    }
+    await signupRequestOtp({ email: signupEmail });
   };
 
   const formatTime = (seconds: number) => {
@@ -110,9 +88,7 @@ export const SignupStep2: React.FC<SignupStep2Props> = ({ onNext, onBack }) => {
         <h2 className="text-2xl font-bold text-slate-900 mb-2">
           Verify Your Email
         </h2>
-        <p className="text-slate-600 mb-2">
-          We've sent a 6-digit verification code to:
-        </p>
+        <p className="text-slate-600 mb-2">We've sent a 6-digit code to:</p>
         <p className="font-medium text-slate-900">{signupEmail}</p>
       </div>
 
@@ -135,11 +111,12 @@ export const SignupStep2: React.FC<SignupStep2Props> = ({ onNext, onBack }) => {
             type="text"
             id="code"
             maxLength={6}
-            className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent transition-colors text-center text-2xl font-mono tracking-widest ${
+            className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-red-500 text-center text-2xl font-mono tracking-widest ${
               errors.code ? "border-red-300" : "border-slate-300"
             }`}
             placeholder="000000"
             autoComplete="one-time-code"
+            autoFocus
           />
           {errors.code && (
             <p className="mt-1 text-sm text-red-600">{errors.code.message}</p>
@@ -150,7 +127,7 @@ export const SignupStep2: React.FC<SignupStep2Props> = ({ onNext, onBack }) => {
           {timeLeft > 0 ? (
             <p>Code expires in {formatTime(timeLeft)}</p>
           ) : (
-            <p className="text-red-600">Verification code has expired</p>
+            <p className="text-red-600">Code has expired</p>
           )}
         </div>
 
@@ -158,34 +135,27 @@ export const SignupStep2: React.FC<SignupStep2Props> = ({ onNext, onBack }) => {
           <Button
             type="button"
             variant="outline"
-            onClick={onBack}
-            className="flex-1 flex items-center justify-center space-x-2"
+            onClick={() => setSignupStep(1)}
+            icon={<ArrowLeft className="h-4 w-4" />}
+            className="flex-1"
           >
-            <ArrowLeft className="h-4 w-4" />
-            <span>Back</span>
+            Back
           </Button>
 
           <Button
             type="submit"
             icon={<ArrowRight className="h-4 w-4" />}
-            className="flex-1 flex items-center justify-center space-x-2"
+            className="flex-1"
             disabled={isLoading || !code || code.length !== 6}
           >
-            {isLoading ? (
-              <span>Verifying...</span>
-            ) : (
-              <>
-                <span>Verify</span>
-                
-              </>
-            )}
+            {isLoading ? "Verifying..." : "Verify"}
           </Button>
         </div>
 
         <div className="text-center">
           <button
             type="button"
-            onClick={handleResendCode}
+            onClick={handleResend}
             disabled={!canResend || isLoading}
             className={`text-sm font-medium flex items-center justify-center space-x-1 mx-auto ${
               canResend && !isLoading

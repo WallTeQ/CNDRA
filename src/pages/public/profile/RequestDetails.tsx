@@ -27,7 +27,7 @@ import {
   useUnreadCount,
   useChatMessages
 } from "../../../hooks/useAccess";
-import { useAuth } from "../../../hooks/useAuth";
+import { useAuth } from "../../../context/AuthContext";
 
 export default function UserRequestDetailPage() {
   const params = useParams();

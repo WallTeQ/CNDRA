@@ -51,7 +51,7 @@ export const RecordsTable: React.FC<RecordsTableProps> = ({
   const endIndex = Math.min(startIndex + itemsPerPage, totalItems);
 
   return (
-    <Card>
+    <>
       <CardContent className="p-0">
         <table className="w-full">
           <thead className="bg-muted/50">
@@ -168,6 +168,6 @@ export const RecordsTable: React.FC<RecordsTableProps> = ({
           </div>
         )}
       </CardContent>
-    </Card>
+    </>
   );
 };

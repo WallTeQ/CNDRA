@@ -2,8 +2,8 @@ import { useEffect, useState } from "react";
 import { Plus, FileText, Building2, CheckCircle } from "lucide-react";
 import { useRecords, useDeleteRecord } from "../../../hooks/useRecords";
 import { useDepartments } from "../../../hooks/useDepartments";
-import { useAppDispatch, useAppSelector } from "../../../store";
-import { clearError } from "../../../store/slices/auth/authSlice";
+// import { useAppDispatch, useAppSelector } from "../../../store";
+// import { clearError} from "../../../context/AuthContext"
 import { Button } from "../../../components/ui/Button";
 import { StatsGrid } from "../overview/StatGrid";
 import ErrorDisplay from "../components/ErrorDisplay";
@@ -14,10 +14,12 @@ import UploadDocumentPage from "../UploadDocument";
 import { RecordPreviewModal } from "./RecordPreviewModal";
 import { Record } from "../../../types";
 import { RecordsLoadingState } from "./RecordsLoadingState";
+import { useAuth } from "../../../context/AuthContext";
 
 export default function RecordsPage() {
-  const dispatch = useAppDispatch();
-  const { error } = useAppSelector((state) => state.auth); 
+  // const dispatch = useAppDispatch();
+  const { clearError } = useAuth();
+  // const { error } = useAppSelector((state) => state.auth); 
 
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedDepartment, setSelectedDepartment] = useState("");
@@ -53,14 +55,14 @@ export default function RecordsPage() {
   const isLoading = recordsLoading || departmentsLoading;
 
   // Effects
-  useEffect(() => {
-    if (error) {
-      const timer = setTimeout(() => {
-        dispatch(clearError());
-      }, 5000);
-      return () => clearTimeout(timer);
-    }
-  }, [error, dispatch]);
+  // useEffect(() => {
+  //   if (error) {
+  //     const timer = setTimeout(() => {
+  //       dispatch(clearError());
+  //     }, 5000);
+  //     return () => clearTimeout(timer);
+  //   }
+  // }, [error, dispatch]);
 
   useEffect(() => {
     setCurrentPage(1);
@@ -161,7 +163,7 @@ export default function RecordsPage() {
     selectedAccessLevel !== "";
 
   // Handle React Query errors
-  const displayError = error || recordsError;
+  const displayError =  recordsError;
 
   return (
     <div className="py-6">

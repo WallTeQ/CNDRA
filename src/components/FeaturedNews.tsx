@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { User, Calendar, MapPin } from "lucide-react";
+import { Calendar, MapPin } from "lucide-react";
 import { Button } from "./ui/Button";
 import { Badge } from "./ui/Badge";
 import { formatDate } from "../utils/FormatDate";
@@ -19,19 +19,11 @@ const FeaturedNewsSection: React.FC = () => {
   } = usePublishedEvents();
  
 
-  // Make the filtering more defensive
-  console.log("eventsData:", eventsData);
-  console.log("Current date:", new Date());
-
   const upcomingEvents = eventsData
     ?.filter((event) => {
       const eventDate = new Date(event.startsAt);
       const now = new Date();
-      console.log(
-        `Event: ${event.title}, Date: ${eventDate}, Is future: ${
-          eventDate > now
-        }`
-      );
+    
       return eventDate > now;
     })
     .sort(
@@ -39,7 +31,6 @@ const FeaturedNewsSection: React.FC = () => {
     )
     .slice(0, 3);
 
-  console.log("Upcoming Events:", upcomingEvents);
 
   const getCategoryColor = (category: string) => {
     const colors: {

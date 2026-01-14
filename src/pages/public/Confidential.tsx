@@ -10,13 +10,13 @@ import {
 import { Button } from "../../components/ui/Button";
 import { Input } from "../../components/ui/Input";
 import { Badge } from "../../components/ui/Badge";
-import { Lock, ShieldAlert, Search } from "lucide-react";
+import { Lock, Search } from "lucide-react";
 import {
   useRestrictedRecords,
   useConfidentialRecords,
   useRecords
 } from "../../hooks/useRecords";
-import { useAuth } from "../../hooks/useAuth";
+import { useAuth } from "../../context/AuthContext";
 import Pagination from "../../components/Pagination";
 
 const ITEMS_PER_PAGE = 8;

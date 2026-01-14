@@ -34,9 +34,7 @@ export const RelatedArticles: React.FC<RelatedArticlesProps> = ({
       </h3>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {articles.map((article) => {
-          const imageUrl = article.fileAssets?.[0]?.cloudinaryPublicId
-            ? `https://res.cloudinary.com/your-cloud-name/image/upload/${article.fileAssets[0].cloudinaryPublicId}`
-            : article.fileAssets?.[0]?.localPath;
+          const imageUrl = article.fileAssets?.[0]?.storagePath;
 
           return (
             <Link
