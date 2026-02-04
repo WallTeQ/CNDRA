@@ -18,7 +18,7 @@ export const useUsers = (filters?: Record<string, any>) => {
   return useQuery({
     queryKey: usersKeys.list(filters || {}),
     queryFn: () => usersApi.getAll(),
-    select: (data) => data.data || [],
+    select: (data) => Array.isArray(data.data) ? data.data : [],
   });
 };
 

@@ -19,7 +19,7 @@ export const useRecords = (filters?: Record<string, any>) => {
   return useQuery({
     queryKey: recordsKeys.list(filters || {}),
     queryFn: () => recordsApi.getAll(filters),
-    select: (data) => data.data || [],
+    select: (data) => Array.isArray(data.data) ? data.data : [],
   });
 };
 
@@ -36,7 +36,7 @@ export const useRestrictedRecords = () => {
   return useQuery({
     queryKey: recordsKeys.restricted(),
     queryFn: () => recordsApi.getRestricted(),
-    select: (data) => data.data || [],
+    select: (data) => Array.isArray(data.data) ? data.data : [],
   });
 };
 
@@ -44,7 +44,7 @@ export const usePublicRecords = () => {
   return useQuery({
     queryKey: recordsKeys.restricted(),
     queryFn: () => recordsApi.getPublic(),
-    select: (data) => data.data || [],
+    select: (data) => Array.isArray(data.data) ? data.data : [],
   });
 };
 
@@ -52,7 +52,7 @@ export const useConfidentialRecords = () => {
   return useQuery({
     queryKey: recordsKeys.confidential(),
     queryFn: () => recordsApi.getConfidential(),
-    select: (data) => data.data || [],
+    select: (data) => Array.isArray(data.data) ? data.data : [],
   });
 };
 

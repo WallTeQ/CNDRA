@@ -1,9 +1,10 @@
 import { api } from "./config";
 import "./interceptor";
 import { ApiResponse } from "../../types/api";
+import { PaginatedDepartmentsResponse } from "../../types/departments";
 
 export const departmentsApi = {
-  getAll: (params?: any): Promise<ApiResponse<any[]>> =>
+  getAll: (params?: any): Promise<PaginatedDepartmentsResponse> =>
     api.get("/departments", { params }).then((res) => res.data),
 
   getById: (id: string): Promise<ApiResponse<any>> =>
