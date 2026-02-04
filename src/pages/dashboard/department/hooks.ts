@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Department, DepartmentFormData } from "../../../types/departments";
 import {
@@ -9,34 +8,55 @@ import {
 } from "../../../hooks/useDepartments";
 
 export const useDepartments = () => {
-  // React Query hooks
-  const { data: departments = [], isLoading: loading, error } = useDepartmentsQuery();
-  const createMutation = useCreateDepartment();
-  const updateMutation = useUpdateDepartment();
-  const deleteMutation = useDeleteDepartment();
-
+  // State declarations FIRST
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
 
   // Modal states
-  const [isNewDepartmentModalOpen, setIsNewDepartmentModalOpen] = useState(false);
+  const [isNewDepartmentModalOpen, setIsNewDepartmentModalOpen] =
+    useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
-  const [selectedDepartment, setSelectedDepartment] = useState<Department | null>(null);
+  const [selectedDepartment, setSelectedDepartment] =
+    useState<Department | null>(null);
 
   // Form states
-  const [newDepartmentForm, setNewDepartmentForm] = useState<DepartmentFormData>({
-    name: "",
-    description: "",
-  });
-  const [editDepartmentForm, setEditDepartmentForm] = useState<DepartmentFormData>({
-    name: "",
-    description: "",
-  });
+  const [newDepartmentForm, setNewDepartmentForm] =
+    useState<DepartmentFormData>({
+      name: "",
+      description: "",
+    });
+  const [editDepartmentForm, setEditDepartmentForm] =
+    useState<DepartmentFormData>({
+      name: "",
+      description: "",
+    });
 
   // Error message state (for UI display)
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+  // React Query hooks - NOW these can use the state variables declared above
+  const {
+    data: departmentsData,
+    isLoading: loading,
+    error: queryError,
+    refetch,
+  } = useDepartmentsQuery({
+    page: currentPage,
+    limit: itemsPerPage,
+    search: searchTerm,
+  });
+
+  // Extract data from API response
+  const departments = departmentsData?.items || [];
+  const allDepartments = departmentsData?.items || [];
+  const totalPages = departmentsData?.totalPages || 0;
+  const totalItems = departmentsData?.total || 0;
+
+  const createMutation = useCreateDepartment();
+  const updateMutation = useUpdateDepartment();
+  const deleteMutation = useDeleteDepartment();
 
   // Handle errors from mutations
   useEffect(() => {
@@ -46,29 +66,24 @@ export const useDepartments = () => {
       setErrorMessage("Failed to update department");
     } else if (deleteMutation.error) {
       setErrorMessage("Failed to delete department");
-    } else if (error) {
+    } else if (queryError) {
       setErrorMessage("Failed to load departments");
     }
-  }, [createMutation.error, updateMutation.error, deleteMutation.error, error]);
+  }, [
+    createMutation.error,
+    updateMutation.error,
+    deleteMutation.error,
+    queryError,
+  ]);
 
   // Reset to first page when search changes
   useEffect(() => {
     setCurrentPage(1);
   }, [searchTerm]);
 
-  const filteredDepartments = departments?.filter(
-    (dept) =>
-      dept?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (dept?.description &&
-        dept?.description?.toLowerCase().includes(searchTerm.toLowerCase()))
-  );
-
-  const totalPages = Math.ceil(filteredDepartments.length / itemsPerPage);
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const paginatedDepartments = filteredDepartments.slice(
-    startIndex,
-    startIndex + itemsPerPage
-  );
+  // REMOVE client-side filtering and pagination - the API handles this
+  // Just use the departments directly from the API
+  const paginatedDepartments = departments;
 
   const handleNewDepartmentSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -154,16 +169,20 @@ export const useDepartments = () => {
   };
 
   return {
-    // State
+    // State - use data from API
     departments: paginatedDepartments,
-    allDepartments: departments,
-    loading: loading || createMutation.isPending || updateMutation.isPending || deleteMutation.isPending,
+    allDepartments: allDepartments,
+    loading:
+      loading ||
+      createMutation.isPending ||
+      updateMutation.isPending ||
+      deleteMutation.isPending,
     error: errorMessage,
     searchTerm,
     currentPage,
-    totalPages,
+    totalPages, // From API
     itemsPerPage,
-    totalItems: filteredDepartments.length,
+    totalItems, // From API
 
     // Modal states
     isNewDepartmentModalOpen,

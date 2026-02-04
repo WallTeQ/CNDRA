@@ -20,8 +20,14 @@ export const useRecords = (filters?: Record<string, any>) => {
     queryKey: recordsKeys.list(filters || {}),
     queryFn: () => recordsApi.getAll(filters),
     select: (data) => {
-      console.log('Raw API response:', data); 
-      return Array.isArray(data?.data) ? data.data : [];
+      console.log("Raw API response:", data);
+      return {
+        items: Array.isArray(data?.data?.items) ? data.data.items : [],
+        total: data?.data?.total || 0,
+        page: data?.data?.page || 1,
+        limit: data?.data?.limit || 10,
+        totalPages: data?.data?.totalPages || 0,
+      };
     },
   });
 };
@@ -35,19 +41,47 @@ export const useRecord = (id: string, enabled = true) => {
   });
 };
 
+// export const useRestrictedRecords = () => {
+//   return useQuery({
+//     queryKey: recordsKeys.restricted(),
+//     queryFn: () => recordsApi.getRestricted(),
+//     select: (data) => {
+//       console.log("Restricted Records API response:", data);
+//       // Return full pagination structure OR just items array depending on API response
+//       return Array.isArray(data?.data?.items)
+//         ? data.data.items
+//         : data?.data || [];
+//     },
+//   });
+// };
+
+export const usePublicRecords = () => {
+  return useQuery({
+    queryKey: [...recordsKeys.all, "public"], // Unique key
+    queryFn: () => recordsApi.getPublic(),
+    select: (data) => {
+      console.log("Public Records API response:", data);
+      // The API returns {items: [...], total: 22, ...} directly
+      // NOT {data: {items: [...], total: 22, ...}}
+      return Array.isArray(data?.items) ? data.items : [];
+    },
+  });
+};
+
 export const useRestrictedRecords = () => {
   return useQuery({
     queryKey: recordsKeys.restricted(),
     queryFn: () => recordsApi.getRestricted(),
-    select: (data) => data.data?.items || [],
-  });
-};
-
-export const usePublicRecords = () => {
-  return useQuery({
-    queryKey: recordsKeys.restricted(),
-    queryFn: () => recordsApi.getPublic(),
-    select: (data) => data.data?.items || [],
+    select: (data) => {
+      console.log("Restricted Records API response:", data);
+      // Check if data has a 'data' wrapper or is direct
+      if (Array.isArray(data?.data?.items)) {
+        return data.data.items;
+      } else if (Array.isArray(data?.items)) {
+        return data.items;
+      }
+      return [];
+    },
   });
 };
 
@@ -55,10 +89,18 @@ export const useConfidentialRecords = () => {
   return useQuery({
     queryKey: recordsKeys.confidential(),
     queryFn: () => recordsApi.getConfidential(),
-    select: (data) => Array.isArray(data.data) ? data.data : [],
+    select: (data) => {
+      console.log("Confidential Records API response:", data);
+      // Check if data has a 'data' wrapper or is direct
+      if (Array.isArray(data?.data?.items)) {
+        return data.data.items;
+      } else if (Array.isArray(data?.items)) {
+        return data.items;
+      }
+      return [];
+    },
   });
 };
-
 // Helper function to create FormData for record creation/update
 const createRecordFormData = (recordData: any): FormData => {
   const formData = new FormData();

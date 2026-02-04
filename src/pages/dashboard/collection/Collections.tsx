@@ -90,7 +90,7 @@ export default function CollectionsPage() {
 
           <StatCard
             name="Departments"
-            value={departments.length.toString()}
+            value={departments?.length.toString()}
             icon={Building2}
             color="green"
           />

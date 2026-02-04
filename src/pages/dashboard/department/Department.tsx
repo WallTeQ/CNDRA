@@ -60,12 +60,14 @@ export default function DepartmentsPage() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const filteredDepartments = allDepartments?.filter(
-    (dept) =>
-      dept?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (dept?.description &&
-        dept?.description?.toLowerCase().includes(searchTerm.toLowerCase()))
-  );
+ const filteredDepartments = searchTerm
+   ? allDepartments?.filter(
+       (dept) =>
+         dept?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+         (dept?.description &&
+           dept?.description?.toLowerCase().includes(searchTerm.toLowerCase())),
+     )
+   : allDepartments;
 
   return (
     <div className="py-6">

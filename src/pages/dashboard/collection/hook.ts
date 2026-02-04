@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Collection, NewCollectionForm } from "../../../types";
 import {
@@ -8,22 +7,10 @@ import {
   useDeleteCollection,
 } from "../../../hooks/useCollection";
 import { Department } from "../../../types/departments";
-import { useDepartments as useDepartmentsQuery } from "../../../hooks/useDepartments";
+import { useAllDepartments } from "../../../hooks/useDepartments";
 
 export const useCollections = () => {
-  // React Query hooks
-  const {
-    data: collections = [],
-    isLoading: collectionsLoading,
-    error: collectionsError,
-  } = useCollectionsQuery();
-  const { data: departments = [], isLoading: departmentsLoading } =
-    useDepartmentsQuery();
-  const createMutation = useCreateCollection();
-  const updateMutation = useUpdateCollection();
-  const deleteMutation = useDeleteCollection();
-
-  // State
+  // State declarations FIRST
   const [selectedCollection, setSelectedCollection] =
     useState<Collection | null>(null);
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
@@ -48,6 +35,33 @@ export const useCollections = () => {
   });
 
   const itemsPerPage = 10;
+
+  // React Query hooks - NOW they can use the state variables
+  const { data: departments = [], isLoading: departmentsLoading } =
+    useAllDepartments();
+
+  const {
+    data: collectionsData,
+    isLoading: collectionsLoading,
+    error: queryError,
+    refetch,
+  } = useCollectionsQuery({
+    page: currentPage,
+    limit: itemsPerPage,
+    search: searchTerm,
+    department: departmentFilter === "all" ? undefined : departmentFilter,
+  });
+
+  const createMutation = useCreateCollection();
+  const updateMutation = useUpdateCollection();
+  const deleteMutation = useDeleteCollection();
+
+  // Extract data from API response
+  const collections = collectionsData?.items || [];
+  const totalPages = collectionsData?.totalPages || 0;
+  const totalItems = collectionsData?.total || 0;
+
+  // Combined loading state
   const loading =
     collectionsLoading ||
     departmentsLoading ||
@@ -63,14 +77,14 @@ export const useCollections = () => {
       setErrorMessage("Failed to update collection");
     } else if (deleteMutation.error) {
       setErrorMessage("Failed to delete collection");
-    } else if (collectionsError) {
+    } else if (queryError) {
       setErrorMessage("Failed to load collections");
     }
   }, [
     createMutation.error,
     updateMutation.error,
     deleteMutation.error,
-    collectionsError,
+    queryError,
   ]);
 
   // Reset to first page when filters change
@@ -78,28 +92,11 @@ export const useCollections = () => {
     setCurrentPage(1);
   }, [searchTerm, departmentFilter]);
 
-  // Filter and pagination logic
-  const filteredCollections = collections.filter((collection) => {
-    const matchesSearch =
-      collection.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (collection.description &&
-        collection.description
-          .toLowerCase()
-          .includes(searchTerm.toLowerCase()));
-
-    const matchesDepartment =
-      departmentFilter === "all" ||
-      collection.departments.some((dept: Department) => dept.name === departmentFilter);
-
-    return matchesSearch && matchesDepartment;
+  // REMOVE client-side filtering - server handles it
+  // Just validate the records are valid
+  const paginatedCollections = collections.filter((collection) => {
+    return collection && collection.id && collection.title;
   });
-
-  const totalPages = Math.ceil(filteredCollections.length / itemsPerPage);
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const paginatedCollections = filteredCollections.slice(
-    startIndex,
-    startIndex + itemsPerPage
-  );
 
   // Event handlers
   const handleCreateCollection = async (e: React.FormEvent) => {
@@ -198,9 +195,9 @@ export const useCollections = () => {
     searchTerm,
     departmentFilter,
     currentPage,
-    totalPages,
+    totalPages, // From API
     itemsPerPage,
-    totalItems: filteredCollections.length,
+    totalItems, // From API
     hasFilters,
 
     // Actions

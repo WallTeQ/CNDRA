@@ -5,10 +5,20 @@ import { Link } from "react-router-dom";
 import { usePublicRecords } from "../hooks/useRecords";
 
 export default function FeaturedRecords() {
-  const { data: records = [], isLoading: recordsLoading } = usePublicRecords();
+  const {
+    data: records = [],
+    isLoading: recordsLoading,
+    error,
+  } = usePublicRecords();
+
+  console.log("FeaturedRecords - records:", records);
+  console.log("FeaturedRecords - isLoading:", recordsLoading);
+  console.log("FeaturedRecords - error:", error);
 
   //TODO: records should returned from the backend already sorted by most recent or most accessed
   const featuredRecords = records.slice(-9).reverse();
+
+  console.log("FeaturedRecords - featuredRecords:", featuredRecords);
 
   return (
     <>
@@ -42,6 +52,12 @@ export default function FeaturedRecords() {
                   </CardContent>
                 </Card>
               ))}
+            </div>
+          ) : featuredRecords.length === 0 ? (
+            <div className="text-center py-12">
+              <p className="text-muted-foreground">
+                No featured records available
+              </p>
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

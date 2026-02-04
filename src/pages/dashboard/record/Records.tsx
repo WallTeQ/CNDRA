@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Plus, FileText, Building2, CheckCircle } from "lucide-react";
 import { useRecords, useDeleteRecord } from "../../../hooks/useRecords";
-import { useDepartments } from "../../../hooks/useDepartments";
+import { useAllDepartments, useDepartments } from "../../../hooks/useDepartments";
 // import { useAppDispatch, useAppSelector } from "../../../store";
 // import { clearError} from "../../../context/AuthContext"
 import { Button } from "../../../components/ui/Button";
@@ -36,7 +36,7 @@ export default function RecordsPage() {
 
   // React Query hooks
   const {
-    data: records = [],
+    data: recordsData,
     isLoading: recordsLoading,
     error: recordsError,
     refetch: refetchRecords,
@@ -44,10 +44,17 @@ export default function RecordsPage() {
     search: searchTerm,
     department: selectedDepartment,
     accessLevel: selectedAccessLevel,
+    page: currentPage,
+    limit: itemsPerPage,
   });
+  console.log("Records", recordsData)
 
-  const { data: departments = [], isLoading: departmentsLoading } =
-    useDepartments();
+    const records = recordsData?.items || [];
+    const totalRecords = recordsData?.total || 0;
+    const totalPages = recordsData?.totalPages || 0;
+
+   const { data: departments = [], isLoading: departmentsLoading } =
+     useAllDepartments();
 
   const deleteRecordMutation = useDeleteRecord();
 
@@ -81,7 +88,7 @@ export default function RecordsPage() {
   const recordStats = [
     {
       name: "Total Records",
-      value: records?.length?.toString(),
+      value: totalRecords?.toString(),
       change: "+12%",
       changeType: "increase" as const,
       icon: FileText,
@@ -113,25 +120,14 @@ export default function RecordsPage() {
     },
   ];
 
-  // Filter and pagination logic (now handled by React Query, but keeping for client-side pagination)
-  const filteredRecords = (records || [])
-    .filter((record) => {
-      if (!record || typeof record !== "object") return false;
-      if (!record.id) return false;
-      return true;
-    })
-    .sort((a, b) => {
-      const dateA = new Date(a.createdAt || 0);
-      const dateB = new Date(b.createdAt || 0);
-      return dateB.getTime() - dateA.getTime();
-    });
+ const filteredRecords = records.filter((record) => {
+   if (!record || typeof record !== "object") return false;
+   if (!record.id) return false;
+   return true;
+ });
 
-  const totalPages = Math.ceil(filteredRecords?.length / itemsPerPage);
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const paginatedRecords = filteredRecords?.slice(
-    startIndex,
-    startIndex + itemsPerPage
-  );
+ // Use records directly - they're already paginated by the server
+ const paginatedRecords = filteredRecords;
 
   // Event handlers
   const handleDeleteRecord = async (id: string) => {

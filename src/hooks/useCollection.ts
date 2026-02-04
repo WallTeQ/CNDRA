@@ -12,13 +12,22 @@ export const collectionsKeys = {
   detail: (id: string) => [...collectionsKeys.details(), id] as const,
 };
 
-
 // Hooks
 export const useCollections = (filters?: Record<string, any>) => {
   return useQuery({
     queryKey: collectionsKeys.list(filters || {}),
     queryFn: () => collectionsApi.getAll(filters),
-    select: (data) => data.data?.items || [],
+    select: (data) => {
+      console.log("Raw Collections API response:", data);
+      // Return full pagination data structure
+      return {
+        items: Array.isArray(data?.data?.items) ? data.data.items : [],
+        total: data?.data?.total || 0,
+        page: data?.data?.page || 1,
+        limit: data?.data?.limit || 10,
+        totalPages: data?.data?.totalPages || 0,
+      };
+    },
   });
 };
 
@@ -26,7 +35,11 @@ export const useCollection = (id: string, enabled = true) => {
   return useQuery({
     queryKey: collectionsKeys.detail(id),
     queryFn: () => collectionsApi.getById(id),
-    select: (data) => data.data,
+    select: (data) => {
+      console.log("Single Collection API response:", data);
+      // For single collection, just return the data
+      return data?.data;
+    },
     enabled: !!id && enabled,
   });
 };

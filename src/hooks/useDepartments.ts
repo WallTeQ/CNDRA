@@ -12,8 +12,6 @@ export const departmentsKeys = {
   detail: (id: string) => [...departmentsKeys.details(), id] as const,
 };
 
-
-
 // Hooks
 export const useDepartments = (filters?: Record<string, any>) => {
   return useQuery({
@@ -21,7 +19,14 @@ export const useDepartments = (filters?: Record<string, any>) => {
     queryFn: () => departmentsApi.getAll(filters),
     select: (data) => {
       console.log("Raw API response:", data);
-      return Array.isArray(data?.data) ? data.data : [];
+      // Return full pagination data structure
+      return {
+        items: Array.isArray(data?.data?.items) ? data.data.items : [],
+        total: data?.data?.total || 0,
+        page: data?.data?.page || 1,
+        limit: data?.data?.limit || 10,
+        totalPages: data?.data?.totalPages || 0,
+      };
     },
   });
 };
@@ -67,6 +72,20 @@ export const useDeleteDepartment = () => {
     onSuccess: (_, id) => {
       queryClient.removeQueries({ queryKey: departmentsKeys.detail(id) });
       queryClient.invalidateQueries({ queryKey: departmentsKeys.lists() });
+    },
+  });
+};
+
+
+
+// Fetch all departments without pagination (for dropdowns, filters, etc.)
+export const useAllDepartments = () => {
+  return useQuery({
+    queryKey: departmentsKeys.all,
+    queryFn: () => departmentsApi.getAll({ limit: 1000 }), // Large limit to get all
+    select: (data) => {
+      console.log("All Departments API response:", data);
+      return Array.isArray(data?.data?.items) ? data.data.items : [];
     },
   });
 };
