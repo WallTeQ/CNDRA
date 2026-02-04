@@ -1,6 +1,7 @@
 import { UseQueryResult, UseMutationResult } from "@tanstack/react-query";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { accessApi } from "../services/api";
+import { ApiResponse } from "../types/api";
 import {
   AccessRequest,
   ChatMessage,
@@ -52,7 +53,7 @@ export const useAccessRequests = (
   return useQuery({
     queryKey: accessKeys.requestsList(filters || {}),
     queryFn: () => accessApi.getAll(filters),
-    select: (data): AccessRequest[] => data.data || [],
+    select: (data): AccessRequest[] => Array.isArray(data.data) ? data.data : [],
   });
 };
 
@@ -75,12 +76,12 @@ export const useOverdueRequests = (): UseQueryResult<
   return useQuery({
     queryKey: accessKeys.requestsOverdue(),
     queryFn: () => accessApi.getOverdue(),
-    select: (data): AccessRequest[] => data.data || [],
+    select: (data): AccessRequest[] => Array.isArray(data.data) ? data.data : [],
   });
 };
 
 export const useSubmitAccessRequest = (): UseMutationResult<
-  AccessRequest,
+  ApiResponse<any>,
   Error,
   SubmitAccessRequestData
 > => {
@@ -107,7 +108,7 @@ export const useSubmitAccessRequest = (): UseMutationResult<
 };
 
 export const useUpdateRequestStatus = (): UseMutationResult<
-  AccessRequest,
+  ApiResponse<any>,
   Error,
   { requestId: string; data: UpdateRequestStatusData }
 > => {
@@ -151,7 +152,7 @@ export const useCommunications = (
   return useQuery({
     queryKey: accessKeys.communicationsList(requestId),
     queryFn: () => accessApi.getCommunications(requestId),
-    select: (data): Communication[] => data.data || [],
+    select: (data): Communication[] => Array.isArray(data.data) ? data.data : [],
     enabled: !!requestId && enabled,
   });
 };
@@ -163,7 +164,7 @@ export const useDetailedCommunications = (
   return useQuery({
     queryKey: accessKeys.communicationsDetailed(requestId),
     queryFn: () => accessApi.getDetailedCommunications(requestId),
-    select: (data): Communication[] => data.data || [],
+    select: (data): Communication[] => Array.isArray(data.data) ? data.data : [],
     enabled: !!requestId && enabled,
   });
 };
@@ -176,7 +177,7 @@ export const useChatRooms = (): UseQueryResult<ChatRoom[], Error> => {
   return useQuery({
     queryKey: accessKeys.chatRooms(),
     queryFn: () => accessApi.chat.getRooms(),
-    select: (data): ChatRoom[] => data.data || [],
+    select: (data): ChatRoom[] => Array.isArray(data.data) ? data.data : [],
     // refetchInterval: 30000, // Refetch every 30 seconds for real-time updates
   });
 };
@@ -188,7 +189,7 @@ export const useChatMessages = (
   return useQuery({
     queryKey: accessKeys.chatMessages(requestId),
     queryFn: () => accessApi.chat.getMessages(requestId),
-    select: (data): ChatMessage[] => data.data || [],
+    select: (data): ChatMessage[] => Array.isArray(data.data) ? data.data : [],
     enabled: !!requestId && enabled,
     // refetchInterval: 120000, // Refetch every 120 seconds for real-time chat
   });
@@ -201,7 +202,7 @@ export const useUnreadMessages = (
   return useQuery({
     queryKey: accessKeys.chatUnread(requestId),
     queryFn: () => accessApi.chat.getUnreadMessages(requestId),
-    select: (data): ChatMessage[] => data.data || [],
+    select: (data): ChatMessage[] => Array.isArray(data.data) ? data.data : [],
     enabled: !!requestId && enabled,
     // refetchInterval: 10000, // Refetch every 10 seconds
   });
@@ -221,7 +222,7 @@ export const useUnreadCount = (
 };
 
 export const useSendChatMessage = (): UseMutationResult<
-  ChatMessage,
+  ApiResponse<any>,
   Error,
   { requestId: string; data: SendChatMessageData }
 > => {
@@ -269,7 +270,7 @@ export const useSendChatMessage = (): UseMutationResult<
 };
 
 export const useMarkMessageRead = (): UseMutationResult<
-  void,
+  ApiResponse<any>,
   Error,
   string
 > => {
@@ -285,7 +286,7 @@ export const useMarkMessageRead = (): UseMutationResult<
   });
 };
 
-export const useMarkAllRead = (): UseMutationResult<void, Error, string> => {
+export const useMarkAllRead = (): UseMutationResult<ApiResponse<any>, Error, string> => {
   const queryClient = useQueryClient();
 
   return useMutation({

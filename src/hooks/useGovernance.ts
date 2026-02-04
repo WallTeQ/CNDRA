@@ -1,6 +1,7 @@
 import { UseQueryResult, UseMutationResult } from "@tanstack/react-query";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { governanceApi } from "../services/api";
+import { ApiResponse } from "../types/api";
 import {
   News,
   Notice,
@@ -61,7 +62,7 @@ export const usePublishedNews = (
   return useQuery({
     queryKey: governanceKeys.newsPublished(filters || {}),
     queryFn: () => governanceApi.news.getPublished(filters),
-    select: (data): News[] => data.data || [],
+    select: (data): News[] => Array.isArray(data.data) ? data.data : [],
   });
 };
 
@@ -71,7 +72,7 @@ export const useAllNews = (
   return useQuery({
     queryKey: governanceKeys.newsAdmin(filters || {}),
     queryFn: () => governanceApi.news.getAll(filters),
-    select: (data): News[] => data.data || [],
+    select: (data): News[] => Array.isArray(data.data) ? data.data : [],
   });
 };
 
@@ -88,7 +89,7 @@ export const useNews = (
 };
 
 export const useCreateNews = (): UseMutationResult<
-  News,
+  ApiResponse<any>,
   Error,
   CreateNewsRequest
 > => {
@@ -126,7 +127,7 @@ export const useCreateNews = (): UseMutationResult<
 };
 
 export const useUpdateNews = (): UseMutationResult<
-  News,
+  ApiResponse<any>,
   Error,
   { id: string; data: UpdateNewsRequest }
 > => {
@@ -154,7 +155,7 @@ export const useUpdateNews = (): UseMutationResult<
 };
 
 export const usePublishNews = (): UseMutationResult<
-  News,
+  ApiResponse<any>,
   Error,
   { newsId: string }
 > => {
@@ -169,7 +170,7 @@ export const usePublishNews = (): UseMutationResult<
 };
 
 export const useUnpublishNews = (): UseMutationResult<
-  News,
+  ApiResponse<any>,
   Error,
   { newsId: string }
 > => {
@@ -184,7 +185,7 @@ export const useUnpublishNews = (): UseMutationResult<
   });
 };
 
-export const useDeleteNews = (): UseMutationResult<void, Error, string> => {
+export const useDeleteNews = (): UseMutationResult<ApiResponse<any>, Error, string> => {
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -206,7 +207,7 @@ export const usePublishedNotices = (
   return useQuery({
     queryKey: governanceKeys.noticesPublished(filters || {}),
     queryFn: () => governanceApi.notices.getPublished(filters),
-    select: (data): Notice[] => data.data || [],
+    select: (data): Notice[] => Array.isArray(data.data) ? data.data : [],
   });
 };
 
@@ -216,7 +217,7 @@ export const useAllNotices = (
   return useQuery({
     queryKey: governanceKeys.noticesAdmin(filters || {}),
     queryFn: () => governanceApi.notices.getAll(filters),
-    select: (data): Notice[] => data.data || [],
+    select: (data): Notice[] => Array.isArray(data.data) ? data.data : [],
   });
 };
 
@@ -233,7 +234,7 @@ export const useNotice = (
 };
 
 export const useCreateNotice = (): UseMutationResult<
-  Notice,
+  ApiResponse<any>,
   Error,
   CreateNoticeRequest
 > => {
@@ -256,7 +257,7 @@ export const useCreateNotice = (): UseMutationResult<
 };
 
 export const useUpdateNotice = (): UseMutationResult<
-  Notice,
+  ApiResponse<any>,
   Error,
   { id: string; data: UpdateNoticeRequest }
 > => {
@@ -283,7 +284,7 @@ export const useUpdateNotice = (): UseMutationResult<
 };
 
 export const usePublishNotice = (): UseMutationResult<
-  Notice,
+  ApiResponse<any>,
   Error,
   { noticeId: string }
 > => {
@@ -299,7 +300,7 @@ export const usePublishNotice = (): UseMutationResult<
 };
 
 export const useUnpublishNotice = (): UseMutationResult<
-  Notice,
+  ApiResponse<any>,
   Error,
   { noticeId: string }
 > => {
@@ -314,7 +315,7 @@ export const useUnpublishNotice = (): UseMutationResult<
   });
 };
 
-export const useDeleteNotice = (): UseMutationResult<void, Error, string> => {
+export const useDeleteNotice = (): UseMutationResult<ApiResponse<any>, Error, string> => {
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -336,7 +337,7 @@ export const usePublishedEvents = (
   return useQuery({
     queryKey: governanceKeys.eventsPublished(filters || {}),
     queryFn: () => governanceApi.events.getPublished(filters),
-    select: (data): Event[] => data.data || [],
+    select: (data): Event[] => Array.isArray(data.data) ? data.data : [],
   });
 };
 
@@ -346,7 +347,7 @@ export const useAllEvents = (
   return useQuery({
     queryKey: governanceKeys.eventsAdmin(filters || {}),
     queryFn: () => governanceApi.events.getAll(filters),
-    select: (data): Event[] => data.data || [],
+    select: (data): Event[] => Array.isArray(data.data) ? data.data : [],
   });
 };
 
@@ -363,7 +364,7 @@ export const useEvent = (
 };
 
 export const useCreateEvent = (): UseMutationResult<
-  Event,
+  ApiResponse<any>,
   Error,
   CreateEventRequest
 > => {
@@ -385,7 +386,7 @@ export const useCreateEvent = (): UseMutationResult<
 };
 
 export const useUpdateEvent = (): UseMutationResult<
-  Event,
+  ApiResponse<any>,
   Error,
   { id: string; data: UpdateEventRequest }
 > => {
@@ -412,7 +413,7 @@ export const useUpdateEvent = (): UseMutationResult<
 };
 
 export const usePublishEvent = (): UseMutationResult<
-  Event,
+  ApiResponse<any>,
   Error,
   { eventId: string }
 > => {
@@ -428,7 +429,7 @@ export const usePublishEvent = (): UseMutationResult<
 };
 
 export const useUnpublishEvent = (): UseMutationResult<
-  Event,
+  ApiResponse<any>,
   Error,
   { eventId: string }
 > => {
@@ -443,7 +444,7 @@ export const useUnpublishEvent = (): UseMutationResult<
   });
 };
 
-export const useDeleteEvent = (): UseMutationResult<void, Error, string> => {
+export const useDeleteEvent = (): UseMutationResult<ApiResponse<any>, Error, string> => {
   const queryClient = useQueryClient();
 
   return useMutation({
