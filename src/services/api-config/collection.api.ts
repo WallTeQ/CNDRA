@@ -1,9 +1,9 @@
 import { api } from "./config";
 import "./interceptor";
-import { ApiResponse } from "../../types/api";
+import { ApiResponse, PaginatedResponse } from "../../types/api";
 
 export const collectionsApi = {
-  getAll: (params?: any): Promise<ApiResponse<any[]>> =>
+  getAll: (params?: any): Promise<ApiResponse<PaginatedResponse<any>>> =>
     api.get("/collections", { params }).then((res) => res.data),
 
   getById: (id: string): Promise<ApiResponse<any>> =>

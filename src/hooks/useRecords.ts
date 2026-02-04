@@ -19,7 +19,7 @@ export const useRecords = (filters?: Record<string, any>) => {
   return useQuery({
     queryKey: recordsKeys.list(filters || {}),
     queryFn: () => recordsApi.getAll(filters),
-    select: (data) => Array.isArray(data.data) ? data.data : [],
+    select: (data) => data.data?.items || [],
   });
 };
 
@@ -36,7 +36,7 @@ export const useRestrictedRecords = () => {
   return useQuery({
     queryKey: recordsKeys.restricted(),
     queryFn: () => recordsApi.getRestricted(),
-    select: (data) => Array.isArray(data.data) ? data.data : [],
+    select: (data) => data.data?.items || [],
   });
 };
 
@@ -44,7 +44,7 @@ export const usePublicRecords = () => {
   return useQuery({
     queryKey: recordsKeys.restricted(),
     queryFn: () => recordsApi.getPublic(),
-    select: (data) => Array.isArray(data.data) ? data.data : [],
+    select: (data) => data.data?.items || [],
   });
 };
 

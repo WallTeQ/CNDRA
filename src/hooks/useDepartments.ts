@@ -19,7 +19,7 @@ export const useDepartments = (filters?: Record<string, any>) => {
   return useQuery({
     queryKey: departmentsKeys.list(filters || {}),
     queryFn: () => departmentsApi.getAll(filters),
-    select: (data) => data.items || [],
+    select: (data) => data.data?.items || [],
   });
 };
 
