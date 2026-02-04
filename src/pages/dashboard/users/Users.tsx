@@ -52,11 +52,11 @@ export default function UsersPage() {
   const itemsPerPage = 10;
 
   // Calculate statistics
-  const activeUsers = users.filter((u) => u.isActive === true).length;
-  const administrators = users.filter(
+  const activeUsers = users?.filter((u) => u.isActive === true).length;
+  const administrators = users?.filter(
     (u) => u.roles[0].name === "admin" || u.roles[0].name === "super-admin"
   ).length;
-  const inactiveUsers = users.filter(
+  const inactiveUsers = users?.filter(
     (u) => u.isActive === false).length;
 
   // Stats configuration for reusable StatCard components

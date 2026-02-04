@@ -49,7 +49,7 @@ export const RecordsFilters: React.FC<RecordsFiltersProps> = ({
             onChange={(e) => setSelectedDepartment(e.target.value)}
           >
             <option value="">All Departments</option>
-            {departments.map((dept) => (
+            {departments?.map((dept) => (
               <option key={dept.id} value={dept.id}>
                 {dept.name}
               </option>

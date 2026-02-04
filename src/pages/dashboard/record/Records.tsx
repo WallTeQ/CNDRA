@@ -69,11 +69,11 @@ export default function RecordsPage() {
   }, [searchTerm, selectedDepartment, selectedAccessLevel]);
 
   // Calculate statistics for StatCards
-  const activeRecords = records.filter(
-    (record) => record.accessLevel !== "CONFIDENTIAL"
+  const activeRecords = records?.filter(
+    (record) => record?.accessLevel !== "CONFIDENTIAL"
   ).length;
-  const totalFileAssets = records.reduce(
-    (sum, record) => sum + (record.fileAssets?.length || 0),
+  const totalFileAssets = records?.reduce(
+    (sum, record) => sum + (record?.fileAssets?.length || 0),
     0
   );
 
@@ -81,7 +81,7 @@ export default function RecordsPage() {
   const recordStats = [
     {
       name: "Total Records",
-      value: records.length.toString(),
+      value: records?.length?.toString(),
       change: "+12%",
       changeType: "increase" as const,
       icon: FileText,
@@ -89,7 +89,7 @@ export default function RecordsPage() {
     },
     {
       name: "Departments",
-      value: departments.length.toString(),
+      value: departments?.length?.toString(),
       change: "+3%",
       changeType: "increase" as const,
       icon: Building2,
@@ -97,7 +97,7 @@ export default function RecordsPage() {
     },
     {
       name: "Active Records",
-      value: activeRecords.toString(),
+      value: activeRecords?.toString(),
       change: "+8%",
       changeType: "increase" as const,
       icon: CheckCircle,
@@ -105,7 +105,7 @@ export default function RecordsPage() {
     },
     {
       name: "File Assets",
-      value: totalFileAssets.toString(),
+      value: totalFileAssets?.toString(),
       change: "+15%",
       changeType: "increase" as const,
       icon: FileText,
@@ -126,9 +126,9 @@ export default function RecordsPage() {
       return dateB.getTime() - dateA.getTime();
     });
 
-  const totalPages = Math.ceil(filteredRecords.length / itemsPerPage);
+  const totalPages = Math.ceil(filteredRecords?.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
-  const paginatedRecords = filteredRecords.slice(
+  const paginatedRecords = filteredRecords?.slice(
     startIndex,
     startIndex + itemsPerPage
   );

@@ -55,7 +55,7 @@ const FeaturedNewsSection: React.FC = () => {
                 <div className="flex flex-row gap-8 p-8">
                   {/* Image on the left */}
                   <div className="relative w-80 h-56 flex-shrink-0 overflow-hidden  bg-slate-100">
-                    {article.fileAssets?.[0]?.storagePath ? (
+                    {article?.fileAssets?.[0]?.storagePath ? (
                       <img
                         src={article.fileAssets[0].storagePath}
                         alt={article.title}
@@ -153,9 +153,9 @@ const FeaturedNewsSection: React.FC = () => {
                         <span className="line-clamp-1">{event.location}</span>
                       </div>
                     )}
-                    {event.requiresRegistration && (
+                    {event?.requiresRegistration && (
                       <Link
-                        to={event.registrationUrl || `/events/${event.id}`}
+                        to={event?.registrationUrl || `/events/${event.id}`}
                         onClick={(e) => e.stopPropagation()}
                       >
                         <Button size="sm" className="w-full">

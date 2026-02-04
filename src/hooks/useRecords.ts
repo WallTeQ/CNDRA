@@ -19,7 +19,10 @@ export const useRecords = (filters?: Record<string, any>) => {
   return useQuery({
     queryKey: recordsKeys.list(filters || {}),
     queryFn: () => recordsApi.getAll(filters),
-    select: (data) => data.data || [],
+    select: (data) => {
+      console.log('Raw API response:', data); 
+      return Array.isArray(data?.data) ? data.data : [];
+    },
   });
 };
 
