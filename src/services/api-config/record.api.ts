@@ -1,9 +1,9 @@
 import { api } from "./config";
 import "./interceptor";
-import { ApiResponse } from "../../types/api";
+import { ApiResponse, PaginatedResponse } from "../../types/api";
 
 export const recordsApi = {
-  getAll: (params?: any): Promise<ApiResponse<any[]>> =>
+  getAll: (params?: any): Promise<ApiResponse<PaginatedResponse<any>>> =>
     api.get("/records", { params }).then((res) => res.data),
 
   getById: (id: string): Promise<ApiResponse<any>> =>
@@ -42,12 +42,12 @@ export const recordsApi = {
   delete: (id: string): Promise<ApiResponse> =>
     api.delete(`/records/${id}`).then((res) => res.data),
 
-  getRestricted: (): Promise<ApiResponse<[]>> =>
+  getRestricted: (): Promise<ApiResponse<PaginatedResponse<any>>> =>
     api.get("/records/restricted").then((res) => res.data),
 
-  getPublic: (): Promise<ApiResponse<[]>> =>
+  getPublic: (): Promise<ApiResponse<PaginatedResponse<any>>> =>
     api.get("/records/public").then((res) => res.data),
 
-  getConfidential: (): Promise<ApiResponse<[]>> =>
+  getConfidential: (): Promise<ApiResponse<PaginatedResponse<any>>> =>
     api.get("/records/confidential").then((res) => res.data),
 };

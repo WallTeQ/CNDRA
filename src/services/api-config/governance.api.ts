@@ -1,6 +1,6 @@
 import { api } from "./config";
 import "./interceptor";
-import { ApiResponse } from "../../types/api";
+import { ApiResponse, PaginatedResponse } from "../../types/api";
 
 export const governanceApi = {
   // News endpoints
@@ -40,10 +40,10 @@ export const governanceApi = {
       return api.post("/governance/news", data).then((res) => res.data);
     },
 
-    getPublished: (params?: any): Promise<ApiResponse<any[]>> =>
+    getPublished: (params?: any): Promise<ApiResponse<PaginatedResponse<any>>> =>
       api.get("/governance/news", { params }).then((res) => res.data),
 
-    getAll: (params?: any): Promise<ApiResponse<any[]>> =>
+    getAll: (params?: any): Promise<ApiResponse<PaginatedResponse<any>>> =>
       api.get("/governance/news/admin", { params }).then((res) => res.data),
 
     getById: (id: string): Promise<ApiResponse<any>> =>
@@ -89,10 +89,10 @@ export const governanceApi = {
     create: (data: any): Promise<ApiResponse<any>> =>
       api.post("/governance/notice", data).then((res) => res.data),
 
-    getPublished: (params?: any): Promise<ApiResponse<any[]>> =>
+    getPublished: (params?: any): Promise<ApiResponse<PaginatedResponse<any>>> =>
       api.get("/governance/notice", { params }).then((res) => res.data),
 
-    getAll: (params?: any): Promise<ApiResponse<any[]>> =>
+    getAll: (params?: any): Promise<ApiResponse<PaginatedResponse<any>>> =>
       api.get("/governance/notice/admin", { params }).then((res) => res.data),
 
     getById: (id: string): Promise<ApiResponse<any>> =>
@@ -116,10 +116,10 @@ export const governanceApi = {
     create: (data: any): Promise<ApiResponse<any>> =>
       api.post("/governance/event", data).then((res) => res.data),
 
-    getPublished: (params?: any): Promise<ApiResponse<any[]>> =>
+    getPublished: (params?: any): Promise<ApiResponse<PaginatedResponse<any>>> =>
       api.get("/governance/event", { params }).then((res) => res.data),
 
-    getAll: (params?: any): Promise<ApiResponse<any[]>> =>
+    getAll: (params?: any): Promise<ApiResponse<PaginatedResponse<any>>> =>
       api.get("/governance/event/admin", { params }).then((res) => res.data),
 
     getById: (id: string): Promise<ApiResponse<any>> =>

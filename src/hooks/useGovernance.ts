@@ -62,7 +62,7 @@ export const usePublishedNews = (
   return useQuery({
     queryKey: governanceKeys.newsPublished(filters || {}),
     queryFn: () => governanceApi.news.getPublished(filters),
-    select: (data): News[] => Array.isArray(data.data) ? data.data : [],
+    select: (data): News[] => data.data?.items || [],
   });
 };
 
@@ -72,7 +72,7 @@ export const useAllNews = (
   return useQuery({
     queryKey: governanceKeys.newsAdmin(filters || {}),
     queryFn: () => governanceApi.news.getAll(filters),
-    select: (data): News[] => Array.isArray(data.data) ? data.data : [],
+    select: (data): News[] => data.data?.items || [],
   });
 };
 
@@ -207,7 +207,7 @@ export const usePublishedNotices = (
   return useQuery({
     queryKey: governanceKeys.noticesPublished(filters || {}),
     queryFn: () => governanceApi.notices.getPublished(filters),
-    select: (data): Notice[] => Array.isArray(data.data) ? data.data : [],
+    select: (data): Notice[] => data.data?.items || [],
   });
 };
 
@@ -217,7 +217,7 @@ export const useAllNotices = (
   return useQuery({
     queryKey: governanceKeys.noticesAdmin(filters || {}),
     queryFn: () => governanceApi.notices.getAll(filters),
-    select: (data): Notice[] => Array.isArray(data.data) ? data.data : [],
+    select: (data): Notice[] => data.data?.items || [],
   });
 };
 
@@ -337,7 +337,7 @@ export const usePublishedEvents = (
   return useQuery({
     queryKey: governanceKeys.eventsPublished(filters || {}),
     queryFn: () => governanceApi.events.getPublished(filters),
-    select: (data): Event[] => Array.isArray(data.data) ? data.data : [],
+    select: (data): Event[] => data.data?.items || [],
   });
 };
 
@@ -347,7 +347,7 @@ export const useAllEvents = (
   return useQuery({
     queryKey: governanceKeys.eventsAdmin(filters || {}),
     queryFn: () => governanceApi.events.getAll(filters),
-    select: (data): Event[] => Array.isArray(data.data) ? data.data : [],
+    select: (data): Event[] => data.data?.items || [],
   });
 };
 

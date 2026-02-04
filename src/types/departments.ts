@@ -21,3 +21,11 @@ export interface DepartmentFormData {
   name: string;
   description: string;
 }
+
+export interface PaginatedDepartmentsResponse {
+  items: Department[];
+  total: number;
+  page: number;
+  limit: number;
+  totalPages: number;
+}
